@@ -1,2 +1,4 @@
+# frozen_string_literal: true
+
 require './app/controllers/app'
-run cryal::Api.freeze.app
+run Cryal::Api.freeze.app
