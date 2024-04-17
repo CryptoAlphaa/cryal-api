@@ -2,7 +2,6 @@
 
 require 'roda'
 require 'json'
-
 require_relative '../models/routes'
 
 module Cryal
@@ -23,7 +22,7 @@ module Cryal
       end
 
       routing.on 'api' do
-        
+
         routing.on 'routes' do
 
           # GET api/routes/[id]

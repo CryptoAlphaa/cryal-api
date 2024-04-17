@@ -1,0 +1,1 @@
+{"type":"route","id":"123asd","origin":"NTHU","destination":"HCZ","method":"walk"}
