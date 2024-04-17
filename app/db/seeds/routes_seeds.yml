@@ -1,2 +1,99 @@
----
-- 
+- id: 1
+  timestamp: 1708371400
+  origin:
+    city: "Los Angeles"
+    region: "California"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -118.2437
+    latitude: 34.0522
+  destination:
+    city: "New York"
+    region: "New York"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -74.0059
+    latitude: 40.7128
+  method: "Airplane"
+
+- id: 2
+  timestamp: 1708375000
+  origin:
+    city: "Chicago"
+    region: "Illinois"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -87.6298
+    latitude: 41.8781
+  destination:
+    city: "Miami"
+    region: "Florida"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -80.1917
+    latitude: 25.7617
+  method: "Train"
+
+- id: 3
+  timestamp: 1708378600
+  origin:
+    city: "Houston"
+    region: "Texas"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -95.3698
+    latitude: 29.7604
+  destination:
+    city: "Las Vegas"
+    region: "Nevada"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -115.1398
+    latitude: 36.1699
+  method: "Car"
+
+- id: 4
+  timestamp: 1708382200
+  origin:
+    city: "Boston"
+    region: "Massachusetts"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -71.0589
+    latitude: 42.3601
+  destination:
+    city: "Seattle"
+    region: "Washington"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -122.3321
+    latitude: 47.6062
+  method: "Bus"
+
+- id: 5
+  timestamp: 1708385800
+  origin:
+    city: "Denver"
+    region: "Colorado"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -104.9903
+    latitude: 39.7392
+  destination:
+    city: "San Francisco"
+    region: "California"
+    country: "United States"
+    country_code: "US"
+    continent: "North America"
+    longitude: -122.4194
+    latitude: 37.7749
+  method: "Car"

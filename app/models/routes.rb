@@ -4,8 +4,6 @@ require 'json'
 require 'base64'
 require 'rbnacl'
 
-
-
 module Cryal
     STORE_DIR = 'app/db/store'
 
@@ -15,22 +13,19 @@ module Cryal
             @origin    = route['origin']
             @destination = route['destination']
             @method     = route['method']
+            @timestamp = route['timestamp'] || Time.now.to_f
         end
 
-        attr_reader :id, :origin, :destination, :method
-    
+        attr_reader :id, :origin, :destination, :method, :timestamp
 
-        def to_json(options = {})
-            JSON(
+        def to_json(*_args)
             {
-                type: 'route',
-                id:,
-                origin:,
-                destination:,
-                method:
-            },
-            options
-            )
+                id: id,
+                origin: origin,
+                destination: destination,
+                method: method,
+                timestamp: timestamp
+            }.to_json(*_args)
         end
 
         def self.setup
@@ -49,12 +44,10 @@ module Cryal
 
         # Query method to retrieve index of all documents
         def self.all
-            Dir.glob("#{Cryal::STORE_DIR}/*.txt").map do |file|
-            file.match(%r{#{Regexp.quote(Cryal::STORE_DIR)}/(.*)\.txt})[1]
+            Dir.glob("#{Cryal::STORE_DIR}/*.txt").map do |f|
+                File.basename(f, '.txt')
             end
         end
-
-
 
         private
         def new_id
