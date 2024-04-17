@@ -5,6 +5,7 @@ require 'json'
 require_relative '../models/routes'
 
 module Cryal
+  # API for a CRUD process
   class Api < Roda
     plugin :environments
     plugin :halt
@@ -17,7 +18,7 @@ module Cryal
       response['Content-Type'] = 'application/json'
 
       # GET /
-      routing.root do 
+      routing.root do
         response.status = 200
         { message: 'Welcome to Cryal API' }.to_json
       end
@@ -26,7 +27,7 @@ module Cryal
         routing.on 'routes' do
           # GET api/routes/[id]
           routing.get String do |id|
-            #print(id, "\n")
+            # print(id, "\n")
             response.status = 200
             Routes.find(id).to_json
           rescue StandardError

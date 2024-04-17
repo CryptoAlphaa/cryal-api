@@ -8,7 +8,7 @@ require 'yaml'
 require_relative '../app/controllers/app'
 require_relative '../app/models/routes'
 
-#Use rack/test in your tests to call your API and check the last_response object
+# Use rack/test in your tests to call your API and check the last_response object
 # Create at least 4 tests:
 # HAPPY tests:
 # Test if the root route works
@@ -24,18 +24,17 @@ end
 
 DATA = YAML.safe_load File.read('app/db/seeds/routes_seeds.yml')
 
-describe 'Test API routes' do
+describe 'Test API routes' do # rubocop:disable Metrics/BlockLength
   include Rack::Test::Methods
 
   before do
     Cryal::Routes.setup
 
-    #delete all files in store, populate with seed data from index 2 to 5
+    # delete all files in store, populate with seed data from index 2 to 5
     Dir.glob("#{Cryal::STORE_DIR}/*.txt").each { |f| File.delete(f) }
     DATA[2..4].each do |route|
-      Cryal::Routes.new(route).save #populate with unused seed data
+      Cryal::Routes.new(route).save # populate with unused seed data
     end
-
   end
 
   describe 'HAPPY: Test API routes' do
@@ -49,18 +48,18 @@ describe 'Test API routes' do
       get 'api/routes'
       _(last_response.status).must_equal 200
       routes = JSON.parse last_response.body
-      _(routes["document_ids"].count).must_equal 3
+      _(routes['document_ids'].count).must_equal 3
     end
 
     it 'should create a new route' do
-      post 'api/routes', DATA[0].to_json, {'CONTENT_TYPE' => 'application/json'}
+      post 'api/routes', DATA[0].to_json, { 'CONTENT_TYPE' => 'application/json' }
       _(last_response.status).must_equal 201
       route = JSON.parse last_response.body
       _(route['id']).must_equal DATA[0]['id']
     end
 
     it 'should get a single route' do
-      post 'api/routes', DATA[1].to_json, {'CONTENT_TYPE' => 'application/json'}
+      post 'api/routes', DATA[1].to_json, { 'CONTENT_TYPE' => 'application/json' }
       route = JSON.parse last_response.body
       get "api/routes/#{route['id']}"
       _(last_response.status).must_equal 200
