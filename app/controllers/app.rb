@@ -22,9 +22,7 @@ module Cryal
       end
 
       routing.on 'api' do
-
         routing.on 'routes' do
-
           # GET api/routes/[id]
           routing.get String do |id|
             print(id, "\n")
@@ -43,11 +41,11 @@ module Cryal
           # POST api/routes/
           routing.post do
             new_data = JSON.parse(routing.body.read)
-            new_doc = Routes.new(new_data)
+            new_route = Routes.new(new_data)
 
-            if new_doc.save
+            if new_route.save
               response.status = 201
-              { message: 'Route saved', id: new_doc.id }.to_json
+              { message: 'Route saved', id: new_route.id }.to_json
             else
               routing.halt 400, { message: 'Could not save Route' }.to_json
             end
@@ -55,14 +53,10 @@ module Cryal
 
           response.status = 200
           { message: 'this is route dir' }.to_json
-
         end
         response.status = 200
         { message: 'this is api dir' }.to_json
       end
-
-
-
     end
   end
 end
