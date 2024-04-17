@@ -5,7 +5,7 @@ require 'base64'
 require 'rbnacl'
 
 module Cryal
-    STORE_DIR = 'app/db/store'
+  STORE_DIR = 'app/db/store'
 
     class Routes
         def initialize(route)
@@ -28,19 +28,19 @@ module Cryal
             }.to_json(*_args)
         end
 
-        def self.setup
-            Dir.mkdir(Cryal::STORE_DIR) unless Dir.exist? Cryal::STORE_DIR
-        end
+    def self.setup
+      Dir.mkdir(Cryal::STORE_DIR) unless Dir.exist? Cryal::STORE_DIR
+    end
 
-        def save
-            File.write("#{Cryal::STORE_DIR}/#{id}.txt", to_json)
-        end
+    def save
+      File.write("#{Cryal::STORE_DIR}/#{id}.txt", to_json)
+    end
 
-        # Query method to find one document
-        def self.find(find_id)
-            document_file = File.read("#{Cryal::STORE_DIR}/#{find_id}.txt")
-            Routes.new JSON.parse(document_file)
-        end
+    # Query method to find one document
+    def self.find(find_id)
+      file = File.read("#{Cryal::STORE_DIR}/#{find_id}.txt")
+      Routes.new JSON.parse(file)
+    end
 
         # Query method to retrieve index of all documents
         def self.all
@@ -49,11 +49,11 @@ module Cryal
             end
         end
 
-        private
-        def new_id
-            timestamp = Time.now.to_f.to_s
-            Base64.urlsafe_encode64(RbNaCl::Hash.sha256(timestamp))[0..9]
-        end
+    private
 
+    def new_id
+      timestamp = Time.now.to_f.to_s
+      Base64.urlsafe_encode64(RbNaCl::Hash.sha256(timestamp))[0..9]
     end
+  end
 end
