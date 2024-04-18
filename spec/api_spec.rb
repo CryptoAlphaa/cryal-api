@@ -48,7 +48,7 @@ describe 'Test API routes' do # rubocop:disable Metrics/BlockLength
       get 'api/routes'
       _(last_response.status).must_equal 200
       routes = JSON.parse last_response.body
-      _(routes['document_ids'].count).must_equal 3
+      _(routes['routes_ids'].count).must_equal 3
     end
 
     it 'should create a new route' do

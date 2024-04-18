@@ -37,7 +37,7 @@ module Cryal
           # GET api/routes/
           routing.get do
             response.status = 200
-            output = { document_ids: Routes.all }
+            output = { routes_ids: Routes.all }
             JSON.pretty_generate(output)
           end
 
