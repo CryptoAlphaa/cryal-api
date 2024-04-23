@@ -21,3 +21,6 @@ gem 'rerun'
 
 # Quality
 gem 'rubocop'
+
+# Database
+gem 'sequel', '~>5.34'
