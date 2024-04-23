@@ -21,11 +21,11 @@ module Cryal
 
     def to_json(*args)
       {
-        id: id,
-        origin: origin,
-        destination: destination,
-        method: method,
-        timestamp: timestamp
+        id: @id,
+        origin: @origin,
+        destination: @destination,
+        method: @method,
+        timestamp: @timestamp
       }.to_json(*args)
     end
 
