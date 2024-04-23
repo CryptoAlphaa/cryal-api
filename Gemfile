@@ -24,3 +24,5 @@ gem 'rubocop'
 
 # Database
 gem 'sequel', '~>5.34'
+
+gem 'figaro'

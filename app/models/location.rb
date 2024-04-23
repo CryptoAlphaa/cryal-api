@@ -11,8 +11,8 @@ module Cryal
             user_id: user_id,
             cur_lat: cur_lat,
             cur_long: cur_long,
-            current_address: current_address,
-            current_name: current_name,
+            cur_address: cur_address,
+            cur_name: cur_name,
             timestamp: timestamp,
             session_id: session_id
         }.to_json(*args)
