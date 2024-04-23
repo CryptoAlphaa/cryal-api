@@ -8,16 +8,6 @@ require 'yaml'
 require_relative '../app/controllers/app'
 require_relative '../app/models/routes'
 
-# Use rack/test in your tests to call your API and check the last_response object
-# Create at least 4 tests:
-# HAPPY tests:
-# Test if the root route works
-# Test if creating a resource (POST method) works
-# Test if getting a single resource (GET) works
-# Test if getting a list of resources (GET) works
-# SAD tests:
-# Make sure that trying to GET a non-existent resource fails
-
 def app
   Cryal::Api
 end
