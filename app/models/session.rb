@@ -1,9 +1,9 @@
 require 'sequel'
 
 module Cryal
-    class TrackingSession < Sequel::Model
-        many_to_one :target_destinations
-        one_to_many :locations
+    class Session < Sequel::Model
+        many_to_one :target
+        one_to_one :user_session
 
         def to_json(*args)
             {
