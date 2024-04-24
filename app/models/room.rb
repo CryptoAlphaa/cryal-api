@@ -1,15 +1,17 @@
 require 'sequel'
 
 module Cryal
-    class Session < Sequel::Model
+    class Room < Sequel::Model
         many_to_one :target
-        one_to_one :user_session
+        one_to_one :user_room
+        one_to_one :user
 
         def to_json(*args)
             {
-                session_id: session_id,
+                room_id: room_id,
                 target_id: target_id,
-                password_session_hash: password_session_hash,
+                room_name: room_name,
+                room_password: room_password,
                 created_time: created_time
             }.to_json(*args)
         end

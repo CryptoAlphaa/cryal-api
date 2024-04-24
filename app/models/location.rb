@@ -12,8 +12,7 @@ module Cryal
             cur_long: cur_long,
             cur_address: cur_address,
             cur_name: cur_name,
-            timestamp: timestamp,
-            session_id: session_id
+            timestamp: timestamp
         }.to_json(*args)
         end
     end
