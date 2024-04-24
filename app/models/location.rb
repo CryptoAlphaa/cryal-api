@@ -2,7 +2,6 @@ require 'sequel'
 
 module Cryal
     class Location < Sequel::Model
-        many_to_one :track_session, optional: true
         many_to_one :user
 
         def to_json(*args)
