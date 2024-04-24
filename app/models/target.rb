@@ -2,7 +2,7 @@ require 'sequel'
 
 module Cryal
     class Target < Sequel::Model
-        one_to_many :session, optional: true
+        one_to_many :room, optional: true
 
         def to_json(*args)
         {

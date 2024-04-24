@@ -7,8 +7,8 @@ Sequel.migration do
         foreign_key :user_id, :users, null: false  # Reference to the user
         Float :cur_lat, null: false
         Float :cur_long, null: false
-        String :cur_address, null: true
-        String :cur_name, null: true
+        String :cur_address
+        String :cur_name
         DateTime :timestamp, default: Sequel::CURRENT_TIMESTAMP
         end
     end
