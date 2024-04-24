@@ -10,7 +10,6 @@ Sequel.migration do
         String :cur_address, null: true
         String :cur_name, null: true
         DateTime :timestamp, default: Sequel::CURRENT_TIMESTAMP
-        foreign_key :session_id, :tracking_sessions, null: true # Reference to the associated tracking session (optional)
         end
     end
 end
