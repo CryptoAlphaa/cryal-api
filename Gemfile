@@ -26,9 +26,9 @@ gem 'rubocop'
 gem 'sequel', '~>5.34'
 
 gem 'figaro'
-gem 'pkg-config'
 gem 'hirb'
+gem 'pkg-config'
 gem 'rake'
 group :development, :test do
-    gem 'sqlite3'
+  gem 'sqlite3'
 end

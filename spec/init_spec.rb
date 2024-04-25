@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
+# frozen_string_literal: true
+
 ENV['RACK_ENV'] = 'test'
 
-# require 'minitest/autorun'
-# require 'minitest/rg'
+require 'minitest/autorun'
+require 'minitest/rg'
 require 'yaml'
 require 'fileutils'
 require 'sequel'
@@ -32,26 +34,11 @@ end
 
 DATA = {} # rubocop:disable Style/MutableConstant
 
+# To load dataset into a DATA
 def load_seed
   DATA[:users] = YAML.safe_load_file('app/db/seeds/users_seeds.yml')
   DATA[:locations] = YAML.safe_load_file('app/db/seeds/locations_seeds.yml')
   DATA[:rooms] = YAML.safe_load_file('app/db/seeds/rooms_seeds.yml')
   DATA[:user_rooms] = YAML.safe_load_file('app/db/seeds/user_rooms_seeds.yml')
   DATA[:targets] = YAML.safe_load_file('app/db/seeds/targets_seeds.yml')
-end
-
-# test function to load everything into the database
-def verify_load_all
-  clear_db
-  puts 'Loading all data into the database'
-
-  app.DB[:users].insert(DATA[:users].first)
-  app.DB[:locations].insert(DATA[:locations].first)
-  app.DB[:targets].insert(DATA[:targets].first)
-  app.DB[:rooms].insert(DATA[:rooms].first)
-  app.DB[:user_rooms].insert(DATA[:user_rooms].first)
-
-  puts 'Data loaded'
-  clear_db
-  puts 'Data cleared'
 end

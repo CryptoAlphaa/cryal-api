@@ -1,17 +1,20 @@
+# frozen_string_literal: true
+
 require 'sequel'
 
 module Cryal
-    class Target < Sequel::Model
-        one_to_many :room, optional: true
+  # Target model
+  class Target < Sequel::Model
+    one_to_many :room, optional: true
 
-        def to_json(*args)
-        {
-            target_id: target_id,
-            dest_lat: dest_lat,
-            dest_long: dest_long,
-            dest_address: dest_address,
-            dest_name: dest_name
-        }.to_json(*args)
-        end
+    def to_json(*args)
+      {
+        target_id:,
+        dest_lat:,
+        dest_long:,
+        dest_address:,
+        dest_name:
+      }.to_json(*args)
     end
+  end
 end
