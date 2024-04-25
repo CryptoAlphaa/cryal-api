@@ -57,7 +57,7 @@ module Cryal
               output = { data: User.all }
               JSON.pretty_generate(output)
             rescue StandardError
-              routing.halt 404, { message: 'som ting wong plis fix get users' }.to_json
+              routing.halt 404, { message: 'something wrong plis fix get users' }.to_json
             end
 
             #post api/v1/users

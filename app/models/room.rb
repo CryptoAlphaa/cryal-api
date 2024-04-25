@@ -3,7 +3,7 @@ require 'sequel'
 module Cryal
     class Room < Sequel::Model
         many_to_one :target
-        one_to_one :user_room
+        one_to_many :user_room
         one_to_one :user
 
         def to_json(*args)
