@@ -3,7 +3,7 @@
 require 'rake/testtask'
 require './require_app'
 
-task :default => :spec
+task default: :spec
 
 desc 'Tests API specs only'
 task :api_spec do
@@ -13,11 +13,12 @@ end
 desc 'Test all the specs'
 Rake::TestTask.new(:spec) do |t|
   t.pattern = 'spec/*_spec.rb'
+  # t.pattern = 'spec/user_rooms_spec.rb'
   t.warning = false
 end
 
 desc 'Runs rubocop on tested code'
-task :style => [:spec, :audit] do
+task style: %i[spec audit] do
   sh 'rubocop .'
 end
 
@@ -27,7 +28,7 @@ task :audit do
 end
 
 desc 'Checks for release'
-task :release? => [:spec, :style, :audit] do
+task release?: %i[spec style audit] do
   puts "\nReady for release!"
 end
 
@@ -36,11 +37,11 @@ task :print_env do
 end
 
 desc 'Run application console (pry)'
-task :console => :print_env do
+task console: :print_env do
   sh 'pry -r ./spec/test_load_all'
 end
 
-namespace :db do
+namespace :db do # rubocop:disable Metrics/BlockLength
   task :load do
     require_app(nil) # load nothing by default
     require 'sequel'
@@ -54,18 +55,18 @@ namespace :db do
   end
 
   desc 'Run migrations'
-  task :migrate => [:load, :print_env] do
+  task migrate: %i[load print_env] do
     puts 'Migrating database to latest'
     Sequel::Migrator.run(@app.DB, 'app/db/migrations')
   end
 
   desc 'Destroy data in database; maintain tables'
-  task :delete => :load_models do
+  task delete: :load_models do
     Cryal::Project.dataset.destroy
   end
 
   desc 'Delete dev or test database file'
-  task :drop => :load do
+  task drop: :load do
     if @app.environment == :production
       puts 'Cannot wipe production database!'
       return

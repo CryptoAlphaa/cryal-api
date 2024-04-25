@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # # frozen_string_literal: true
 
 # require 'roda'
@@ -14,7 +16,7 @@
 #       Routes.setup
 #     end
 
-#     route do |routing| # rubocop:disable Metrics/BlockLength
+#     route do |routing|
 #       response['Content-Type'] = 'application/json'
 
 #       # GET /

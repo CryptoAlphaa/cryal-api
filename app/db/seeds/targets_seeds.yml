@@ -1,0 +1,12 @@
+- dest_lat: 40.73061
+  dest_long: -73.935242
+  dest_address: "Brooklyn, NY"
+  dest_name: Client Office
+- dest_lat: 37.7749
+  dest_long: -122.4194
+  dest_address: "San Francisco, CA"
+  dest_name: Headquarters
+- dest_lat: 51.509865
+  dest_long: -0.118092
+  dest_address: "London, UK"
+  dest_name: Main Store

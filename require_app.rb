@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# frozen_string_literal: true
+
 # Requires all ruby files in specified app folders
 # Params:
 # - (opt) folders: Array of root folder names, or String of single folder name
