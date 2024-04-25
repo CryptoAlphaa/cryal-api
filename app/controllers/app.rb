@@ -19,16 +19,51 @@ module Cryal
         routing.on 'v1' do
           routing.on 'users' do
             routing.on String do |user_id|
+              routing.on 'createroom' do
+                #post api/v1/users/[id]/createroom
+                routing.post do
+                  new_data = JSON.parse(routing.body.read)
+                  new_data['user_id'] = user_id.to_i
+                  new_target = Room.new(new_data)
+                  raise('Could not save room') unless new_target.save
+                  response.status = 201
+                  { message: 'room saved', data: new_target }.to_json
+
+                rescue StandardError => e
+                  routing.halt 400, { message: 'DB Error', error: e }.to_json
+                end
+              end
+
+              routing.on 'joinroom' do
+                #post api/v1/users/[id]/joinroom
+                routing.post do
+                  new_data = JSON.parse(routing.body.read)
+                  new_data['user_id'] = user_id.to_i
+                  new_data['active'] = true
+                  new_target = User_Room.new(new_data)
+
+                  raise('Could Join Room') unless new_target.save
+                  response.status = 201
+                  { message: 'Room Joinned Succesfully', data: new_target }.to_json
+                rescue StandardError => e
+                  routing.halt 400, { message: 'DB Error', error: e }.to_json
+                end
+              end
+
               routing.on 'location' do
+                #get api/vi/users/[id]/location
+                routing.get do
+                  output = { data: User.first(user_id: user_id).locations }
+                  JSON.pretty_generate(output)
+                rescue StandardError => e
+                  routing.halt 400, { message: 'DB Error', error: e }.to_json
+                end
+
                 #post api/vi/users/[id]/location
                 routing.post do
                   new_data = JSON.parse(routing.body.read)
-                  print('0')
                   user = User.first(user_id: user_id)
-                  # puts(loc.methods)
-                  print('1')
                   new_loc = user.add_location(new_data)
-                  print('2')
                   if new_loc
                     response.status = 201
                     { message: 'Location saved', data: new_loc }.to_json
@@ -37,7 +72,7 @@ module Cryal
                   end
 
                 rescue StandardError => e
-                  routing.halt 400, { message: e.message }.to_json
+                  routing.halt 400, { message: 'DB Error', error: e }.to_json
                 end
               end
 
@@ -46,18 +81,17 @@ module Cryal
                 output = User.first(user_id: user_id)
                 response.status = 200
                 output.to_json
-              rescue StandardError
-                routing.halt 404, { message: 'Users not found' }.to_json
+              rescue StandardError => e
+                routing.halt 404, { message: 'Users not found', error: e }.to_json
               end
             end
-
 
             #get api/v1/users
             routing.get do
               output = { data: User.all }
               JSON.pretty_generate(output)
-            rescue StandardError
-              routing.halt 404, { message: 'something wrong plis fix get users' }.to_json
+            rescue StandardError => e
+              routing.halt 404, { message: 'something wrong plis fix get users', errorL: e}.to_json
             end
 
             #post api/v1/users
@@ -68,12 +102,53 @@ module Cryal
 
               response.status = 201
               { message: 'User saved', data: new_user }.to_json
-            rescue StandardError
-              routing.halt 400, { message: 'Can\'t load any users' }.to_json
+            rescue StandardError => e
+              routing.halt 400, { message: 'Can\'t load any users', error: e }.to_json
             end
           end
           response.status = 200
           { message: 'Welcome to Cryal api/v1' }.to_json
+
+          routing.on 'rooms' do
+            #get api/v1/rooms
+            routing.get do
+              output = { data: Room.all }
+              JSON.pretty_generate(output)
+            rescue StandardError => e
+              routing.halt 404, { message: 'something wrong plis fix get rooms', errorL: e}.to_json
+            end
+          end
+
+          routing.on 'userroom' do
+            #get api/v1/userroom
+            routing.get do
+              output = { data: User_Room.all }
+              JSON.pretty_generate(output)
+            rescue StandardError => e
+              routing.halt 404, { message: 'something wrong plis fix get rooms', errorL: e}.to_json
+            end
+          end
+
+          routing.on 'targets' do
+            #get api/v1/targets
+            routing.get do
+              output = { data: Target.all }
+              JSON.pretty_generate(output)
+            rescue StandardError => e
+              routing.halt 404, { message: 'something wrong plis fix get target', errorL: e}.to_json
+            end
+
+            #post api/v1/targets
+            routing.post do
+              new_data = JSON.parse(routing.body.read)
+              new_target = Target.new(new_data)
+              raise('Could not save Target') unless new_target.save
+              response.status = 201
+              { message: 'Target saved', data: new_target }.to_json
+            rescue StandardError => e
+              routing.halt 400, { message: 'Can\'t load any Target', error: e }.to_json
+            end
+          end
         end
         response.status = 200
         { message: 'Welcome to Cryal api' }.to_json
@@ -81,71 +156,3 @@ module Cryal
     end
   end
 end
-          # routing.on 'locations' do
-          #   routing.get do # GET api/v1/locations
-          #     response.status = 200
-          #     output = { location_ids: Location.all }
-          #     JSON.pretty_generate(output)
-          #   end
-
-          #   routing.get do # GET api/v1/locations/[location_id]
-          #     location = Location.where(id: location_id).first
-          #     location ? JSON.pretty_generate(location) : raise('Location not found')
-          #   rescue StandardError
-          #     routing.halt(404, { message: 'Location not found' }.to_json)
-          #   end
-
-          #   routing.post do # POST api/v1/locations
-          #     new_data = JSON.parse(routing.body.read)
-          #     new_location = Location.new(new_data)
-
-          #     if new_location.save
-          #       response.status = 201
-          #       { message: 'Location saved', id: new_location.id }.to_json
-          #     else
-          #       routing.halt 400, { message: 'Could not save location' }.to_json
-          #     end
-          #   end
-          # end
-  #     routing.on 'sessions' do
-  #       routing.get do # GET api/v1/sessions
-  #         response.status = 200
-  #         output = { session_ids: TrackSession.all }
-  #         JSON.pretty_generate(output)
-  #       end
-
-  #       routing.get do # GET api/v1/sessions/[session_id]
-  #         session = TrackSession.where(id: session_id).first
-  #         session ? JSON.pretty_generate(session) : raise('Session not found')
-  #       rescue StandardError
-  #         routing.halt(404, { message: 'Session not found' }.to_json)
-  #       end
-  #     end
-
-  #     # this routing is to get all locations associated with a session
-  #     routing.get do # GET api/v1/sessions/[session_id]/locations
-  #       session = TrackSession.where(id: session_id).first
-
-  #       session || raise('Session not found')
-  #     rescue StandardError
-  #       routing.halt(404, { message: 'Session not found' }.to_json)
-  #     end
-
-  #     all_locations = Location.where(session_id: session_id)
-  #     all_locations ? JSON.pretty_generate(all_locations) : raise('Locations not found')
-  #   rescue StandardError
-  #     routing.halt(404, { message: 'Locations not found' }.to_json)
-  #   end
-  # end
-
-  #     routing.post do # POST api/v1/sessions
-  #       new_data = JSON.parse(routing.body.read)
-  #       new_session = TrackSession.new(new_data)
-
-  #       if new_session.save
-  #         response.status = 201
-  #         { message: 'Session saved', id: new_session.id }.to_json
-  #       else
-  #         routing.halt 400, { message: 'Could not save session' }.to_json
-  #       end
-  #     end

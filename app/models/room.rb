@@ -13,7 +13,7 @@ module Cryal
                 user_id: user_id,
                 room_name: room_name,
                 room_password: room_password,
-                created_time: created_time
+                timestamp: timestamp
             }.to_json(*args)
         end
     end
