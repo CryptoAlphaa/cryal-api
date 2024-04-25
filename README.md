@@ -3,77 +3,43 @@
 This API stores and retrieve an entry of a person current location and destination location.
 
 ## Routes
-** The API will be running on `http://localhost:9292/`.** 
+**The API will be running on `http://localhost:9292/`.** 
 
 All routes are returning as a JSON object. Here are the routes:
 
-1. GET /
+1. `GET /`: Get the root of API to check whether the API is Alive or not
 
-Get the root of API to check whether the API is Alive or not
+2. `GET api/v1/location`: Get all location existed in the databse
 
-2. GET api/v1/location
+3. `GET api/v1/location/[id]`: Get description of a specific location via id
 
-Get all location existed in the databse
+4. `GET api/v1/rooms`: Get all rooms existed in the database
 
-3. GET api/v1/location/[id]
+5. `GET api/v1/rooms/[id]`: Get description of a specific room via id
 
-Get description of a specific location via id
+6. `GET api/v1/targets`: Get all target destination existed in the database
 
-4. GET api/v1/rooms
+7. `GET api/v1/targets/[id]`: Get description of a specific targets destination via id
 
-Get all rooms existed in the database
+8. `GET api/v1/user_room/[id]`: Get description of a specific user_room via id
 
-5. GET api/v1/rooms/[id]
+9. `GET api/v1/userroom`: To get a list of existing user rooms
 
-Get description of a specific room via id
+10. `GET api/v1/users`: To get a list of information of all users
 
-6. GET api/v1/targets
+11. `GET api/v1/users/[id]`: To get information of a certain user
 
-Get all target destination existed in the database
+12. `GET api/v1/users/[id]/location`: To get all the location of a user
 
-7. GET api/v1/targets/[id]
+13. `POST api/v1/targets`: Allows to create destination location
 
-Get description of a specific targets destination via id
+14. `POST api/v1/users`: Allows to create new users
 
-8. GET api/v1/user_room/[id]
+15. `POST api/v1/users/[id]/createroom`: Allows users to create a room
 
-Get description of a specific user_room via id
+16. `POST api/v1/users/[id]/joinroom`: Allows users to join a room
 
-9. GET api/v1/userroom
-
-To get a list of existing user rooms
-
-10. GET api/v1/users
-
-To get a list of information of all users
-
-11. GET api/v1/users/[id]
-
-To get information of a certain user
-
-12. GET api/v1/users/[id]/location
-
-To get all the location of a user
-
-13. POST api/v1/targets
-
-Allows to create destination location
-
-14. POST api/v1/users
-
-Allows to create new users
-
-15. POST api/v1/users/[id]/createroom
-
-Allows users to create a room
-
-16. POST api/v1/users/[id]/joinroom
-
-Allows users to join a room
-
-17. POST api/v1/users/[id]/location
-
-Allows user to create locations
+17. `POST api/v1/users/[id]/location`: Allows user to create locations
 
 
 ## Installation
