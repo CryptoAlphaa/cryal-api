@@ -3,7 +3,7 @@ require 'sequel'
 Sequel.migration do
     change do
       create_table(:rooms) do
-        primary_key :id
+        primary_key :room_id
         foreign_key :target_id, :targets
         foreign_key :user_id, :users, null: false
         String :room_name, null: false
