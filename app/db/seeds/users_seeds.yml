@@ -1,0 +1,9 @@
+- username: alice
+  email: alice@example.com
+  password_hash: hashed_password_1
+- username: bob
+  email: bob@example.com
+  password_hash: hashed_password_2
+- username: charlie
+  email: charlie@example.com
+  password_hash: hashed_password_3
