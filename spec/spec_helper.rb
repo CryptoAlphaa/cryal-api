@@ -26,7 +26,6 @@ end
 
 DATA = {} # rubocop:disable Style/MutableConstant
 
-# To load dataset into a DATA
 def load_seed
   DATA[:users] = YAML.safe_load_file('app/db/seeds/users_seeds.yml')
   DATA[:locations] = YAML.safe_load_file('app/db/seeds/locations_seeds.yml')

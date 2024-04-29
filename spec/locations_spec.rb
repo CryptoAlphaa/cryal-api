@@ -4,7 +4,7 @@
 
 # frozen_string_literal: true
 
-require_relative 'init_spec'
+require_relative 'spec_helper'
 
 describe 'Test Location Model' do # rubocop:disable Metrics/BlockLength
   before do

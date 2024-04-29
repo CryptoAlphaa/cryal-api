@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'init_spec'
+require_relative 'spec_helper'
 
 describe 'Do not expose secret credential' do
   it 'should not find database url' do
