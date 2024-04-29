@@ -223,7 +223,6 @@ module Cryal
           end
         end
         response.status = 200
-        { message: 'Welcome to Cryal api' }.to_json
       end
     end
   end
