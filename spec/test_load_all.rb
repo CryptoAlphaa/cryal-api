@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# frozen_string_literal: true
-
 # run pry -r <path/to/this/file>
 
 require_relative '../require_app'

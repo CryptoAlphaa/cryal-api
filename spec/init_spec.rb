@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# frozen_string_literal: true
-
 ENV['RACK_ENV'] = 'test'
 
 require 'minitest/autorun'
@@ -11,12 +9,6 @@ require 'fileutils'
 require 'sequel'
 
 require_relative 'test_load_all'
-
-# Data takes from db file.
-
-# clear each table
-# clear in order because of foreign key constraints, a -> b means a gives foreign key to b
-# structure: locations <- users -> user_rooms <-> rooms <- targets
 
 def clear_db
   app.DB[:users].delete
