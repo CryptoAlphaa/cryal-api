@@ -10,7 +10,7 @@ module Cryal
 
     # mass assignment prevention
     plugin :whitelist_security
-    set_allowed_columns :active
+    set_allowed_columns :active, :room_id
 
     def to_json(*args)
       {

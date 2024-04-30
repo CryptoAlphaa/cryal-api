@@ -14,14 +14,14 @@ module Cryal
 
     # mass assignment prevention
     plugin :whitelist_security
-    set_allowed_columns :plan_name, :plan_description_secure
+    set_allowed_columns :plan_name, :plan_description
 
     # Secure getters and setters
-    def description
+    def plan_description
         SecureDB.decrypt(plan_description_secure)
       end
   
-    def description=(plaintext)
+    def plan_description=(plaintext)
         self.plan_description_secure = SecureDB.encrypt(plaintext)
     end
 

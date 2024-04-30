@@ -2,39 +2,46 @@
 
 require 'json'
 require 'sequel'
+require 'rbnacl'
 
 module Cryal
   # User model
   class User < Sequel::Model
     one_to_many :locations
-    one_to_many :user_room
-    one_to_one :room
+    one_to_many :user_rooms
+    one_to_many :rooms
 
     plugin :timestamps, update_on_create: true
     plugin :uuid, field: :user_id
+    
     # mass assignment prevention
     plugin :whitelist_security
-    set_allowed_columns :username, :email
+    set_allowed_columns :username, :email, :password
 
-    def password=(password)
-      self.password_hash = SecureDB.hash(password)
+    def password=(plaintext)
+      self.password_hash = SecureDB.hash(plaintext)
     end
 
-    def email=(email)
-      self.email = SecureDB.encrypt(email)
+    def password
+      self.password_hash
     end
 
     def email
-      SecureDB.decrypt(email)
+      self.email_secure
+    end
+
+    def email=(plaintext)
+      self.email_secure = SecureDB.encrypt(plaintext)
     end
 
     def to_json(*args)
       {
         user_id: user_id,
         username: username,
-        email: email,
+        email_secure: email_secure,
         created_at: created_at,
-        updated_at: updated_at
+        updated_at: updated_at,
+        password_hash: password_hash
       }.to_json(*args)
     end
   end

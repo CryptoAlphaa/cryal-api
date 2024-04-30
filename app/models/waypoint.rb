@@ -12,7 +12,7 @@ module Cryal
 
         # mass asignment prevention
         plugin :whitelist_security
-        set_allowed_columns :waypoint_lat_secure, :waypoint_long_secure, :waypoint_address, :waypoint_name
+        set_allowed_columns :latitude, :longitude, :waypoint_address, :waypoint_name
 
         def to_json(*args)
         {

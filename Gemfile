@@ -9,6 +9,7 @@ gem 'roda', '~>3.1'
 
 # Security
 gem 'rbnacl', '~>7.1'
+gem 'base64'
 
 # Testing
 gem 'minitest'
@@ -29,6 +30,8 @@ gem 'figaro'
 gem 'hirb'
 gem 'pkg-config'
 gem 'rake'
+
+
 group :development, :test do
   gem 'sqlite3'
 end

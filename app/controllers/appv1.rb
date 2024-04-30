@@ -115,24 +115,22 @@ module Cryal
     end
 
     def user_fetch_locations(routing, user_id)
-      output = { data: User.first(user_id:).locations }
-      not_found(routing, 'DB Error') if output.nil?
+      output = User.first(user_id:)
+      not_found(routing, 'User not found') if output.nil?
+      locations = output.locations
       response.status = 200
-      output.to_json
+      locations.to_json
     end
 
     def user_create_location(routing, user_id) # rubocop:disable Metrics/AbcSize
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       location = JSON.parse(routing.body.read)
-      location['cur_lat'] = location['cur_lat'].to_f
-      location['cur_long'] = location['cur_long'].to_f
-      location['user_id'] = user_id.to_i
-      location = Location.new(location)
+      location = user.add_location(location)
 
-      if location.save
+      if location
         response.status = 201
-        { message: 'Location saved', data: location }.to_json
+        { message: 'Location saved', data: location.to_json }.to_json
       else
         internal_server_error('Could not save Location')
       end
@@ -150,11 +148,11 @@ module Cryal
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       room = JSON.parse(routing.body.read)
-      room['user_id'] = user_id.to_i
-      room = Room.new(room)
-      if room.save
+      room = user.add_room(room)
+      
+      if room
         response.status = 201
-        { message: 'Room saved', data: room }.to_json
+        { message: 'Room saved', data: room.to_json }.to_json
       else
         internal_server_error('Could not save Room')
       end
@@ -164,15 +162,23 @@ module Cryal
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       user_room = JSON.parse(routing.body.read)
-      user_room['user_id'] = user_id.to_i
-      user_room['active'] = true
-      user_room = User_Room.new(user_room)
-      if user_room.save
+      user_room = user.add_user_room(user_room)
+      if user_room
         response.status = 201
         { message: 'Room Join Successfully', data: user_room }.to_json
       else
         internal_server_error('Could not save User_Room')
       end
+    end
+
+    def user_create_plan(routing, user_id)
+      user = User.first(user_id:)
+      not_found(routing, 'User not found') if user.nil?
+
+      # Plans are made inside a room, so we need to get the room first
+
+      plan = JSON.parse(routing.body.read)
+      plan = user.add_plan(plan)
     end
 
     def global_create_user(routing)
@@ -205,7 +211,7 @@ module Cryal
     end
 
     def global_fetch_userrooms(_routing)
-      output = { data: User_Room.all }
+      output = { data: UserRoom.all }
       output.to_json
     end
 
