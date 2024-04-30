@@ -4,6 +4,8 @@ require 'roda'
 require 'figaro'
 require 'sequel'
 
+require_relative '../app/lib/secure_db'
+
 module Cryal
   # Configuration for the API
   class Api < Roda
@@ -23,6 +25,9 @@ module Cryal
     db_url = ENV.delete('DATABASE_URL')
     DB = Sequel.connect("#{db_url}?encoding=utf8")
     def self.DB = DB # rubocop:disable Naming/MethodName
+
+    # Retreive and Delete secret DB Key
+    SecureDB.setup(config)
 
     configure :development, :test do
       require 'pry'
