@@ -3,8 +3,7 @@
 require 'roda'
 require 'figaro'
 require 'sequel'
-
-require_relative '../app/lib/secure_db'
+require './app/lib/secure_db'
 
 module Cryal
   # Configuration for the API
@@ -27,7 +26,7 @@ module Cryal
     def self.DB = DB # rubocop:disable Naming/MethodName
 
     # Retreive and Delete secret DB Key
-    SecureDB.setup(config)
+    SecureDB.setup(ENV.delete('DB_KEY'))
 
     configure :development, :test do
       require 'pry'

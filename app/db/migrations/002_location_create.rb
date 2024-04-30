@@ -7,11 +7,11 @@ Sequel.migration do
     create_table(:locations) do
       primary_key :location_id
       foreign_key :user_id, :users, null: false, on_delete: :cascade
-      Float :cur_lat, null: false
-      Float :cur_long, null: false
+      String :cur_lat_secure, null: false
+      String :cur_long_secure, null: false
       String :cur_address
       String :cur_name
-      DateTime :timestamp, default: Sequel::CURRENT_TIMESTAMP
+      DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
     end
   end
 end
