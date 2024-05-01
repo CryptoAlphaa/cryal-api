@@ -12,7 +12,7 @@ module Cryal
 
         # mass asignment prevention
         plugin :whitelist_security
-        set_allowed_columns :latitude, :longitude, :waypoint_address, :waypoint_name
+        set_allowed_columns :plan_id, :latitude, :longitude, :waypoint_address, :waypoint_name, :waypoint_number
 
         def to_json(*args)
         {
@@ -43,6 +43,18 @@ module Cryal
 
         def longitude=(plaintext)
             self.waypoint_long_secure = SecureDB.encrypt(plaintext)
+        end
+
+        def add_waypoint(item)
+            puts "Halo gais aku masuk"
+            super(item)
+            # modify the added item to increment the waypoint number
+            last_waypoint_number = Waypoint.where(plan_id: item[:plan_id]).max(:waypoint_number) || 0
+            new_waypoint_number = last_waypoint_number + 1
+            item[:waypoint_number] = new_waypoint_number
+            item.save
+            puts "halo aku keluar"
+            item
         end
 
         # Custom create function

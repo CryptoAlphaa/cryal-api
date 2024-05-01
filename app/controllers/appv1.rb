@@ -41,7 +41,7 @@ module Cryal
               end
             end
 
-            # GET /api/v1/users/[user_id]/rooms # BROKEN, TO DO. FIX MODEL
+            # GET /api/v1/users/[user_id]/rooms DONE
             routing.on 'rooms' do
               routing.get do
                 user_fetch_rooms(routing, user_id)
@@ -64,8 +64,8 @@ module Cryal
 
             # POST /api/v1/users/[user_id]/plans
           routing.on 'plans' do
-            # POST /api/v1/users/[user_id]/plans/create
-            routing.on 'create' do
+            # POST /api/v1/users/[user_id]/plans/create_plan
+            routing.on 'create_plan' do
               routing.post do
                 user_create_plan(routing, user_id)
               end
@@ -76,8 +76,23 @@ module Cryal
               routing.get do
                 user_fetch_plans(routing, user_id)
               end
+            end
+
+            # api/v1/users/[user_id]/plans/[plan_id]
+            routing.on String do |plan_id|
+              routing.on 'waypoints' do
+                # POST /api/v1/users/[user_id]/plans/[plan_id]/waypoints
+                routing.post do
+                  user_create_waypoint(routing, user_id, plan_id)
+                end
+
+                # GET /api/v1/users/[user_id]/plans/[plan_id]/waypoints
+                routing.get do
+                  user_fetch_waypoints(routing, user_id, plan_id)
+                end
+              end
+            end
           end
-        end
       end
 
           # GET /api/v1/users DONE
@@ -222,6 +237,37 @@ module Cryal
       all_plans.each do |plan|
         output.push(plan.to_json)
       end
+    end
+
+    def user_create_waypoint(routing, user_id, plan_id)
+      user = User.first(user_id:)
+      not_found(routing, 'User not found') if user.nil?
+      plan = Plan.first(plan_id:)
+      not_found(routing, 'Plan not found') if plan.nil?
+      waypoint = JSON.parse(routing.body.read)
+      last_waypoint_number = Waypoint.where(plan_id: plan.plan_id).max(:waypoint_number) || 0
+      new_waypoint_number = last_waypoint_number + 1
+      # delete waypoint number field if it exists
+      waypoint.delete('waypoint_number')
+      waypoint[:waypoint_number] = new_waypoint_number
+      waypoint = plan.add_waypoint(waypoint)
+
+      if waypoint
+        response.status = 201
+        { message: 'Waypoint saved', data: waypoint.to_json }.to_json
+      else
+        internal_server_error('Could not save Waypoint')
+      end
+    end
+
+    def user_fetch_waypoints(routing, user_id, plan_id)
+      user = User.first(user_id:)
+      not_found(routing, 'User not found') if user.nil?
+      plan = Plan.first(plan_id:)
+      not_found(routing, 'Plan not found') if plan.nil?
+      waypoints = plan.waypoints
+      response.status = 200
+      waypoints.to_json
     end
 
     def global_create_user(routing)
