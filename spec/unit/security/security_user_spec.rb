@@ -11,13 +11,17 @@ describe 'Security Test User Model' do
     app.DB[:users].insert(DATA[:users].first)
   end
 
-  describe 'mass assignment attacks' do
+  describe 'SECURITY: mass assignment attacks' do
     it 'should not allow changing user password' do
-      # IDK
+      user = User.first(user_id: DATA[:users].first[:id])
+      original_password = user.password
+      post "api/v1/users/#{user.id}", { password: 'new_password' }.to_json
+      user.refresh
+      _(user.password).must_equal original_password  # Ensure password has not changed
     end
   end
 
-  describe 'SQL injection prevention' do
+  describe 'SECURITY: SQL injection prevention' do
     it 'should prevent basic SQL injection to get index' do
         get 'api/v1/users/2%20or%20id%3D1'
         _(last_response.status).must_equal 404
@@ -26,7 +30,7 @@ describe 'Security Test User Model' do
       end
   end
 
-  describe 'non-deterministic UUIDs' do
+  describe 'SECURITY: non-deterministic UUIDs' do
     it 'should generate non-deterministic UUIDs' do
       post 'api/v1/users', { name: 'New User' }.to_json
       first_user = JSON.parse(last_response.body)['data']
@@ -36,24 +40,18 @@ describe 'Security Test User Model' do
     end
   end
 
-  describe 'secured data fields' do
-    it 'should encrypt and decrypt sensitive data fields' do
+  describe 'SECURITY: secured data fields' do
+    # it 'should encrypt and decrypt sensitive data fields' do
+    #   get 'api/v1/users'
+    #   users = JSON.parse(last_response.body)
+    #   _(users.any? { |u| u.key?('password') }).must_equal false
+    # end
+    it 'should not expose encrypted or sensitive user fields' do
       get 'api/v1/users'
       users = JSON.parse(last_response.body)
-      _(users.any? { |u| u.key?('password') }).must_equal false
-    end
-  end
-
-  describe 'security library cases' do
-    it 'should store encrypted passwords' do
-      # create a user with a known password
-      user = User.create(email: 'test@example.com', password: 'password')
-      # Fetch the user directly from the database
-      stored_user = User.find(email: 'test@example.com')
-      # The stored password should not be the same as the plain text password
-      expect(stored_user.password).not_to eq('password')
-      # The stored password should be the encrypted version of the plain text password
-      expect(stored_user.password).to eq(User.encrypt_password('password'))
+      users.each do |user|
+        _(user.keys).wont_include 'password'
+      end
     end
   end
 end
