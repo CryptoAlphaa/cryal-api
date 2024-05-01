@@ -8,12 +8,12 @@ module Cryal
   # User model
   class User < Sequel::Model
     one_to_many :locations
-    one_to_many :user_rooms
+    one_to_many :user_rooms, class: 'Cryal::User_Room'
     one_to_many :rooms
 
     plugin :timestamps, update_on_create: true
     plugin :uuid, field: :user_id
-    
+
     # mass assignment prevention
     plugin :whitelist_security
     set_allowed_columns :username, :email, :password

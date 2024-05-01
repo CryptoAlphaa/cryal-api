@@ -5,7 +5,7 @@ require 'sequel'
 module Cryal
   # Room model
   class Room < Sequel::Model
-    one_to_many :user_rooms
+    one_to_many :user_rooms, class: 'Cryal::User_Room'
     many_to_one :user
     one_to_many :plans
 
@@ -37,7 +37,7 @@ module Cryal
         created_at: created_at,
         updated_at: updated_at
       }.to_json(*args)
-      
+
     end
   end
 end
