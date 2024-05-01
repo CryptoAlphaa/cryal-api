@@ -1,20 +1,17 @@
-- user_id: 1
-  cur_lat: 40.7128
-  cur_long: -74.0060
+- latitude: '40.7128'
+  longitude: '-74.0060'
   cur_address: "New York, NY"
   cur_name: Office
-- user_id: 1
-  cur_lat: 44.0522
-  cur_long: -74.0060
+- latitude: '44.0522'
+  longitude: '-74.0060'
   cur_address: "New York, NY"
   cur_name: Supermarket  
-- user_id: 2
-  cur_lat: 34.0522
-  cur_long: -118.2437
+- latitude: '34.0522'
+  longitude: '-118.2437'
   cur_address: "Los Angeles, CA"
   cur_name: Home
-- user_id: 3
-  cur_lat: 51.5074
-  cur_long: -0.1278
+- location_id: 1
+  latitude: '59.1'
+  longitude: '-0.1278'
   cur_address: "London, UK"
   cur_name: Work

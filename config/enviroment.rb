@@ -2,6 +2,7 @@
 
 require 'roda'
 require 'figaro'
+require 'logger'
 require 'sequel'
 require './app/lib/secure_db'
 
@@ -25,11 +26,19 @@ module Cryal
     DB = Sequel.connect("#{db_url}?encoding=utf8")
     def self.DB = DB # rubocop:disable Naming/MethodName
 
-    # Retreive and Delete secret DB Key
+    configure :development, :production do
+      plugin :common_logger, $stdout
+    end
+
+    LOGGER = Logger.new($stderr)
+    def self.logger = LOGGER
+
+    # Retrieve and Delete secret DB Key
     SecureDB.setup(ENV.delete('DB_KEY'))
 
     configure :development, :test do
       require 'pry'
+      logger.level = Logger::ERROR
     end
   end
 end

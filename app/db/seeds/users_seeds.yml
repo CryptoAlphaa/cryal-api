@@ -1,9 +1,13 @@
-- username: alice
-  email: alice@example.com
-  password_hash: hashed_password_1
-- username: bob
-  email: bob@example.com
-  password_hash: hashed_password_2
-- username: charlie
-  email: charlie@example.com
-  password_hash: hashed_password_3
+- username: Bobby
+  email: Bobby@example.com
+  password: Bobby_Password
+- username: Bella
+  email: Bella@example.com
+  password: Bella_Password
+- username: Jansen
+  email: Jansen@example.com
+  password: Jansen_Password
+- username: Eve
+  email: Eve@example.com
+  password: Eve_Password
+  user_id : 01052024

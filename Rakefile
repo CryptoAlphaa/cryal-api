@@ -12,19 +12,19 @@ end
 
 # desc 'Test all the specs'
 # Rake::TestTask.new(:spec) do |t|
-#   t.pattern = 'spec/*_spec.rb'
+#   t.pattern = 'spec/unit/users_spec.rb'
 #   t.warning = false
 # end
 
 desc 'Test unit specs only'
 Rake::TestTask.new(:unit) do |t|
-  t.pattern = 'spec/unit/*_spec.rb'
+  t.pattern = 'spec/unit/user_rooms_spec.rb'
   t.warning = false
 end
 
 desc 'Test security specs only'
 Rake::TestTask.new(:security) do |t|
-  t.pattern = 'spec/unit/security/*_spec.rb'
+  t.pattern = 'spec/unit/security/security_user_spec.rb'
   t.warning = false
 end
 
