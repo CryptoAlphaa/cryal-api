@@ -4,7 +4,7 @@
 
 # frozen_string_literal: true
 
-require_relative 'spec_helper'
+require_relative '../spec_helper'
 
 describe 'Test Target Model' do # rubocop:disable Metrics/BlockLength
   before do
