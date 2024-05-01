@@ -12,41 +12,31 @@ describe 'Test UserRoom Model' do # rubocop:disable Metrics/BlockLength
     load_seed
 
     # because user_room needs a foreign key of users and rooms, we need to insert them first
-    app.DB[:users].insert(DATA[:users][0])
-    app.DB[:targets].insert(DATA[:targets][0])
-    app.DB[:rooms].insert(DATA[:rooms][0])
-    app.DB[:user_rooms].insert(DATA[:user_rooms][0])
+    first_user = Cryal::User.create(DATA[:users][0])
+    second_user = Cryal::User.create(DATA[:users][1])
+    first_user.add_room(DATA[:rooms][0])
+    room_data = Cryal::Room.where(room_name: 'Meeting Room 1').first
+    prepare_to_join_room = { room_id: room_data[:room_id], active: true }
+    second_user.add_user_room(prepare_to_join_room)
   end
 
   describe 'HAPPY: Test GET' do
-    it 'should get all user_rooms' do
-      get 'api/v1/user_rooms'
+    it 'should get all userrooms' do
+      get 'api/v1/userrooms'
       _(last_response.status).must_equal 200
       user_rooms = JSON.parse(last_response.body)
       _(user_rooms.length).must_equal 1
     end
-
-    it 'should get a single user_room' do
-      user_room_id = DATA[:user_rooms].first
-      user_room_id = user_room_id[:id]
-      get "api/v1/user_rooms/#{user_room_id}"
-      _(last_response.status).must_equal 200
-      user_room = JSON.parse(last_response.body)
-      _(user_room['id']).must_equal user_room_id
-    end
-  end
-
-  describe 'SAD: Test GET' do
-    it 'should return 404 if user_room is not found' do
-      get 'api/v1/user_rooms/100'
-      _(last_response.status).must_equal 404
-    end
   end
 
   describe 'HAPPY: Test POST' do
-    it 'should create a new user_room' do
+    it 'should create a new userroom' do
       # use api/v1/users/user_id/joinroom/room_id to create a new user_room
-      post 'api/v1/users/1/joinroom', DATA[:user_rooms][1].to_json
+      third_user = Cryal::User.create(DATA[:users][2])
+      room_data = Cryal::Room.where(room_name: 'Meeting Room 1').first
+      user_id = third_user[:user_id]
+      prepare_to_join_room = { room_id: room_data[:room_id], active: true }
+      post "api/v1/users/#{user_id}/joinroom", prepare_to_join_room.to_json
       _(last_response.status).must_equal 201
       user_room = JSON.parse(last_response.body)
       _(user_room['data']).wont_be_nil

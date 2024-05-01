@@ -1,9 +1,5 @@
+- active: true
+- active: true
+- active: false
 - user_id: 1
-  room_id: 1
   active: true
-- user_id: 2
-  room_id: 1
-  active: true
-- user_id: 3
-  room_id: 3
-  active: false

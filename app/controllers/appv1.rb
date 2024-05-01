@@ -261,7 +261,7 @@ module Cryal
       final_user = User.new(user)
       final_user.save
       response.status = 201
-      { message: 'User saved', data: final_user.to_json }.to_json
+      { message: 'User saved', data: final_user}.to_json
 
     rescue => e
       log_and_handle_error(routing, user, e)

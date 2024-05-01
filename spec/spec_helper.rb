@@ -15,7 +15,8 @@ def clear_db
   app.DB[:locations].delete
   app.DB[:rooms].delete
   app.DB[:user_rooms].delete
-  app.DB[:targets].delete
+  app.DB[:plans].delete
+  app.DB[:waypoints].delete
   # reset the auto increment
   app.DB[:sqlite_sequence].where(name: 'users').delete
   app.DB[:sqlite_sequence].where(name: 'locations').delete

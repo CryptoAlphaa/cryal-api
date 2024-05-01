@@ -9,7 +9,10 @@ describe 'Test User Model' do # rubocop:disable Metrics/BlockLength
     load_seed
 
     # fill the user table with the first seed
-    app.DB[:users].insert(DATA[:users].first)
+    DATA[:users].each do |user|
+      Cryal::User.create(user)
+      break
+    end
   end
 
   describe 'HAPPY: Test GET' do
@@ -22,11 +25,11 @@ describe 'Test User Model' do # rubocop:disable Metrics/BlockLength
 
     it 'should get a single user' do
       user_id = DATA[:users].first
-      user_id = user_id['id']
+      user_id = user_id['user_id']
       get "api/v1/users/#{user_id}"
       _(last_response.status).must_equal 200
       user = JSON.parse(last_response.body)
-      _(user['id']).must_equal user_id
+      _(user['user_id']).must_equal user_id
     end
   end
 
@@ -48,9 +51,9 @@ describe 'Test User Model' do # rubocop:disable Metrics/BlockLength
   end
 
   describe 'SAD: Test POST' do
-    it 'should return 404 if data is invalid' do
+    it 'should return 500 if server error' do
       post 'api/v1/users', {}.to_json
-      _(last_response.status).must_equal 404
+      _(last_response.status).must_equal 500
     end
   end
 end

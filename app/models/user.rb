@@ -38,10 +38,8 @@ module Cryal
       {
         user_id: user_id,
         username: username,
-        email_secure: email_secure,
         created_at: created_at,
-        updated_at: updated_at,
-        password_hash: password_hash
+        updated_at: updated_at
       }.to_json(*args)
     end
   end
