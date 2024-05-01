@@ -17,11 +17,12 @@ def clear_db
   app.DB[:user_rooms].delete
   app.DB[:targets].delete
   # reset the auto increment
-  app.DB.run("DELETE FROM sqlite_sequence WHERE name='users'")
-  app.DB.run("DELETE FROM sqlite_sequence WHERE name='locations'")
-  app.DB.run("DELETE FROM sqlite_sequence WHERE name='rooms'")
-  app.DB.run("DELETE FROM sqlite_sequence WHERE name='user_rooms'")
-  app.DB.run("DELETE FROM sqlite_sequence WHERE name='targets'")
+  app.DB[:sqlite_sequence].where(name: 'users').delete
+  app.DB[:sqlite_sequence].where(name: 'locations').delete
+  app.DB[:sqlite_sequence].where(name: 'rooms').delete
+  app.DB[:sqlite_sequence].where(name: 'user_rooms').delete
+  app.DB[:sqlite_sequence].where(name: 'plans').delete
+  app.DB[:sqlite_sequence].where(name: 'waypoints').delete
 end
 
 DATA = {} # rubocop:disable Style/MutableConstant
@@ -31,5 +32,6 @@ def load_seed
   DATA[:locations] = YAML.safe_load_file('app/db/seeds/locations_seeds.yml')
   DATA[:rooms] = YAML.safe_load_file('app/db/seeds/rooms_seeds.yml')
   DATA[:user_rooms] = YAML.safe_load_file('app/db/seeds/user_rooms_seeds.yml')
-  DATA[:targets] = YAML.safe_load_file('app/db/seeds/targets_seeds.yml')
+  DATA[:plans] = YAML.safe_load_file('app/db/seeds/plans_seeds.yml')
+  DATA[:waypoints] = YAML.safe_load_file('app/db/seeds/waypoints_seeds.yml')
 end
