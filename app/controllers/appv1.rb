@@ -61,7 +61,14 @@ module Cryal
                 user_join_room(routing, user_id)
               end
             end
+
+          # POST /api/v1/users/[user_id]/createplan
+          routing.on 'createplan' do
+            routing.post do
+              user_create_plan(routing, user_id)
+            end
           end
+        end
 
           # GET /api/v1/users DONE
           routing.get do
@@ -149,7 +156,7 @@ module Cryal
       not_found(routing, 'User not found') if user.nil?
       room = JSON.parse(routing.body.read)
       room = user.add_room(room)
-      
+
       if room
         response.status = 201
         { message: 'Room saved', data: room.to_json }.to_json
@@ -159,7 +166,7 @@ module Cryal
     end
 
     def user_join_room(routing, user_id)
-      user = User.first(user_id:)
+      user = User.first(user_id: user_id)
       not_found(routing, 'User not found') if user.nil?
       user_room = JSON.parse(routing.body.read)
       user_room = user.add_user_room(user_room)
@@ -174,6 +181,9 @@ module Cryal
     def user_create_plan(routing, user_id)
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
+
+      plan = JSON.parse(routing.body.read)
+      # Get the room first
 
       # Plans are made inside a room, so we need to get the room first
 
@@ -211,7 +221,7 @@ module Cryal
     end
 
     def global_fetch_userrooms(_routing)
-      output = { data: UserRoom.all }
+      output = { data: User_Room.all }
       output.to_json
     end
 

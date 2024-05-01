@@ -8,9 +8,12 @@ module Cryal
     many_to_one :room
     many_to_one :user
 
+    plugin :uuid, field: :user_id
+    plugin :uuid, field: :room_id
+
     # mass assignment prevention
     plugin :whitelist_security
-    set_allowed_columns :active, :room_id
+    set_allowed_columns :active, :room_id, :user_id
 
     def to_json(*args)
       {
