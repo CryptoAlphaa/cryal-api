@@ -1,10 +1,7 @@
 # This spec file is used to test the user model
-# We want to test the API to properly interact with the user model
-# We will test the GET and POST routes for the user model
-
 # frozen_string_literal: true
 
-require_relative 'spec_helper'
+require_relative '../spec_helper'
 
 describe 'Test User Model' do # rubocop:disable Metrics/BlockLength
   before do

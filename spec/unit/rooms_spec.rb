@@ -3,7 +3,7 @@
 # We will test the GET and POST routes for the rooms model
 # frozen_string_literal: true
 
-require_relative 'spec_helper'
+require_relative '../spec_helper'
 
 describe 'Test Room Model' do # rubocop:disable Metrics/BlockLength
   before do
