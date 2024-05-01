@@ -62,13 +62,23 @@ module Cryal
               end
             end
 
-          # POST /api/v1/users/[user_id]/createplan
-          routing.on 'createplan' do
-            routing.post do
-              user_create_plan(routing, user_id)
+            # POST /api/v1/users/[user_id]/plans
+          routing.on 'plans' do
+            # POST /api/v1/users/[user_id]/plans/create
+            routing.on 'create' do
+              routing.post do
+                user_create_plan(routing, user_id)
+              end
             end
+
+            # GET /api/v1/users/[user_id]/plans/fetch
+            routing.on 'fetch' do
+              routing.get do
+                user_fetch_plans(routing, user_id)
+              end
           end
         end
+      end
 
           # GET /api/v1/users DONE
           routing.get do
@@ -105,10 +115,6 @@ module Cryal
         end
       end
     end
-
-    # targets belom di kerjain
-    # targets belom di kerjain
-    # targets belom di kerjain
 
     private
 
@@ -181,14 +187,41 @@ module Cryal
     def user_create_plan(routing, user_id)
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
-
       plan = JSON.parse(routing.body.read)
       # Get the room first
+      # check if plan has no room name field
+      room = Room.first(room_name: plan['room_name'])
+      not_found(routing, 'Room not found') if room.nil?
+      # check if user is in the room via user_room
 
-      # Plans are made inside a room, so we need to get the room first
+      user_room = User_Room.first(user_id: user.user_id, room_id: room.room_id)
+      not_found(routing, 'User not in the room') if user_room.nil?
+      #finally add the plan
+      # delete the room_name field
+      plan.delete('room_name')
+      plan = room.add_plan(plan)
+      if plan
+        response.status = 201
+        { message: 'Plan saved', data: plan.to_json }.to_json
+      else
+        internal_server_error('Could not save Plan')
+      end
+    end
 
-      plan = JSON.parse(routing.body.read)
-      plan = user.add_plan(plan)
+    def user_fetch_plans(routing, user_id)
+      user = User.first(user_id:)
+      not_found(routing, 'User not found') if user.nil?
+      search = JSON.parse(routing.body.read)
+      room = Room.first(room_name: search['room_name'])
+      not_found(routing, 'Room not found') if room.nil?
+      user_room = User_Room.first(user_id: user.user_id, room_id: room.room_id)
+      not_found(routing, 'User not in the room') if user_room.nil?
+      all_plans = room.plans
+      # Extract only the plan_name and plan_description
+      output = []
+      all_plans.each do |plan|
+        output.push(plan.to_json)
+      end
     end
 
     def global_create_user(routing)

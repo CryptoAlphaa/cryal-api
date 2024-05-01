@@ -5,7 +5,7 @@ require 'sequel'
 Sequel.migration do
   change do
     create_table(:plans) do
-      uuid :plans_id, primary_key: true
+      uuid :plan_id, primary_key: true
       foreign_key :room_id, table: :rooms, null: false, on_delete: :cascade
 
       String :plan_name, null: false  
@@ -14,7 +14,7 @@ Sequel.migration do
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
       DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
 
-      unique [:room_id, :plan_name]
+      # unique [:room_id, :plan_name]
     end
   end
 end

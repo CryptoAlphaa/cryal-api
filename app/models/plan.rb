@@ -29,7 +29,7 @@ module Cryal
       {
         plan_id: plan_id,
         plan_name: plan_name,
-        plan_description: description,
+        plan_description: plan_description_secure,
         created_at: created_at,
         updated_at: updated_at
       }.to_json(*args)
