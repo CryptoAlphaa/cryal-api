@@ -155,13 +155,10 @@ module Cryal
       not_found(routing, 'User not found') if user.nil?
       location = JSON.parse(routing.body.read)
       location = user.add_location(location)
-
-      if location
-        response.status = 201
-        { message: 'Location saved', data: location.to_json }.to_json
-      else
-        internal_server_error('Could not save Location')
-      end
+      response.status = 201
+      { message: 'Location saved', data: location.to_json }.to_json
+      rescue => e
+        log_and_handle_error(routing, location, e)
     end
 
     # TODO : Fix model first
@@ -177,13 +174,11 @@ module Cryal
       not_found(routing, 'User not found') if user.nil?
       room = JSON.parse(routing.body.read)
       room = user.add_room(room)
+      response.status = 201
+      { message: 'Room saved', data: room.to_json }.to_json
 
-      if room
-        response.status = 201
-        { message: 'Room saved', data: room.to_json }.to_json
-      else
-        internal_server_error('Could not save Room')
-      end
+      rescue => e
+        log_and_handle_error(routing, room, e)
     end
 
     def user_join_room(routing, user_id)
@@ -191,36 +186,28 @@ module Cryal
       not_found(routing, 'User not found') if user.nil?
       user_room = JSON.parse(routing.body.read)
       user_room = user.add_user_room(user_room)
-      if user_room
-        response.status = 201
-        { message: 'Room Join Successfully', data: user_room }.to_json
-      else
-        internal_server_error('Could not save User_Room')
-      end
+      response.status = 201
+      { message: 'Room Join Successfully', data: user_room }.to_json
+
+      rescue => e
+        log_and_handle_error(routing, user_room, e)
     end
 
     def user_create_plan(routing, user_id)
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       plan = JSON.parse(routing.body.read)
-      # Get the room first
-      # check if plan has no room name field
       room = Room.first(room_name: plan['room_name'])
       not_found(routing, 'Room not found') if room.nil?
-      # check if user is in the room via user_room
-
       user_room = User_Room.first(user_id: user.user_id, room_id: room.room_id)
       not_found(routing, 'User not in the room') if user_room.nil?
-      #finally add the plan
-      # delete the room_name field
       plan.delete('room_name')
-      plan = room.add_plan(plan)
-      if plan
-        response.status = 201
-        { message: 'Plan saved', data: plan.to_json }.to_json
-      else
-        internal_server_error('Could not save Plan')
-      end
+      final_plan = room.add_plan(plan)
+      response.status = 201
+      { message: 'Plan saved', data: final_plan.to_json }.to_json
+
+      rescue => e
+        log_and_handle_error(routing, plan, e)
     end
 
     def user_fetch_plans(routing, user_id)
@@ -250,14 +237,13 @@ module Cryal
       # delete waypoint number field if it exists
       waypoint.delete('waypoint_number')
       waypoint[:waypoint_number] = new_waypoint_number
-      waypoint = plan.add_waypoint(waypoint)
+      final_waypoint = plan.add_waypoint(waypoint)
 
-      if waypoint
-        response.status = 201
-        { message: 'Waypoint saved', data: waypoint.to_json }.to_json
-      else
-        internal_server_error('Could not save Waypoint')
-      end
+      response.status = 201
+      { message: 'Waypoint saved', data: final_waypoint.to_json }.to_json
+
+    rescue => e
+      log_and_handle_error(routing, waypoint, e)
     end
 
     def user_fetch_waypoints(routing, user_id, plan_id)
@@ -272,14 +258,13 @@ module Cryal
 
     def global_create_user(routing)
       user = JSON.parse(routing.body.read)
-      user = User.new(user)
-      if user.save
-        response.status = 201
-        { message: 'User saved', data: user }.to_json
-        user.to_json
-      else
-        internal_server_error('Failed to create user')
-      end
+      final_user = User.new(user)
+      final_user.save
+      response.status = 201
+      { message: 'User saved', data: final_user.to_json }.to_json
+
+    rescue => e
+      log_and_handle_error(routing, user, e)
     end
 
     def global_fetch_users(_routing)
@@ -308,8 +293,15 @@ module Cryal
       routing.halt 404, { message: }.to_json
     end
 
-    def internal_server_error(message)
-      routing.halt 500, { message: }.to_json
+    def log_and_handle_error(routing, json, e)
+      if e.is_a?(Sequel::MassAssignmentRestriction)
+        Api.logger.warn "Mass Assignment: #{json.keys}"
+        routing.halt 400, { message: 'Mass Assignment Error' }.to_json
+      else
+        Api.logger.error "Error: #{e.message}"
+        routing.halt 500, { message: 'Internal Server Error' }.to_json
+      end
     end
+
   end
 end
