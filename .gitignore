@@ -1,4 +1,3 @@
 app/db/store/*
 config/secrets.yml
-app/db/store/*
 _*
