@@ -2,7 +2,7 @@
 
 require_relative './../../spec_helper'
 
-describe 'Security Test Waypoint Model' do
+describe 'Security Plan Model' do
   before do
     clear_db
     load_seed
@@ -11,7 +11,7 @@ describe 'Security Test Waypoint Model' do
 
     describe 'SECURITY: Mass Assignment' do
         it 'should not allow post to change id' do
-            data = Populate()
+            data = PopulatePlan()
             post_item = DATA[:plans][3]
             post_item[:plan_id] = 100
             user_id = data[0][:user_id]
@@ -33,7 +33,7 @@ describe 'Security Test Waypoint Model' do
 
     describe 'SECURITY: Non-deterministic UUIDs' do
         it 'should generate non-deterministic UUIDs' do
-            data = Populate()
+            data = PopulatePlan()
             user_id = data[0][:user_id]
             room_name = data[1][:room_name]
             post_item = { plan_name: 'New Plan', plan_description: 'New Description', room_name: room_name}
@@ -48,10 +48,9 @@ describe 'Security Test Waypoint Model' do
 
     describe 'SECURITY: Encrypted Data Fields' do
         it 'should encrypt and decrypt sensitive data fields' do
-            data = Populate()
+            data = PopulatePlan()
             user_id = data[0][:user_id]
             room_name = data[1][:room_name]
-            p room_name
             post_item = { plan_name: 'New Plan 100', plan_description: 'New Description 100', room_name: room_name}
             post "/api/v1/users/#{user_id}/plans/create_plan", post_item.to_json
             plans = JSON.parse(last_response.body)['data']
@@ -61,7 +60,7 @@ describe 'Security Test Waypoint Model' do
 end
 
 
-def Populate
+def PopulatePlan
     first_user = Cryal::User.create(DATA[:users][0])
     second_user = Cryal::User.create(DATA[:users][1])
     room = first_user.add_room(DATA[:rooms][0])
