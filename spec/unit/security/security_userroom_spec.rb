@@ -25,9 +25,9 @@ describe 'Security Test UserRoom Model' do # rubocop:disable Metrics/BlockLength
       data = Populate()
       user_id = data[0][:user_id]
       room_name = data[1][:room_name]
-      post_item = { room_id: 100, active: true }
+      post_item = { malicious_data: 100, active: true }
       post "/api/v1/users/#{user_id}/joinroom", post_item.to_json
-      _(last_response.status).must_equal 500
+      _(last_response.status).must_equal 400
       _(last_response.body['data']).must_be_nil
     end
   end

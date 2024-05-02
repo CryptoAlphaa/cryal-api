@@ -24,7 +24,7 @@ end
 
 desc 'Test security specs only'
 Rake::TestTask.new(:security) do |t|
-  t.pattern = 'spec/unit/security/security_rooms_spec.rb'
+  t.pattern = 'spec/unit/security/*.rb'
   t.warning = false
 end
 
