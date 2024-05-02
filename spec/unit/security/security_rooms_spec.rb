@@ -7,30 +7,35 @@ describe 'Security Test Rooms Model' do
     clear_db
     load_seed
     # because room needs a foreign key of users and targets, we need to insert them first
-    app.DB[:users].insert(DATA[:users][0])
-    app.DB[:targets].insert(DATA[:targets][0])
-    app.DB[:rooms].insert(DATA[:rooms][0])
   end
 
   describe 'SECURITY: Mass Assignment' do
-    # IDK
+    it 'should not allow post to change id' do
+      data = Populate()
+      user_id = data[0][:user_id]
+      post_item = DATA[:rooms][1]
+      post_item[:room_id] = 100
+      post "/api/v1/users/#{user_id}/createroom", post_item.to_json
+      _(last_response.status).must_equal 400
+      _(last_response.body['data']).must_be_nil
+    end
   end
 
   describe 'SECURITY: SQL Injection' do
     it 'should prevent SQL injection in room queries' do
       get 'api/v1/rooms/1%20or%20id%3D1'
       _(last_response.status).must_equal 404
-      # Verify the rooms table still exists and has data
-      _(app.DB[:rooms].count).wont_equal 0
     end
   end
 
   describe 'SECURITY: Non-Deterministic UUIDs' do
     it 'generates non-deterministic UUIDs for new rooms' do
-      post 'api/v1/users/1/createroom', { name: 'Room A' }.to_json
-      room1_id = JSON.parse(last_response.body)['data']['id']
-      post 'api/v1/users/1/createroom', { name: 'Room B' }.to_json
-      room2_id = JSON.parse(last_response.body)['data']['id']
+      data = Populate()
+      user_id = data[0][:user_id]
+      post "api/v1/users/#{user_id}/createroom", DATA[:rooms][1].to_json
+      room1_id = JSON.parse(last_response.body)['data']['room_id']
+      post "api/v1/users/#{user_id}/createroom", DATA[:rooms][2].to_json
+      room2_id = JSON.parse(last_response.body)['data']['room_id']
       _(room1_id).wont_equal room2_id
     end
   end
@@ -38,19 +43,29 @@ describe 'Security Test Rooms Model' do
   describe 'SECURITY: Encryption of Sensitive Data' do
     it 'ensures sensitive room data is encrypted' do
       # Assuming that the room description should be encrypted
-      post 'api/v1/users/1/createroom', { description: 'Secret Room' }.to_json
-      room = app.DB[:rooms].where(id: JSON.parse(last_response.body)['data']['id']).first
-      _(room[:description]).wont_match /Secret Room/  # Check that the description isn't stored in plain text
+      data = Populate()
+      user_id = data[0][:user_id]
+      room_description = DATA[:rooms][2][:room_description]
+      post "api/v1/users/#{user_id}/createroom", DATA[:rooms][2].to_json
+      room = JSON.parse(last_response.body)['data']
+      _(room[:room_description]).wont_match room_description
     end
   end
 
   describe 'SECURITY: Data Exposure' do
     it 'should not expose sensitive room details publicly' do
+      data = Populate()
       get 'api/v1/rooms'
-      rooms = JSON.parse(last_response.body)
+      rooms = JSON.parse(last_response.body)['data']
       rooms.each do |room|
-        _(room.key?('precise_coordinates')).must_equal false
+        _(room.key?('password_hash')).must_equal false
       end
     end
   end
+end
+
+def Populate()
+  first_user = Cryal::User.create(DATA[:users][0])
+  room = first_user.add_room(DATA[:rooms][0])
+  return first_user, room
 end

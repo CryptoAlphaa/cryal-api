@@ -1,9 +1,13 @@
 - room_name: Meeting Room 1
+  room_description: 'A cozy meeting room for small groups.'
   room_password: room_pass_1
 - room_name: Private Room
+  room_description: 'A private room for confidential discussions.'
   room_password: room_pass_2
 - room_name: Conference Room A
+  room_description: 'A spacious conference room for large gatherings.'
   room_password: conf_pass
 - user_id: 4
   room_name: pantai
+  room_description: 'A room with a view of the beach.'
   room_password: beach
