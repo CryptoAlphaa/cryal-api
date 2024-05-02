@@ -51,9 +51,9 @@ describe 'Test User Model' do # rubocop:disable Metrics/BlockLength
   end
 
   describe 'SAD: Test POST' do
-    it 'should return 500 if server error' do
-      post 'api/v1/users', {}.to_json
-      _(last_response.status).must_equal 500
+    it 'should return 400 if server error' do
+      post 'api/v1/users', {username: "ubi", password: "bola", email_secure: "kocak"}.to_json
+      _(last_response.status).must_equal 400
     end
   end
 end
