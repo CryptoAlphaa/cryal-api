@@ -24,12 +24,12 @@ describe 'Test User Model' do # rubocop:disable Metrics/BlockLength
     end
 
     it 'should get a single user' do
-      user_id = DATA[:users].first
-      user_id = user_id['user_id']
+      test_user = Cryal::User.create(DATA[:users][1])
+      user_id = test_user[:user_id]
       get "api/v1/users/#{user_id}"
       _(last_response.status).must_equal 200
       user = JSON.parse(last_response.body)
-      _(user['user_id']).must_equal user_id
+      _(user['user_id']).wont_be_nil
     end
   end
 

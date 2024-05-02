@@ -13,9 +13,8 @@ describe 'Test Plans Model' do # rubocop:disable Metrics/BlockLength
         it 'should get all plans for a user' do
             user, room = PopulatePlan()
             user_id = user[:user_id]
-            room_name = room[:room_name]
-            get "api/v1/users/#{user_id}/plans/fetch", room_name: room_name
-            p last_response.body
+            one_room_name = room[:room_name]
+            get "api/v1/users/#{user_id}/plans/fetch/?room_name=#{one_room_name}"
             _(last_response.status).must_equal 200
             plans = JSON.parse(last_response.body)
             _(plans.length).must_equal 1

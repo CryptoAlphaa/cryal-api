@@ -213,8 +213,8 @@ module Cryal
     def user_fetch_plans(routing, user_id)
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
-      search = JSON.parse(routing.body.read)
-      room = Room.first(room_name: search['room_name'])
+      search = routing.params['room_name']
+      room = Room.first(room_name: search)
       not_found(routing, 'Room not found') if room.nil?
       user_room = User_Room.first(user_id: user.user_id, room_id: room.room_id)
       not_found(routing, 'User not in the room') if user_room.nil?
@@ -224,6 +224,8 @@ module Cryal
       all_plans.each do |plan|
         output.push(plan.to_json)
       end
+      response.status = 200
+      output.to_json
     end
 
     def user_create_waypoint(routing, user_id, plan_id)

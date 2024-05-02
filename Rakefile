@@ -28,6 +28,15 @@ Rake::TestTask.new(:security) do |t|
   t.warning = false
 end
 
+desc 'Test models specs only'
+Rake::TestTask.new(:model) do |t|
+  t.pattern = 'spec/supposed_unit/*.rb'
+  t.warning = false
+end
+
+desc 'Run both unit and security specs'
+task :specs => [:unit, :security]
+
 desc 'Runs rubocop on tested code'
 task style: %i[spec audit] do
   sh 'rubocop .'
