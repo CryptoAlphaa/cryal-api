@@ -18,4 +18,4 @@
   longitude: '-4.0'
   waypoint_address: '321 Pine Lane'
   waypoint_name: 'Yellow Cottage'
-  plan_id: 1
+  waypoint_id: 1

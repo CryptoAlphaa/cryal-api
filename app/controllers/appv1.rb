@@ -175,7 +175,7 @@ module Cryal
       room = JSON.parse(routing.body.read)
       room = user.add_room(room)
       response.status = 201
-      { message: 'Room saved', data: room.to_json }.to_json
+      { message: 'Room saved', data: room }.to_json
 
       rescue => e
         log_and_handle_error(routing, room, e)
@@ -204,7 +204,7 @@ module Cryal
       plan.delete('room_name')
       final_plan = room.add_plan(plan)
       response.status = 201
-      { message: 'Plan saved', data: final_plan.to_json }.to_json
+      { message: 'Plan saved', data: final_plan }.to_json
 
       rescue => e
         log_and_handle_error(routing, plan, e)
@@ -240,7 +240,7 @@ module Cryal
       final_waypoint = plan.add_waypoint(waypoint)
 
       response.status = 201
-      { message: 'Waypoint saved', data: final_waypoint.to_json }.to_json
+      { message: 'Waypoint saved', data: final_waypoint }.to_json
 
     rescue => e
       log_and_handle_error(routing, waypoint, e)
