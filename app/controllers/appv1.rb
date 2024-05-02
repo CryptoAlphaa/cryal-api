@@ -156,7 +156,7 @@ module Cryal
       location = JSON.parse(routing.body.read)
       location = user.add_location(location)
       response.status = 201
-      { message: 'Location saved', data: location.to_json }.to_json
+      { message: 'Location saved', data: location }.to_json
       rescue => e
         log_and_handle_error(routing, location, e)
     end
