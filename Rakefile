@@ -16,26 +16,32 @@ end
 #   t.warning = false
 # end
 
-desc 'Test unit specs only'
-Rake::TestTask.new(:unit) do |t|
-  t.pattern = 'spec/unit/*.rb'
+desc 'Test API functionality specs only'
+Rake::TestTask.new(:function) do |t|
+  t.pattern = 'spec/integration/*.rb'
   t.warning = false
 end
 
-desc 'Test security specs only'
+desc 'Test API security specs only'
 Rake::TestTask.new(:security) do |t|
-  t.pattern = 'spec/unit/security/*.rb'
+  t.pattern = 'spec/integration/security/*.rb'
   t.warning = false
 end
 
 desc 'Test models specs only'
 Rake::TestTask.new(:model) do |t|
-  t.pattern = 'spec/supposed_unit/*.rb'
+  t.pattern = 'spec/unit/*.rb'
+  t.warning = false
+end
+
+desc 'Test environment specs only'
+Rake::TestTask.new(:envspec) do |t|
+  t.pattern = 'spec/env_spec.rb'
   t.warning = false
 end
 
 desc 'Run both unit and security specs'
-task :specs => [:unit, :security]
+task :specs => [:function, :security, :model, :envspec]
 
 desc 'Runs rubocop on tested code'
 task style: %i[spec audit] do

@@ -12,7 +12,6 @@ describe 'User Model' do # rubocop:disable Metrics/BlockLength
     
     describe 'HAPPY: Test User Model' do
         it 'should get all users and retrieve the correct information' do
-            
             Cryal::User.create(DATA[:users][0])
             Cryal::User.create(DATA[:users][1])
             Cryal::User.create(DATA[:users][2])
@@ -45,9 +44,8 @@ describe 'User Model' do # rubocop:disable Metrics/BlockLength
     
     describe 'SAD: Test User Model' do
         it 'should return nil if user is not found' do
-        user = Cryal::User[100]
+        user = Cryal::User.where(username: 'not_a_user').first
         _(user).must_be_nil
         end
     end
-
 end
