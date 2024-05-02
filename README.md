@@ -8,38 +8,22 @@ This API stores and retrieve an entry of a person current location and destinati
 All routes are returning as a JSON object. Here are the routes:
 
 1. `GET /`: Get the root of API to check whether the API is Alive or not
-
-2. `GET api/v1/location`: Get all location existed in the databse
-
-3. `GET api/v1/location/[id]`: Get description of a specific location via id
-
-4. `GET api/v1/rooms`: Get all rooms existed in the database
-
-5. `GET api/v1/rooms/[id]`: Get description of a specific room via id
-
-6. `GET api/v1/targets`: Get all target destination existed in the database
-
-7. `GET api/v1/targets/[id]`: Get description of a specific targets destination via id
-
-8. `GET api/v1/user_room/[id]`: Get description of a specific user_room via id
-
-9. `GET api/v1/userroom`: To get a list of existing user rooms
-
-10. `GET api/v1/users`: To get a list of information of all users
-
-11. `GET api/v1/users/[id]`: To get information of a certain user
-
-12. `GET api/v1/users/[id]/location`: To get all the location of a user
-
-13. `POST api/v1/targets`: Allows to create destination location
-
-14. `POST api/v1/users`: Allows to create new users
-
-15. `POST api/v1/users/[id]/createroom`: Allows users to create a room
-
-16. `POST api/v1/users/[id]/joinroom`: Allows users to join a room
-
-17. `POST api/v1/users/[id]/location`: Allows user to create locations
+2. `GET /api/v1/rooms`: Get all existed rooms
+3. `GET /api/v1/rooms/[room_id]`: Get a specific rooms by room_id
+4. `GET /api/v1/userrooms`: Get list of connection between user and room
+5. `GET /api/v1/users`: Get all user
+6. `GET /api/v1/users/[user_id]`: Get a specific user by user_id
+7. `GET /api/v1/users/[user_id]/locations`: Get a location of a specific user by user_id
+8. `GET /api/v1/users/[user_id]/plans/[plan_id]/waypoints`: Get all waypoint of a specific plan from a specific room of a user
+9. `GET /api/v1/users/[user_id]/plans/fetch/?room_name=#{sendthis['room_name']}`: Get all plan of a specific user by user_id
+10. `GET /api/v1/users/[user_id]/rooms`: Get all rooms of a specific user by user_id
+11. `POST /api/v1/users`: Post a new user
+12. `POST /api/v1/users/[user_id]/createroom`: Post a request to create a new room by a user
+13. `POST /api/v1/users/[user_id]/joinroom`: Post a request to join a specific room
+14. `POST /api/v1/users/[user_id]/locations`: Post a request to create a new location by a user
+15. `POST /api/v1/users/[user_id]/plans`: Post a request to create new plan by a user
+16. `POST /api/v1/users/[user_id]/plans/[plan_id]/waypoints`: Post a request to create a new waypoint within plan by a user
+17. `POST /api/v1/users/[user_id]/plans/create_plan`: Post a request to create new plan by a user
 
 
 ## Installation
@@ -71,9 +55,10 @@ Setup test database once:
 ```shell
 RACK_ENV=test rake db:migrate
 ```
+> If the migration fails, check whether you already have `store` folder inside `db` directory
 
 Run the test specification script in `Rakefile`:
 
 ```shell
-rake spec
+rake specs
 ```

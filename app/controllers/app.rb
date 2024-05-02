@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # # frozen_string_literal: true
 
 # require 'sequel'
@@ -6,11 +8,11 @@
 
 # module Cryal
 #   # Class for designing the API
-#   class Api < Roda # rubocop:disable Metrics/ClassLength
+#   class Api < Roda
 #     plugin :environments
 #     plugin :halt
 
-#     route do |routing| # rubocop:disable Metrics/BlockLength
+#     route do |routing|
 #       response['Content-Type'] = 'application/json'
 
 #       routing.root do
@@ -18,10 +20,10 @@
 #         { message: 'Welcome to Cryal APIs' }.to_json
 #       end
 
-#       routing.on 'api' do # rubocop:disable Metrics/BlockLength
-#         routing.on 'v1' do # rubocop:disable Metrics/BlockLength
-#           routing.on 'users' do # rubocop:disable Metrics/BlockLength
-#             routing.on String do |user_id| # rubocop:disable Metrics/BlockLength
+#       routing.on 'api' do
+#         routing.on 'v1' do
+#           routing.on 'users' do
+#             routing.on String do |user_id|
 #               routing.on 'createroom' do
 #                 # post api/v1/users/[id]/createroom
 #                 routing.post do
@@ -54,7 +56,7 @@
 #                 end
 #               end
 
-#               routing.on 'location' do # rubocop:disable Metrics/BlockLength
+#               routing.on 'location' do
 #                 routing.on String do |location_id|
 #                   # get api/v1/location/[id]
 #                   routing.get do

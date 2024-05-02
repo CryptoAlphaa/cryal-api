@@ -23,11 +23,11 @@ module Cryal
     end
 
     def password
-      self.password_hash
+      password_hash
     end
 
     def email
-      self.email_secure
+      email_secure
     end
 
     def email=(plaintext)
@@ -36,10 +36,10 @@ module Cryal
 
     def to_json(*args)
       {
-        user_id: user_id,
-        username: username,
-        created_at: created_at,
-        updated_at: updated_at
+        user_id:,
+        username:,
+        created_at:,
+        updated_at:
       }.to_json(*args)
     end
   end

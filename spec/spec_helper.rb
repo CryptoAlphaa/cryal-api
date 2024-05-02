@@ -10,7 +10,7 @@ require 'sequel'
 
 require_relative 'test_load_all'
 
-def clear_db
+def clear_db # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   app.DB[:users].delete
   app.DB[:locations].delete
   app.DB[:rooms].delete

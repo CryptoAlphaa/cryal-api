@@ -7,12 +7,7 @@ describe 'Test User Model' do # rubocop:disable Metrics/BlockLength
   before do
     clear_db
     load_seed
-
-    # fill the user table with the first seed
-    DATA[:users].each do |user|
-      Cryal::User.create(user)
-      break
-    end
+    Cryal::User.create(DATA[:users].first)
   end
 
   describe 'HAPPY: Test GET' do
@@ -52,7 +47,7 @@ describe 'Test User Model' do # rubocop:disable Metrics/BlockLength
 
   describe 'SAD: Test POST' do
     it 'should return 400 if server error' do
-      post 'api/v1/users', {username: "ubi", password: "bola", email_secure: "kocak"}.to_json
+      post 'api/v1/users', { username: 'ubi', password: 'bola', email_secure: 'kocak' }.to_json
       _(last_response.status).must_equal 400
     end
   end

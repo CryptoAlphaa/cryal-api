@@ -12,10 +12,10 @@ Sequel.migration do
       String :waypoint_address
       String :waypoint_name
       Integer :waypoint_number, default: 1
-        DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
-        DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
+      DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
+      DateTime :updated_at, default: Sequel::CURRENT_TIMESTAMP
 
-        # unique [:plan_id, :waypoint_number, :waypoint_name] # unique waypoint number for each plan
+      # unique [:plan_id, :waypoint_number, :waypoint_name] # unique waypoint number for each plan
     end
   end
 end

@@ -22,6 +22,7 @@ class SecureDB
   # Encrypt or else return nil if data is nil
   def self.encrypt(plaintext)
     return nil unless plaintext
+
     simple_box = RbNaCl::SimpleBox.from_secret_key(@key)
     ciphertext = simple_box.encrypt(plaintext)
     Base64.strict_encode64(ciphertext)

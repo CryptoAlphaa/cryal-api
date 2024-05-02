@@ -2,7 +2,7 @@
 
 require_relative './../../spec_helper'
 
-describe 'Security Test Location Model' do
+describe 'Security Test Location Model' do # rubocop:disable Metrics/BlockLength
   before do
     clear_db
     load_seed
@@ -17,7 +17,7 @@ describe 'Security Test Location Model' do
       locs = DATA[:locations][1]
       post "api/v1/users/#{user['user_id']}/locations", locs.to_json
       location = JSON.parse(last_response.body)['data']
-      post "api/v1/users/#{user['user_id']}/locations/#{location['location_id']}", {location_id: 2}.to_json
+      post "api/v1/users/#{user['user_id']}/locations/#{location['location_id']}", { location_id: 2 }.to_json
       _(last_response.status).must_equal 400
     end
   end
@@ -32,7 +32,7 @@ describe 'Security Test Location Model' do
     it 'should prevent SQL injection through POST data' do
       malicious_data = { name: "Test'; DROP TABLE locations;" }.to_json
       post 'api/v1/users/1/locations', malicious_data
-      _(last_response.status).must_equal 404  # Assuming your API has validation and rejects this
+      _(last_response.status).must_equal 404 # Assuming your API has validation and rejects this
     end
   end
 
@@ -50,7 +50,7 @@ describe 'Security Test Location Model' do
       post "api/v1/users/#{user['user_id']}/locations", locs.to_json
       location2 = JSON.parse(last_response.body)['data']
 
-      _(location1["location_id"]).wont_equal location2["location_id"]
+      _(location1['location_id']).wont_equal location2['location_id']
     end
   end
 
@@ -64,8 +64,7 @@ describe 'Security Test Location Model' do
       get "api/v1/users/#{user['user_id']}/locations"
       loc = JSON.parse(last_response.body)
       loc = loc[0]
-      _(loc["cur_lat_secure"]).wont_match locs["latitude"]
-
+      _(loc['cur_lat_secure']).wont_match locs['latitude']
     end
   end
 
@@ -79,7 +78,7 @@ describe 'Security Test Location Model' do
       get "api/v1/users/#{user['user_id']}/locations"
       loc = JSON.parse(last_response.body)
       loc = loc[0]
-      _(loc["cur_lat_secure"]).wont_match locs["latitude"]
+      _(loc['cur_lat_secure']).wont_match locs['latitude']
     end
   end
 end

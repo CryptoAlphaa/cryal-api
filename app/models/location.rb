@@ -15,13 +15,13 @@ module Cryal
 
     def to_json(*args)
       {
-        location_id: location_id,
-        user_id: user_id,
-        latitude: self.cur_lat_secure,
-        longitude: self.cur_long_secure,
-        cur_address: cur_address,
-        cur_name: cur_name,
-        created_at: created_at
+        location_id:,
+        user_id:,
+        latitude: cur_lat_secure,
+        longitude: cur_long_secure,
+        cur_address:,
+        cur_name:,
+        created_at:
       }.to_json(*args)
     end
 
@@ -44,8 +44,8 @@ module Cryal
 
     # Custom create function
     def self.create_location(user_id, lat, long, address, name)
-      location = self.new(
-        user_id: user_id,
+      location = new(
+        user_id:,
         cur_lat_secure: SecureDB.encrypt(lat),
         cur_long_secure: SecureDB.encrypt(long),
         cur_address: address,

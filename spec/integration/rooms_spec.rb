@@ -9,13 +9,8 @@ describe 'Test Room Model' do # rubocop:disable Metrics/BlockLength
   before do
     clear_db
     load_seed
-
-    # because room needs a foreign key of users and targets, we need to insert them first
-    DATA[:users].each do |user|
-      first_data = Cryal::User.create(user)
-      first_data.add_room(DATA[:rooms].first)
-      break
-    end
+    first_data = Cryal::User.create(DATA[:users].first)
+    first_data.add_room(DATA[:rooms].first)
   end
 
   describe 'HAPPY: Test GET' do

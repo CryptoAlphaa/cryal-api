@@ -7,18 +7,11 @@
 require_relative '../spec_helper'
 
 describe 'Test Location Model' do # rubocop:disable Metrics/BlockLength
-  
   before do
     clear_db
     load_seed
-    
-    # because location has a foreign key, we need to insert a user first
-    DATA[:users].each do |user|
-      first_data = Cryal::User.create(user)
-      # FIRST_USER_ID = first_data['user_id']
-      first_data.add_location(DATA[:locations].first)
-      break
-    end
+    first_data = Cryal::User.create(DATA[:users].first)
+    first_data.add_location(DATA[:locations].first)
   end
 
   describe 'HAPPY: Test GET' do
@@ -35,7 +28,7 @@ describe 'Test Location Model' do # rubocop:disable Metrics/BlockLength
 
   describe 'SAD: Test GET' do
     it 'should return 404 if user not found' do
-      user_id = Cryal::User.first()
+      Cryal::User.first
       user_id = 100
       get "api/v1/users/#{user_id}/locations"
       _(last_response.status).must_equal 404

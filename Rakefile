@@ -41,7 +41,7 @@ Rake::TestTask.new(:envspec) do |t|
 end
 
 desc 'Run both unit and security specs'
-task :specs => [:function, :security, :model, :envspec]
+task specs: %i[function security model envspec]
 
 desc 'Runs rubocop on tested code'
 task style: %i[spec audit] do

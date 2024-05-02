@@ -17,10 +17,10 @@ module Cryal
 
     def to_json(*args)
       {
-        id: id,
-        room_id: room_id,
-        user_id: user_id,
-        active: active
+        id:,
+        room_id:,
+        user_id:,
+        active:
       }.to_json(*args)
     end
   end

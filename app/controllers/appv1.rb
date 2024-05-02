@@ -6,7 +6,7 @@ require 'json'
 
 module Cryal
   # Class for designing the API
-  class Api < Roda
+  class Api < Roda # rubocop:disable Metrics/ClassLength
     plugin :environments
     plugin :halt
     plugin :json
@@ -63,37 +63,37 @@ module Cryal
             end
 
             # POST /api/v1/users/[user_id]/plans
-          routing.on 'plans' do
-            # POST /api/v1/users/[user_id]/plans/create_plan
-            routing.on 'create_plan' do
-              routing.post do
-                user_create_plan(routing, user_id)
-              end
-            end
-
-            # GET /api/v1/users/[user_id]/plans/fetch
-            routing.on 'fetch' do
-              routing.get do
-                user_fetch_plans(routing, user_id)
-              end
-            end
-
-            # api/v1/users/[user_id]/plans/[plan_id]
-            routing.on String do |plan_id|
-              routing.on 'waypoints' do
-                # POST /api/v1/users/[user_id]/plans/[plan_id]/waypoints
+            routing.on 'plans' do
+              # POST /api/v1/users/[user_id]/plans/create_plan DONE
+              routing.on 'create_plan' do
                 routing.post do
-                  user_create_waypoint(routing, user_id, plan_id)
+                  user_create_plan(routing, user_id)
                 end
+              end
 
-                # GET /api/v1/users/[user_id]/plans/[plan_id]/waypoints
+              # GET /api/v1/users/[user_id]/plans/fetch DONE
+              routing.on 'fetch' do
                 routing.get do
-                  user_fetch_waypoints(routing, user_id, plan_id)
+                  user_fetch_plans(routing, user_id)
+                end
+              end
+
+              # api/v1/users/[user_id]/plans/[plan_id]
+              routing.on String do |plan_id|
+                routing.on 'waypoints' do
+                  # POST /api/v1/users/[user_id]/plans/[plan_id]/waypoints DONE
+                  routing.post do
+                    user_create_waypoint(routing, user_id, plan_id)
+                  end
+
+                  # GET /api/v1/users/[user_id]/plans/[plan_id]/waypoints DONE
+                  routing.get do
+                    user_fetch_waypoints(routing, user_id, plan_id)
+                  end
                 end
               end
             end
           end
-      end
 
           # GET /api/v1/users DONE
           routing.get do
@@ -106,7 +106,6 @@ module Cryal
           end
         end
 
-        # GET /api/v1/rooms DONE
         routing.on 'rooms' do
           routing.on String do |room_id|
             routing.is do
@@ -150,15 +149,15 @@ module Cryal
       locations.to_json
     end
 
-    def user_create_location(routing, user_id) # rubocop:disable Metrics/AbcSize
+    def user_create_location(routing, user_id)
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       location = JSON.parse(routing.body.read)
       location = user.add_location(location)
       response.status = 201
       { message: 'Location saved', data: location }.to_json
-      rescue => e
-        log_and_handle_error(routing, location, e)
+    rescue StandardError => e
+      log_and_handle_error(routing, location, e)
     end
 
     # TODO : Fix model first
@@ -176,24 +175,22 @@ module Cryal
       room = user.add_room(room)
       response.status = 201
       { message: 'Room saved', data: room }.to_json
-
-      rescue => e
-        log_and_handle_error(routing, room, e)
+    rescue StandardError => e
+      log_and_handle_error(routing, room, e)
     end
 
     def user_join_room(routing, user_id)
-      user = User.first(user_id: user_id)
+      user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       user_room = JSON.parse(routing.body.read)
       user_room = user.add_user_room(user_room)
       response.status = 201
       { message: 'Room Join Successfully', data: user_room }.to_json
-
-      rescue => e
-        log_and_handle_error(routing, user_room, e)
+    rescue StandardError => e
+      log_and_handle_error(routing, user_room, e)
     end
 
-    def user_create_plan(routing, user_id)
+    def user_create_plan(routing, user_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       plan = JSON.parse(routing.body.read)
@@ -205,12 +202,11 @@ module Cryal
       final_plan = room.add_plan(plan)
       response.status = 201
       { message: 'Plan saved', data: final_plan }.to_json
-
-      rescue => e
-        log_and_handle_error(routing, plan, e)
+    rescue StandardError => e
+      log_and_handle_error(routing, plan, e)
     end
 
-    def user_fetch_plans(routing, user_id)
+    def user_fetch_plans(routing, user_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       search = routing.params['room_name']
@@ -228,7 +224,7 @@ module Cryal
       output.to_json
     end
 
-    def user_create_waypoint(routing, user_id, plan_id)
+    def user_create_waypoint(routing, user_id, plan_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       user = User.first(user_id:)
       not_found(routing, 'User not found') if user.nil?
       plan = Plan.first(plan_id:)
@@ -243,8 +239,7 @@ module Cryal
 
       response.status = 201
       { message: 'Waypoint saved', data: final_waypoint }.to_json
-
-    rescue => e
+    rescue StandardError => e
       log_and_handle_error(routing, waypoint, e)
     end
 
@@ -263,9 +258,8 @@ module Cryal
       final_user = User.new(user)
       final_user.save
       response.status = 201
-      { message: 'User saved', data: final_user}.to_json
-
-    rescue => e
+      { message: 'User saved', data: final_user }.to_json
+    rescue StandardError => e
       log_and_handle_error(routing, user, e)
     end
 
@@ -295,15 +289,14 @@ module Cryal
       routing.halt 404, { message: }.to_json
     end
 
-    def log_and_handle_error(routing, json, e)
-      if e.is_a?(Sequel::MassAssignmentRestriction)
+    def log_and_handle_error(routing, json, err)
+      if err.is_a?(Sequel::MassAssignmentRestriction)
         Api.logger.warn "Mass Assignment: #{json.keys}"
         routing.halt 400, { message: 'Mass Assignment Error' }.to_json
       else
-        Api.logger.error "Error: #{e.message}"
+        Api.logger.error "Error: #{err.message}"
         routing.halt 500, { message: 'Internal Server Error' }.to_json
       end
     end
-
   end
 end

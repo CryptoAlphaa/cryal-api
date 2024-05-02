@@ -8,7 +8,7 @@ Sequel.migration do
       uuid :plan_id, primary_key: true
       foreign_key :room_id, table: :rooms, null: false, on_delete: :cascade
 
-      String :plan_name, null: false  
+      String :plan_name, null: false
       String :plan_description_secure # encrypted plan description
 
       DateTime :created_at, default: Sequel::CURRENT_TIMESTAMP
