@@ -71,7 +71,6 @@ namespace :db do # rubocop:disable Metrics/BlockLength
   task :load do
     require_app(nil) # load nothing by default
     require 'sequel'
-
     Sequel.extension :migration
     @app = Cryal::Api
   end
@@ -104,23 +103,23 @@ namespace :db do # rubocop:disable Metrics/BlockLength
   end
 
   desc 'Delete all data'
-  task :reset_seeds => [:load_models] do
-    app.DB[:schema_seeds].delete if app.DB.tables.include?(:schema_seeds)
+  task :reset_seeds => [:load, :load_models] do
+    @app.DB[:schema_seeds].delete if @app.DB.tables.include?(:schema_seeds)
     Cryal::User.dataset.destroy # masih belom jalan karna kita msh blm beresin associations buat cascade delete\
-    Cryal::Room.dataset.destroy # blm fix karna figma blm di benerin aku bingung wakawkawkwakwa
+    # Cryal::Room.dataset.destroy # blm fix karna figma blm di benerin aku bingung wakawkawkwakwa
     # kalo delete user semua table kedelete karna mereka butuh foreign key
   end
 
   desc 'Seed the db with data'
-  task :seed => [:load_models] do
+  task :seed => [:load, :load_models] do
     require 'sequel/extensions/seed'
     Sequel::Seed.setup(:development)
     Sequel.extension :seed
-    Sequel::Seeder.apply(app.DB, 'app/db/seeds')
+    Sequel::Seeder.apply(@app.DB, 'app/db/seeds')
   end
 
   desc 'Delete data and reseed'
-  task :reseed => [:reset_seeds, :seed]
+  task :reseed => [:load, :reset_seeds, :seed]
 end
 
 namespace :newkey do
