@@ -102,6 +102,25 @@ namespace :db do # rubocop:disable Metrics/BlockLength
     FileUtils.rm(db_filename)
     puts "Deleted #{db_filename}"
   end
+
+  desc 'Delete all data'
+  task :reset_seeds => [:load_models] do
+    app.DB[:schema_seeds].delete if app.DB.tables.include?(:schema_seeds)
+    Cryal::User.dataset.destroy # masih belom jalan karna kita msh blm beresin associations buat cascade delete\
+    Cryal::Room.dataset.destroy # blm fix karna figma blm di benerin aku bingung wakawkawkwakwa
+    # kalo delete user semua table kedelete karna mereka butuh foreign key
+  end
+
+  desc 'Seed the db with data'
+  task :seed => [:load_models] do
+    require 'sequel/extensions/seed'
+    Sequel::Seed.setup(:development)
+    Sequel.extension :seed
+    Sequel::Seeder.apply(app.DB, 'app/db/seeds')
+  end
+
+  desc 'Delete data and reseed'
+  task :reseed => [:reset_seeds, :seed]
 end
 
 namespace :newkey do
