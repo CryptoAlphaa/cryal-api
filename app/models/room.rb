@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sequel'
+require_relative './password'
 
 module Cryal
   # Room model
@@ -25,8 +26,13 @@ module Cryal
       self.room_description_secure = SecureDB.encrypt(plaintext)
     end
 
-    def room_password=(password)
-      self.room_password_hash = SecureDB.hash(password)
+    def room_password=(new_password)
+      self.room_password_hash = Cryal::Password.digest(new_password)
+    end
+
+    def room_password?(try_password)
+      password = Cryal::Password.from_digest(room_password_hash)
+      password.correct?(try_password)
     end
 
     def to_json(*args)
