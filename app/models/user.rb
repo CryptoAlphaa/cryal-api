@@ -3,6 +3,7 @@
 require 'json'
 require 'sequel'
 require 'rbnacl'
+require_relative './password'
 
 module Cryal
   # User model
@@ -18,12 +19,13 @@ module Cryal
     plugin :whitelist_security
     set_allowed_columns :username, :email, :password
 
-    def password=(plaintext)
-      self.password_hash = SecureDB.hash(plaintext)
+    def password=(new_password)
+      self.password_hash = Cryal::Password.digest(new_password)
     end
 
-    def password
-      password_hash
+    def password?(try_password)
+      password = Cryal::Password.from_digest(password_digest)
+      password.correct?(try_password)
     end
 
     def email
