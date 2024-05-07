@@ -5,7 +5,7 @@ require 'sequel'
 module Cryal
   # Model for Location data
   class Location < Sequel::Model
-    many_to_one :user
+    many_to_one :user, class: 'Cryal::User'
 
     plugin :timestamps, update_on_create: true
 

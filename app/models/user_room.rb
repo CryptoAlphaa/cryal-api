@@ -5,8 +5,8 @@ require 'sequel'
 module Cryal
   # User_Room model
   class User_Room < Sequel::Model # rubocop:disable Naming/ClassAndModuleCamelCase
-    many_to_one :room
-    many_to_one :user
+    many_to_one :room, class: 'Cryal::Room'
+    many_to_one :user, class: 'Cryal::User'
 
     plugin :uuid, field: :user_id
     plugin :uuid, field: :room_id

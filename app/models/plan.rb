@@ -6,8 +6,8 @@ require 'sequel'
 module Cryal
   # Model for Location data
   class Plan < Sequel::Model
-    many_to_one :room
-    one_to_many :waypoints
+    many_to_one :room, class: 'Cryal::Room'
+    one_to_many :waypoints, class: 'Cryal::Waypoint', on_delete: :cascade
 
     plugin :uuid, field: :plan_id
     plugin :timestamps, update_on_create: true

@@ -8,7 +8,7 @@ Sequel.migration do
       primary_key :id
       foreign_key :user_id, :users, null: false, on_delete: :cascade
       foreign_key :room_id, :rooms, on_delete: :cascade
-      Boolean :active, null: false
+      Boolean :active
     end
   end
 end

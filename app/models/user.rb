@@ -8,9 +8,9 @@ require_relative './password'
 module Cryal
   # User model
   class User < Sequel::Model
-    one_to_many :locations
-    one_to_many :user_rooms, class: 'Cryal::User_Room'
-    one_to_many :rooms
+    one_to_many :locations, class: 'Cryal::Location', on_delete: :cascade
+    one_to_many :user_rooms, class: 'Cryal::User_Room', on_delete: :cascade
+    one_to_many :rooms, class: 'Cryal::Room'
 
     plugin :timestamps, update_on_create: true
     plugin :uuid, field: :user_id
