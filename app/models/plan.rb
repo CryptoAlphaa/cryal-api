@@ -25,14 +25,17 @@ module Cryal
       self.plan_description_secure = SecureDB.encrypt(plaintext)
     end
 
-    def to_json(*args)
+    def to_json(options = {})
+    JSON(
       {
         plan_id:,
         plan_name:,
         plan_description: plan_description_secure,
         created_at:,
         updated_at:
-      }.to_json(*args)
+      },
+        options
+      )
     end
   end
 end

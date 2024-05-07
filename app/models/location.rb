@@ -13,8 +13,9 @@ module Cryal
     plugin :whitelist_security
     set_allowed_columns :latitude, :longitude, :cur_address, :cur_name
 
-    def to_json(*args)
-      {
+    def to_json(options = {})
+      JSON(
+        {
         location_id:,
         user_id:,
         latitude: cur_lat_secure,
@@ -22,7 +23,9 @@ module Cryal
         cur_address:,
         cur_name:,
         created_at:
-      }.to_json(*args)
+      }, 
+        options
+      )
     end
 
     # Secure getters and setters

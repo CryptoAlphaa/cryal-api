@@ -35,14 +35,17 @@ module Cryal
       password.correct?(try_password)
     end
 
-    def to_json(*args)
+    def to_json(options = {})
+      JSON(
       {
         room_id:,
         room_name:,
         room_description: room_description_secure,
         created_at:,
         updated_at:
-      }.to_json(*args)
+      },
+        options
+      )
     end
   end
 end

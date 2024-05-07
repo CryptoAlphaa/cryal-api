@@ -36,13 +36,16 @@ module Cryal
       self.email_secure = SecureDB.encrypt(plaintext)
     end
 
-    def to_json(*args)
-      {
+    def to_json(options = {})
+      JSON(
+        {
         user_id:,
         username:,
         created_at:,
         updated_at:
-      }.to_json(*args)
+      },
+        options
+      )
     end
   end
 end
