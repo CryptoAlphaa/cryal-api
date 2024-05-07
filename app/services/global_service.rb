@@ -18,7 +18,7 @@ module Cryal
         extend Cryal
         def self.call(_routing)
           output = { data: Cryal::User.all }
-          output#.to_json
+          output
         end
       end
     end
@@ -29,7 +29,7 @@ module Cryal
         extend Cryal
         def self.call(_routing)
           output = { data: Cryal::Room.all }
-          output#.to_json
+          output
         end
       end
 
@@ -39,7 +39,7 @@ module Cryal
         def self.call(routing, room_id)
           output = Cryal::Room.first(room_id:)
           not_found(routing, 'Room not found') if output.nil?
-          output#.to_json
+          output
         end
       end
     end
@@ -50,7 +50,7 @@ module Cryal
         extend Cryal
         def self.call(_routing)
           output = { data: Cryal::User_Room.all }
-          output#.to_json
+          output#.t
         end
       end
     end

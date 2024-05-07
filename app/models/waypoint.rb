@@ -15,8 +15,9 @@ module Cryal
     plugin :whitelist_security
     set_allowed_columns :plan_id, :latitude, :longitude, :waypoint_address, :waypoint_name, :waypoint_number
 
-    def to_json(*args) # rubocop:disable Metrics/MethodLength
-      {
+    def to_json(options = {}) # rubocop:disable Metrics/MethodLength
+      JSON(
+        {
         waypoint_id:,
         plan_id:,
         waypoint_lat: latitude,
@@ -26,7 +27,9 @@ module Cryal
         waypoint_number:,
         created_at:,
         updated_at:
-      }.to_json(*args)
+      }, 
+        options
+      )
     end
 
     # Secure getters and setters

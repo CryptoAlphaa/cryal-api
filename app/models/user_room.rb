@@ -15,13 +15,16 @@ module Cryal
     plugin :whitelist_security
     set_allowed_columns :active, :room_id, :user_id
 
-    def to_json(*args)
+    def to_json(options = {})
+      JSON(
       {
         id:,
         room_id:,
         user_id:,
         active:
-      }.to_json(*args)
+      },
+        options
+      )
     end
   end
 end
