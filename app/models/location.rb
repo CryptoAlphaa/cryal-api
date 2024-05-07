@@ -5,7 +5,7 @@ require 'sequel'
 module Cryal
   # Model for Location data
   class Location < Sequel::Model
-    many_to_one :user, class: 'Cryal::User'
+    many_to_one :account, class: 'Cryal::Account'
 
     plugin :timestamps, update_on_create: true
 
@@ -17,7 +17,7 @@ module Cryal
       JSON(
         {
         location_id:,
-        user_id:,
+        account_id:,
         latitude: cur_lat_secure,
         longitude: cur_long_secure,
         cur_address:,
@@ -46,9 +46,9 @@ module Cryal
     end
 
     # Custom create function
-    def self.create_location(user_id, lat, long, address, name)
+    def self.create_location(account_id, lat, long, address, name)
       location = new(
-        user_id:,
+        account_id:,
         cur_lat_secure: SecureDB.encrypt(lat),
         cur_long_secure: SecureDB.encrypt(long),
         cur_address: address,

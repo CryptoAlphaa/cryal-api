@@ -1,6 +1,6 @@
 Sequel.seed(:development) do
   def run
-    create_users
+    create_account
     add_locations
     create_rooms
     create_user_rooms
@@ -12,7 +12,7 @@ end
 # load all yaml seeds
 require 'yaml'
 DIR = File.dirname(__FILE__)
-USER_INFO = YAML.load_file("#{DIR}/users_seeds.yml")
+ACCOUNT_INFO = YAML.load_file("#{DIR}/accounts_seeds.yml")
 LOCATION_INFO = YAML.load_file("#{DIR}/locations_seeds.yml")
 ROOM_INFO = YAML.load_file("#{DIR}/rooms_seeds.yml")
 USER_ROOM_INFO = YAML.load_file("#{DIR}/user_rooms_seeds.yml")
@@ -20,41 +20,41 @@ PLAN_INFO = YAML.load_file("#{DIR}/plans_seeds.yml")
 WAYPOINT_INFO = YAML.load_file("#{DIR}/waypoints_seeds.yml")
 
 
-def create_users
-  USER_INFO.each do |data|
-    Cryal::User.create(data)
+def create_account
+  ACCOUNT_INFO.each do |data|
+    Cryal::Account.create(data)
   end
 end
 
 def add_locations
-  users = Cryal::User.all
-  users.each_with_index do |user, index|
-    user.add_location(LOCATION_INFO[index])
+  accounts = Cryal::Account.all
+  accounts.each_with_index do |account, index|
+    account.add_location(LOCATION_INFO[index])
   end
 end
 
 def create_rooms
-  users = Cryal::User.all
-  users.each_with_index do |user, index|
-    user.add_room(ROOM_INFO[index])
+  accounts = Cryal::Account.all
+  accounts.each_with_index do |account, index|
+    account.add_room(ROOM_INFO[index])
     break if index == 3
   end
 end
 
 def create_user_rooms
-  users = Cryal::User.all
+  accounts = Cryal::Account.all
   rooms = Cryal::Room.all
   room_ids = []
   rooms.each_with_index do |room, index|
     room_ids.push(room.room_id)
   end
-  users.each_with_index do |user, index|
+  accounts.each_with_index do |account, index|
     user_room_info = USER_ROOM_INFO[index % 4] || { active: true }
     user_room_packet = {
       'active' => user_room_info["active"],
       'room_id' => room_ids[index % 4]
     }
-    user.add_user_room(user_room_packet)
+    account.add_user_room(user_room_packet)
   end
 end
 

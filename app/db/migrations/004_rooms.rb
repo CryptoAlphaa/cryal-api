@@ -6,7 +6,7 @@ Sequel.migration do
   change do
     create_table(:rooms) do
       uuid :room_id, primary_key: true
-      foreign_key :user_id, :users, null: false, on_delete: :cascade
+      foreign_key :account_id, :accounts, null: false, on_delete: :cascade
       String :room_name, null: false
       String :room_description_secure
       String :room_password_hash # must be hashed!

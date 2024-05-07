@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+Cryal# frozen_string_literal: true
 
 require 'sequel'
 require 'roda'
@@ -20,70 +20,70 @@ module Cryal
       end
 
       routing.on 'api/v1' do # rubocop:disable Metrics/BlockLength
-        routing.on 'users' do # rubocop:disable Metrics/BlockLength
-          routing.on String do |user_id| # rubocop:disable Metrics/BlockLength
+        routing.on 'accounts' do # rubocop:disable Metrics/BlockLength
+          routing.on String do |account_id| # rubocop:disable Metrics/BlockLength
             routing.is do
-              # GET /api/v1/users/[user_id] DONE
+              # GET /api/v1/accounts/[account_id] DONE
               routing.get do
-                output = Cryal::UserService::User::FetchOne.call(routing, user_id)
+                output = Cryal::AccountService::Account::FetchOne.call(routing, account_id)
                 response.status = 200
                 output.to_json
               end
             end
 
             routing.on 'locations' do
-              # GET /api/v1/users/[user_id]/locations DONEE
+              # GET /api/v1/accounts/[account_id]/locations DONEE
               routing.get do
-                output = Cryal::UserService::Location::FetchAll.call(routing, user_id)
+                output = Cryal::AccountService::Location::FetchAll.call(routing, account_id)
                 response.status = 200
                 output.to_json
-                # user_fetch_locations(routing, user_id)
+                # user_fetch_locations(routing, account_id)
               end
 
-              # POST /api/v1/users/[user_id]/locations DONEE
+              # POST /api/v1/accounts/[account_id]/locations DONEE
               routing.post do
                 json = JSON.parse(routing.body.read)
-                output = Cryal::UserService::Location::Create.call(routing, json, user_id)
+                output = Cryal::AccountService::Location::Create.call(routing, json, account_id)
                 
                 response.status = 201
                 { message: 'Location saved', data: output }.to_json
               rescue StandardError => e
                 log_and_handle_error(routing, json, e)
-                # user_create_location(routing, user_id)
+                # user_create_location(routing, account_id)
               end
             end
 
-            # GET /api/v1/users/[user_id]/rooms DONEE
+            # GET /api/v1/accounts/[account_id]/rooms DONEE
             routing.on 'rooms' do
               routing.get do
-                output = Cryal::UserService::Room::FetchOne.call(routing, user_id)
+                output = Cryal::AccountService::Room::FetchOne.call(routing, account_id)
                 not_found(routing, 'DB Error') if output.nil?
                 response.status = 200
                 output.to_json
-                # user_fetch_rooms(routing, user_id)
+                # user_fetch_rooms(routing, account_id)
               end
             end
 
-            # POST /api/v1/users/[user_id]/createroom DONEE
+            # POST /api/v1/accounts/[account_id]/createroom DONEE
             routing.on 'createroom' do
               routing.post do
-                # user_create_room(routing, user_id)
+                # user_create_room(routing, account_id)
                 json = JSON.parse(routing.body.read)
-                output = Cryal::UserService::Room::Create.call(routing, json, user_id)
+                output = Cryal::AccountService::Room::Create.call(routing, json, account_id)
                 response.status = 201
                 { message: 'Room created', data: output }.to_json
               rescue StandardError => e
                 log_and_handle_error(routing, json, e)
-                # Cryal::UserService::Room::Join.call(routing, user_id)
+                # Cryal::AccountService::Room::Join.call(routing, account_id)
               end
             end
 
-            # POST /api/v1/users/[user_id]/joinroom DONEE
+            # POST /api/v1/accounts/[account_id]/joinroom DONEE
             routing.on 'joinroom' do
               routing.post do
-                # user_join_room(routing, user_id)
+                # user_join_room(routing, account_id)
                 json = JSON.parse(routing.body.read)
-                output = Cryal::UserService::Room::Join.call(routing, json, user_id)
+                output = Cryal::AccountService::Room::Join.call(routing, json, account_id)
                 response.status = 201
                 { message: 'Room Join Successfully', data: output }.to_json
               rescue StandardError => e
@@ -91,14 +91,14 @@ module Cryal
               end
             end
 
-            # POST /api/v1/users/[user_id]/plans
+            # POST /api/v1/accounts/[account_id]/plans
             routing.on 'plans' do # rubocop:disable Metrics/BlockLength
-              # POST /api/v1/users/[user_id]/plans/create_plan DONEE
+              # POST /api/v1/accounts/[account_id]/plans/create_plan DONEE
               routing.on 'create_plan' do
                 routing.post do
-                  # user_create_plan(routing, user_id)
+                  # user_create_plan(routing, account_id)
                   json = JSON.parse(routing.body.read)
-                  output = Cryal::UserService::Plans::Create.call(routing, json, user_id)
+                  output = Cryal::AccountService::Plans::Create.call(routing, json, account_id)
                   response.status = 201
                   { message: 'Plan saved', data: output }.to_json
                 rescue StandardError => e
@@ -106,34 +106,34 @@ module Cryal
                 end
               end
 
-              # GET /api/v1/users/[user_id]/plans/fetch DONEE
+              # GET /api/v1/accounts/[account_id]/plans/fetch DONEE
               routing.on 'fetch' do
                 routing.get do
-                  # user_fetch_plans(routing, user_id)
-                  output = Cryal::UserService::Plans::FetchOne.call(routing, user_id)
+                  # user_fetch_plans(routing, account_id)
+                  output = Cryal::AccountService::Plans::FetchOne.call(routing, account_id)
                   response.status = 200
                   output.to_json
                 end
               end
 
-              # api/v1/users/[user_id]/plans/[plan_id]
+              # api/v1/accounts/[account_id]/plans/[plan_id]
               routing.on String do |plan_id|
                 routing.on 'waypoints' do
-                  # POST /api/v1/users/[user_id]/plans/[plan_id]/waypoints DONEE
+                  # POST /api/v1/accounts/[account_id]/plans/[plan_id]/waypoints DONEE
                   routing.post do
-                    # user_create_waypoint(routing, user_id, plan_id)
+                    # user_create_waypoint(routing, account_id, plan_id)
                     json = JSON.parse(routing.body.read)
-                    output = Cryal::UserService::Waypoint::Create.call(routing, json, user_id, plan_id)
+                    output = Cryal::AccountService::Waypoint::Create.call(routing, json, account_id, plan_id)
                     response.status = 201
                     { message: 'Waypoint saved', data: output }.to_json
                   rescue StandardError => e
                     log_and_handle_error(routing, json, e)
                   end
 
-                  # GET /api/v1/users/[user_id]/plans/[plan_id]/waypoints DONE
+                  # GET /api/v1/accounts/[account_id]/plans/[plan_id]/waypoints DONE
                   routing.get do
-                    # user_fetch_waypoints(routing, user_id, plan_id)
-                    output = Cryal::UserService::Waypoint::FetchOne.call(routing, user_id, plan_id)
+                    # user_fetch_waypoints(routing, account_id, plan_id)
+                    output = Cryal::AccountService::Waypoint::FetchOne.call(routing, account_id, plan_id)
                     response.status = 200
                     output.to_json
                   end
@@ -142,20 +142,20 @@ module Cryal
             end
           end
 
-          # GET /api/v1/users DONEE
+          # GET /api/v1/accounts DONEE
           routing.get do
-            output = Cryal::GlobalActions::User::FetchAll.call(routing)
+            output = Cryal::GlobalActions::Account::FetchAll.call(routing)
             response.status = 200
             output.to_json
           end
 
-          # POST /api/v1/users DONEE
+          # POST /api/v1/accounts DONEE
           routing.post do
             json = JSON.parse(routing.body.read)
-            output = Cryal::GlobalActions::User::Create.call(json)
+            output = Cryal::GlobalActions::Account::Create.call(json)
 
             response.status = 201
-            { message: 'User saved', data: output }.to_json
+            { message: 'Account saved', data: output }.to_json
           rescue StandardError => e
             log_and_handle_error(routing, json, e)
           end
@@ -195,26 +195,26 @@ module Cryal
 
     # Naming Convention [Route]_[Task]_[Object]_[AdditionalInfo]
 
-    # def user_fetch_user(routing, user_id)
-    #   output = User.first(user_id:)
-    #   not_found(routing, 'User not found') if output.nil?
+    # def user_fetch_user(routing, account_id)
+    #   output = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if output.nil?
     #   response.status = 200
     #   output.to_json
     # end
 
-    # def user_fetch_locations(routing, user_id)
-    #   output = User.first(user_id:)
-    #   not_found(routing, 'User not found') if output.nil?
+    # def user_fetch_locations(routing, account_id)
+    #   output = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if output.nil?
     #   locations = output.locations
     #   response.status = 200
     #   locations.to_json
     # end
 
-    # def user_create_location(routing, user_id)
-    #   user = User.first(user_id:)
-    #   not_found(routing, 'User not found') if user.nil?
+    # def user_create_location(routing, account_id)
+    #   Account = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if Account.nil?
     #   location = JSON.parse(routing.body.read)
-    #   location = user.add_location(location)
+    #   location = Account.add_location(location)
     #   response.status = 201
     #   { message: 'Location saved', data: location }.to_json
     # rescue StandardError => e
@@ -222,43 +222,43 @@ module Cryal
     # end
 
     # # TODO : Fix model first
-    # def user_fetch_rooms(routing, user_id)
-    #   output = { data: User.first(user_id:).rooms }
+    # def user_fetch_rooms(routing, account_id)
+    #   output = { data: Account.first(account_id:).rooms }
     #   not_found(routing, 'DB Error') if output.nil?
     #   response.status = 200
     #   output.to_json
     # end
 
-    # def user_create_room(routing, user_id)
-    #   user = User.first(user_id:)
-    #   not_found(routing, 'User not found') if user.nil?
+    # def user_create_room(routing, account_id)
+    #   Account = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if Account.nil?
     #   room = JSON.parse(routing.body.read)
-    #   room = user.add_room(room)
+    #   room = Account.add_room(room)
     #   response.status = 201
     #   { message: 'Room saved', data: room }.to_json
     # rescue StandardError => e
     #   log_and_handle_error(routing, room, e)
     # end
 
-    # def user_join_room(routing, user_id)
-    #   user = User.first(user_id:)
-    #   not_found(routing, 'User not found') if user.nil?
+    # def user_join_room(routing, account_id)
+    #   Account = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if Account.nil?
     #   user_room = JSON.parse(routing.body.read)
-    #   user_room = user.add_user_room(user_room)
+    #   user_room = Account.add_user_room(user_room)
     #   response.status = 201
     #   { message: 'Room Join Successfully', data: user_room }.to_json
     # rescue StandardError => e
     #   log_and_handle_error(routing, user_room, e)
     # end
 
-    # def user_create_plan(routing, user_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    #   user = User.first(user_id:)
-    #   not_found(routing, 'User not found') if user.nil?
+    # def user_create_plan(routing, account_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    #   Account = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if Account.nil?
     #   plan = JSON.parse(routing.body.read)
     #   room = Room.first(room_name: plan['room_name'])
     #   not_found(routing, 'Room not found') if room.nil?
-    #   user_room = User_Room.first(user_id: user.user_id, room_id: room.room_id)
-    #   not_found(routing, 'User not in the room') if user_room.nil?
+    #   user_room = User_Room.first(account_id: Account.account_id, room_id: room.room_id)
+    #   not_found(routing, 'Account not in the room') if user_room.nil?
     #   plan.delete('room_name')
     #   final_plan = room.add_plan(plan)
     #   response.status = 201
@@ -267,14 +267,14 @@ module Cryal
     #   log_and_handle_error(routing, plan, e)
     # end
 
-    # def user_fetch_plans(routing, user_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    #   user = User.first(user_id:)
-    #   not_found(routing, 'User not found') if user.nil?
+    # def user_fetch_plans(routing, account_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    #   Account = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if Account.nil?
     #   search = routing.params['room_name']
     #   room = Room.first(room_name: search)
     #   not_found(routing, 'Room not found') if room.nil?
-    #   user_room = User_Room.first(user_id: user.user_id, room_id: room.room_id)
-    #   not_found(routing, 'User not in the room') if user_room.nil?
+    #   user_room = User_Room.first(account_id: Account.account_id, room_id: room.room_id)
+    #   not_found(routing, 'Account not in the room') if user_room.nil?
     #   all_plans = room.plans
     #   # Extract only the plan_name and plan_description
     #   output = []
@@ -285,9 +285,9 @@ module Cryal
     #   output.to_json
     # end
 
-    # def user_create_waypoint(routing, user_id, plan_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-    #   user = User.first(user_id:)
-    #   not_found(routing, 'User not found') if user.nil?
+    # def user_create_waypoint(routing, account_id, plan_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    #   Account = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if Account.nil?
     #   plan = Plan.first(plan_id:)
     #   not_found(routing, 'Plan not found') if plan.nil?
     #   waypoint = JSON.parse(routing.body.read)
@@ -304,9 +304,9 @@ module Cryal
     #   log_and_handle_error(routing, waypoint, e)
     # end
 
-    # def user_fetch_waypoints(routing, user_id, plan_id)
-    #   user = User.first(user_id:)
-    #   not_found(routing, 'User not found') if user.nil?
+    # def user_fetch_waypoints(routing, account_id, plan_id)
+    #   Account = Account.first(account_id:)
+    #   not_found(routing, 'Account not found') if Account.nil?
     #   plan = Plan.first(plan_id:)
     #   not_found(routing, 'Plan not found') if plan.nil?
     #   waypoints = plan.waypoints
@@ -315,17 +315,17 @@ module Cryal
     # end
 
     # def global_create_user(routing)
-    #   user = JSON.parse(routing.body.read)
-    #   final_user = User.new(user)
+    #   Account = JSON.parse(routing.body.read)
+    #   final_user = Account.new(Account)
     #   final_user.save
     #   response.status = 201
-    #   { message: 'User saved', data: final_user }.to_json
+    #   { message: 'Account saved', data: final_user }.to_json
     # rescue StandardError => e
-    #   log_and_handle_error(routing, user, e)
+    #   log_and_handle_error(routing, Account, e)
     # end
 
     # def global_fetch_users(_routing)
-    #   output = { data: User.all }
+    #   output = { data: Account.all }
     #   output.to_json
     # end
 

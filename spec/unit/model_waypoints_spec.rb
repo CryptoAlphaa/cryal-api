@@ -41,7 +41,7 @@ end
 
 # To create a waypoint, you will need to have a user, a room, user_room, and a plan
 def prepare_sample_data
-  user = Cryal::User.create(DATA[:users][0])
+  user = Cryal::Account.create(DATA[:accounts][0])
   room = user.add_room(DATA[:rooms][0])
   user.add_user_room({ room_id: room[:room_id], active: true })
   plan = room.add_plan(DATA[:plans][0])

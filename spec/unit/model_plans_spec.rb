@@ -48,7 +48,7 @@ describe 'Plans Model' do # rubocop:disable Metrics/BlockLength
 end
 
 def prepare_plan_spec
-  user = Cryal::User.create(DATA[:users][0])
+  user = Cryal::Account.create(DATA[:accounts][0])
   room = user.add_room(DATA[:rooms][0])
   user.add_user_room({ room_id: room[:room_id], active: true })
   # plan = room.add_plan(DATA[:plans][0])
