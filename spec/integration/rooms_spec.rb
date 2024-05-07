@@ -9,7 +9,7 @@ describe 'Test Room Model' do # rubocop:disable Metrics/BlockLength
   before do
     clear_db
     load_seed
-    first_data = Cryal::User.create(DATA[:users].first)
+    first_data = Cryal::Account.create(DATA[:accounts].first)
     first_data.add_room(DATA[:rooms].first)
   end
 
@@ -26,9 +26,9 @@ describe 'Test Room Model' do # rubocop:disable Metrics/BlockLength
     it 'should create a new room by a user' do
       # use the second seed to create a new room
       # but first we need to insert the user and target
-      new_user = Cryal::User.create(DATA[:users][1])
-      user_id = new_user[:user_id]
-      post "api/v1/users/#{user_id}/createroom", DATA[:rooms][1].to_json
+      new_user = Cryal::Account.create(DATA[:accounts][1])
+      account_id = new_user[:account_id]
+      post "api/v1/accounts/#{account_id}/createroom", DATA[:rooms][1].to_json
       _(last_response.status).must_equal 201
       room = JSON.parse(last_response.body)
       _(room['data']).wont_be_nil
@@ -37,7 +37,7 @@ describe 'Test Room Model' do # rubocop:disable Metrics/BlockLength
 
   describe 'SAD: Test POST' do
     it 'should return 404 if user does not exist' do
-      post 'api/v1/users/2/createroom', {}.to_json
+      post 'api/v1/accounts/2/createroom', {}.to_json
       _(last_response.status).must_equal 404
     end
   end

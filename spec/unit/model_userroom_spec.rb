@@ -11,7 +11,7 @@ describe 'UserRoom Model' do
   describe 'HAPPY: Test UserRoom Model' do
     it 'should make a user join a room' do
       _, room = prepare_user_room_data
-      new_user = Cryal::User.create(DATA[:users][1])
+      new_user = Cryal::Account.create(DATA[:accounts][1])
       sample_room_id = room[:room_id]
       new_user.add_user_room({ room_id: sample_room_id, active: true })
       new_user = Cryal::User_Room.all
@@ -22,7 +22,7 @@ describe 'UserRoom Model' do
   describe 'SAD: Test UserRoom Model' do
     it 'should NOT allow a user to join a room if it does not exist' do
       prepare_user_room_data
-      new_user = Cryal::User.create(DATA[:users][1])
+      new_user = Cryal::Account.create(DATA[:accounts][1])
       _(proc {
           new_user.add_user_room({ room_id: 'something', active: true })
         }).must_raise Sequel::ForeignKeyConstraintViolation
@@ -34,7 +34,7 @@ describe 'UserRoom Model' do
 end
 
 def prepare_user_room_data
-  user = Cryal::User.create(DATA[:users][0])
+  user = Cryal::Account.create(DATA[:accounts][0])
   room = user.add_room(DATA[:rooms][0])
   [user, room]
 end

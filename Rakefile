@@ -105,7 +105,7 @@ namespace :db do # rubocop:disable Metrics/BlockLength
   desc 'Delete all data'
   task :reset_seeds => [:load, :load_models] do
     @app.DB[:schema_seeds].delete if @app.DB.tables.include?(:schema_seeds)
-    Cryal::User.dataset.destroy
+    Cryal::Account.dataset.destroy
     Cryal::Room.dataset.destroy
     @app.DB[:sqlite_sequence].where(name: 'locations').delete
     @app.DB[:sqlite_sequence].where(name: 'user_rooms').delete

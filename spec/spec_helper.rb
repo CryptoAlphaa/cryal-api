@@ -11,14 +11,14 @@ require 'sequel'
 require_relative 'test_load_all'
 
 def clear_db # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-  app.DB[:users].delete
+  app.DB[:accounts].delete
   app.DB[:locations].delete
   app.DB[:rooms].delete
   app.DB[:user_rooms].delete
   app.DB[:plans].delete
   app.DB[:waypoints].delete
   # reset the auto increment
-  app.DB[:sqlite_sequence].where(name: 'users').delete
+  app.DB[:sqlite_sequence].where(name: 'accounts').delete
   app.DB[:sqlite_sequence].where(name: 'locations').delete
   app.DB[:sqlite_sequence].where(name: 'rooms').delete
   app.DB[:sqlite_sequence].where(name: 'user_rooms').delete
@@ -29,7 +29,7 @@ end
 DATA = {} # rubocop:disable Style/MutableConstant
 
 def load_seed
-  DATA[:users] = YAML.safe_load_file('app/db/seeds/users_seeds.yml')
+  DATA[:accounts] = YAML.safe_load_file('app/db/seeds/accounts_seeds.yml')
   DATA[:locations] = YAML.safe_load_file('app/db/seeds/locations_seeds.yml')
   DATA[:rooms] = YAML.safe_load_file('app/db/seeds/rooms_seeds.yml')
   DATA[:user_rooms] = YAML.safe_load_file('app/db/seeds/user_rooms_seeds.yml')

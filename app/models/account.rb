@@ -7,13 +7,13 @@ require_relative './password'
 
 module Cryal
   # User model
-  class User < Sequel::Model
+  class Account < Sequel::Model
     one_to_many :locations, class: 'Cryal::Location', on_delete: :cascade
     one_to_many :user_rooms, class: 'Cryal::User_Room', on_delete: :cascade
     one_to_many :rooms, class: 'Cryal::Room'
 
     plugin :timestamps, update_on_create: true
-    plugin :uuid, field: :user_id
+    plugin :uuid, field: :account_id
 
     # mass assignment prevention
     plugin :whitelist_security
@@ -39,7 +39,7 @@ module Cryal
     def to_json(options = {})
       JSON(
         {
-        user_id:,
+        account_id:,
         username:,
         created_at:,
         updated_at:

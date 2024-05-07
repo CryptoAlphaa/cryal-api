@@ -7,7 +7,7 @@ module Cryal
   # Room model
   class Room < Sequel::Model
     one_to_many :user_rooms, class: 'Cryal::User_Room', on_delete: :cascade
-    many_to_one :user, class: 'Cryal::User'
+    many_to_one :account, class: 'Cryal::Account'
     one_to_many :plans, class: 'Cryal::Plan', on_delete: :cascade
 
     plugin :timestamps, update_on_create: true

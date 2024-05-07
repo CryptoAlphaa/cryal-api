@@ -15,7 +15,7 @@ describe 'Security Test UserRoom Model' do # rubocop:disable Metrics/BlockLength
       data = populate
       room_id = data[1][:room_id]
       packet = { room_id:, active: true }
-      post 'api/v1/users/100/joinroom', packet.to_json
+      post 'api/v1/accounts/100/joinroom', packet.to_json
       _(last_response.status).must_equal 404
     end
   end
@@ -23,10 +23,10 @@ describe 'Security Test UserRoom Model' do # rubocop:disable Metrics/BlockLength
   describe 'SECURITY: Mass Assignment' do
     it 'should not allow post to change id' do
       data = populate
-      user_id = data[0][:user_id]
+      account_id = data[0][:account_id]
       data[1][:room_name]
       post_item = { malicious_data: 100, active: true }
-      post "/api/v1/users/#{user_id}/joinroom", post_item.to_json
+      post "/api/v1/accounts/#{account_id}/joinroom", post_item.to_json
       _(last_response.status).must_equal 400
       _(last_response.body['data']).must_be_nil
     end
@@ -34,7 +34,7 @@ describe 'Security Test UserRoom Model' do # rubocop:disable Metrics/BlockLength
 
   describe 'SECURITY: SQL Injection' do
     it 'should prevent SQL injection to get index' do
-      get 'api/v1/users/2%20or%20id%3D1/joinroom/1'
+      get 'api/v1/accounts/2%20or%20id%3D1/joinroom/1'
       _(last_response.status).must_equal 404
       _(last_response.body['data']).must_be_nil
     end
@@ -42,8 +42,8 @@ describe 'Security Test UserRoom Model' do # rubocop:disable Metrics/BlockLength
 end
 
 def populate
-  first_user = Cryal::User.create(DATA[:users][0])
-  second_user = Cryal::User.create(DATA[:users][1])
+  first_user = Cryal::Account.create(DATA[:accounts][0])
+  second_user = Cryal::Account.create(DATA[:accounts][1])
   room = first_user.add_room(DATA[:rooms][0])
   room_data = Cryal::Room.where(room_name: 'Meeting Room 1').first
   prepare_to_join_room = { room_id: room_data[:room_id], active: true }

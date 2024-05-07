@@ -2,12 +2,12 @@
 
 module Cryal
   module GlobalActions
-    module User
+    module Account
       # Create a new user
       class Create
         extend Cryal
         def self.call(json)
-          final_user = Cryal::User.new(json)
+          final_user = Cryal::Account.new(json)
           final_user.save
           final_user
         end
@@ -17,7 +17,7 @@ module Cryal
       class FetchAll
         extend Cryal
         def self.call(_routing)
-          output = { data: Cryal::User.all }
+          output = { data: Cryal::Account.all }
           output
         end
       end

@@ -9,7 +9,7 @@ describe 'Location Model' do
     load_seed
 
     # Because location has a foreign key dependency on user, we need to insert a user first.
-    @user = Cryal::User.create(DATA[:users][0])
+    @user = Cryal::Account.create(DATA[:accounts][0])
   end
 
   describe 'HAPPY: Test Location Model' do
