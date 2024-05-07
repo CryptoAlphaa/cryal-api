@@ -13,7 +13,6 @@ def require_app(folders = %w[config libs models controllers services], config: t
   full_list = app_list.flatten.join(',')
 
   Dir.glob("./{#{full_list}}/**/*.rb").each do |file|
-    puts file
     require file
   end
 end

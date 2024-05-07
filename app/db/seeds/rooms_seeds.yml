@@ -7,7 +7,6 @@
 - room_name: Conference Room A
   room_description: 'A spacious conference room for large gatherings.'
   room_password: conf_pass
-- user_id: 4
-  room_name: pantai
+- room_name: pantai
   room_description: 'A room with a view of the beach.'
-  room_password: beach
+  room_password: beach_pass

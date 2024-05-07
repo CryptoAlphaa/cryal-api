@@ -1,17 +1,32 @@
 - latitude: '40.7128'
   longitude: '-74.0060'
-  cur_address: "New York, NY"
-  cur_name: Office
+  cur_address: "Big City, Hsinchu, Taiwan"
+  cur_name: Shopping Mall
 - latitude: '44.0522'
   longitude: '-74.0060'
-  cur_address: "New York, NY"
+  cur_address: "PX Mart, Kaoshiung"
   cur_name: Supermarket  
 - latitude: '34.0522'
   longitude: '-118.2437'
-  cur_address: "Los Angeles, CA"
+  cur_address: "Monas, Jakarta, Indonesia"
   cur_name: Home
-- location_id: 1
-  latitude: '59.1'
+- latitude: '59.1'
   longitude: '-0.1278'
-  cur_address: "London, UK"
-  cur_name: Work
+  cur_address: "Petronas Tower, Malaysia"
+  cur_name: Vacation
+- latitude: '123.1'
+  longitude: '-0.1128'
+  cur_address: "Eiffel Tower, Paris"
+  cur_name: Vacation
+- latitude: '39.1'
+  longitude: '10.08'
+  cur_address: "National Tsinghua University, Taiwan"
+  cur_name: School
+- latitude: '103.1'
+  longitude: '-30.1278'
+  cur_address: "Disneyland, Hongkong"
+  cur_name: ThemePark
+- latitude: '9.1'
+  longitude: '36.1278'
+  cur_address: "Leofoo Village, Hsinchu, Taiwan"
+  cur_name: ThemePark

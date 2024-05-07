@@ -6,7 +6,7 @@ require 'sequel'
 module Cryal
   # Waypoint class for managing Waypoint model
   class Waypoint < Sequel::Model
-    many_to_one :plan
+    many_to_one :plan, class: 'Cryal::Plan'
 
     plugin :uuid, field: :waypoint_id
     plugin :timestamps, update_on_create: true

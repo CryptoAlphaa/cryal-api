@@ -10,4 +10,15 @@
 - username: Eve
   email: Eve@example.com
   password: Eve_Password
-  user_id : 01052024
+- username: Alice
+  email: Alice@example.com
+  password: Alice_Password
+- username: Panda
+  email: Panda@example.com
+  password: Panda_Password
+- username: Alex
+  email: Alex@example.com
+  password: Alex_Password
+- username: Steve
+  email: Steve@example.com
+  password: Steve_Password
