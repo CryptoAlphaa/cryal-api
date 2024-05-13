@@ -47,5 +47,19 @@ module Cryal
         options
       )
     end
+
+    def to_json_all(options = {}) # rubocop: disable Metrics/MethodLength
+      JSON(
+        {
+          account_id:,
+          username:,
+          email_secure:,
+          password_hash:,
+          created_at:,
+          updated_at:
+        },
+        options
+      )
+    end
   end
 end
