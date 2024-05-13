@@ -17,12 +17,12 @@ module Cryal
 
     def to_json(options = {})
       JSON(
-      {
-        id:,
-        room_id:,
-        account_id:,
-        active:
-      },
+        {
+          id:,
+          room_id:,
+          account_id:,
+          active:
+        },
         options
       )
     end

@@ -17,8 +17,7 @@ module Cryal
       class FetchAll
         extend Cryal
         def self.call(_routing)
-          output = { data: Cryal::Account.all }
-          output
+          { data: Cryal::Account.all }
         end
       end
     end
@@ -28,8 +27,7 @@ module Cryal
       class FetchAll
         extend Cryal
         def self.call(_routing)
-          output = { data: Cryal::Room.all }
-          output
+          { data: Cryal::Room.all }
         end
       end
 
@@ -49,8 +47,8 @@ module Cryal
       class FetchAll
         extend Cryal
         def self.call(_routing)
-          output = { data: Cryal::User_Room.all }
-          output#.t
+          { data: Cryal::User_Room.all }
+          # .t
         end
       end
     end

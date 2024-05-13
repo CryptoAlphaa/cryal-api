@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Sequel.seed(:development) do
   def run
     create_account
@@ -18,7 +20,6 @@ ROOM_INFO = YAML.load_file("#{DIR}/rooms_seeds.yml")
 USER_ROOM_INFO = YAML.load_file("#{DIR}/user_rooms_seeds.yml")
 PLAN_INFO = YAML.load_file("#{DIR}/plans_seeds.yml")
 WAYPOINT_INFO = YAML.load_file("#{DIR}/waypoints_seeds.yml")
-
 
 def create_account
   ACCOUNT_INFO.each do |data|
@@ -41,17 +42,17 @@ def create_rooms
   end
 end
 
-def create_user_rooms
+def create_user_rooms # rubocop:disable Metrics/MethodLength
   accounts = Cryal::Account.all
   rooms = Cryal::Room.all
   room_ids = []
-  rooms.each_with_index do |room, index|
+  rooms.each_with_index do |room, _index|
     room_ids.push(room.room_id)
   end
   accounts.each_with_index do |account, index|
     user_room_info = USER_ROOM_INFO[index % 4] || { active: true }
     user_room_packet = {
-      'active' => user_room_info["active"],
+      'active' => user_room_info['active'],
       'room_id' => room_ids[index % 4]
     }
     account.add_user_room(user_room_packet)
@@ -72,7 +73,7 @@ def create_waypoints
     waypoint_data = WAYPOINT_INFO[index]
     waypoint_data[:waypoint_number] = 1
     plan.add_waypoint(waypoint_data)
-    waypoint_data = WAYPOINT_INFO[index+3]
+    waypoint_data = WAYPOINT_INFO[index + 3]
     waypoint_data[:waypoint_number] = 2
     plan.add_waypoint(waypoint_data)
   end

@@ -26,14 +26,14 @@ module Cryal
     end
 
     def to_json(options = {})
-    JSON(
-      {
-        plan_id:,
-        plan_name:,
-        plan_description: plan_description_secure,
-        created_at:,
-        updated_at:
-      },
+      JSON(
+        {
+          plan_id:,
+          plan_name:,
+          plan_description: plan_description_secure,
+          created_at:,
+          updated_at:
+        },
         options
       )
     end

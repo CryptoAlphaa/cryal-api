@@ -13,17 +13,17 @@ module Cryal
     plugin :whitelist_security
     set_allowed_columns :latitude, :longitude, :cur_address, :cur_name
 
-    def to_json(options = {})
+    def to_json(options = {}) # rubocop:disable Metrics/MethodLength
       JSON(
         {
-        location_id:,
-        account_id:,
-        latitude: cur_lat_secure,
-        longitude: cur_long_secure,
-        cur_address:,
-        cur_name:,
-        created_at:
-      }, 
+          location_id:,
+          account_id:,
+          latitude: cur_lat_secure,
+          longitude: cur_long_secure,
+          cur_address:,
+          cur_name:,
+          created_at:
+        },
         options
       )
     end

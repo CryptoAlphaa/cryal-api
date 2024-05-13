@@ -82,7 +82,7 @@ module Cryal
       # Create plans
       class Create
         extend Cryal
-        def self.call(routing, plan, account_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        def self.call(routing, plan, account_id)
           user = Cryal::Account.first(account_id:)
           not_found(routing, 'User not found') if user.nil?
           room = Cryal::Room.first(room_name: plan['room_name'])
@@ -100,7 +100,7 @@ module Cryal
       # Create waypoints
       class Create
         extend Cryal
-        def self.call(routing, json, account_id, plan_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+        def self.call(routing, json, account_id, plan_id)
           user = Cryal::Account.first(account_id:)
           not_found(routing, 'User not found') if user.nil?
           plan = Cryal::Plan.first(plan_id:)
@@ -127,16 +127,17 @@ module Cryal
       end
     end
 
-   # User service
-   module Account
-        # Create a new user
-        class FetchOne extend Cryal
-            def self.call(routing, account_id)
-                user = Cryal::Account.first(account_id:)
-                not_found(routing, 'User not found') if user.nil?
-                user
-            end
+    # User service
+    module Account
+      # Create a new user
+      class FetchOne
+        extend Cryal
+        def self.call(routing, account_id)
+          user = Cryal::Account.first(account_id:)
+          not_found(routing, 'User not found') if user.nil?
+          user
         end
-   end
+      end
+    end
   end
 end

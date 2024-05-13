@@ -103,7 +103,7 @@ namespace :db do # rubocop:disable Metrics/BlockLength
   end
 
   desc 'Delete all data'
-  task :reset_seeds => [:load, :load_models] do
+  task reset_seeds: %i[load load_models] do
     @app.DB[:schema_seeds].delete if @app.DB.tables.include?(:schema_seeds)
     Cryal::Account.dataset.destroy
     Cryal::Room.dataset.destroy
@@ -112,7 +112,7 @@ namespace :db do # rubocop:disable Metrics/BlockLength
   end
 
   desc 'Seed the db with data'
-  task :seed => [:load, :load_models] do
+  task seed: %i[load load_models] do
     require 'sequel/extensions/seed'
     Sequel::Seed.setup(:development)
     Sequel.extension :seed
@@ -120,7 +120,7 @@ namespace :db do # rubocop:disable Metrics/BlockLength
   end
 
   desc 'Delete data and reseed'
-  task :reseed => [:load, :reset_seeds, :seed]
+  task reseed: %i[load reset_seeds seed]
 end
 
 namespace :newkey do

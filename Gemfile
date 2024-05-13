@@ -32,6 +32,6 @@ gem 'pkg-config'
 gem 'rake'
 
 group :development, :test do
-  gem 'sqlite3'
   gem 'sequel-seed'
+  gem 'sqlite3'
 end

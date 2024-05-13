@@ -1,9 +1,11 @@
-Cryal# frozen_string_literal: true
+# frozen_string_literal: true
+# frozen_string_literal: true
 
 require 'sequel'
 require 'roda'
 require 'json'
 
+# Cryal Module
 module Cryal
   # Class for designing the API
   class Api < Roda # rubocop:disable Metrics/ClassLength
@@ -44,7 +46,7 @@ module Cryal
               routing.post do
                 json = JSON.parse(routing.body.read)
                 output = Cryal::AccountService::Location::Create.call(routing, json, account_id)
-                
+
                 response.status = 201
                 { message: 'Location saved', data: output }.to_json
               rescue StandardError => e
@@ -159,7 +161,6 @@ module Cryal
           rescue StandardError => e
             log_and_handle_error(routing, json, e)
           end
-
         end
         routing.on 'rooms' do
           routing.on String do |room_id|
@@ -251,7 +252,7 @@ module Cryal
     #   log_and_handle_error(routing, user_room, e)
     # end
 
-    # def user_create_plan(routing, account_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    # def user_create_plan(routing, account_id)
     #   Account = Account.first(account_id:)
     #   not_found(routing, 'Account not found') if Account.nil?
     #   plan = JSON.parse(routing.body.read)
@@ -267,7 +268,7 @@ module Cryal
     #   log_and_handle_error(routing, plan, e)
     # end
 
-    # def user_fetch_plans(routing, account_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    # def user_fetch_plans(routing, account_id)
     #   Account = Account.first(account_id:)
     #   not_found(routing, 'Account not found') if Account.nil?
     #   search = routing.params['room_name']
@@ -285,7 +286,7 @@ module Cryal
     #   output.to_json
     # end
 
-    # def user_create_waypoint(routing, account_id, plan_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+    # def user_create_waypoint(routing, account_id, plan_id)
     #   Account = Account.first(account_id:)
     #   not_found(routing, 'Account not found') if Account.nil?
     #   plan = Plan.first(plan_id:)
@@ -345,11 +346,11 @@ module Cryal
     #   output = { data: User_Room.all }
     #   output.to_json
     # end
-    
+
     def not_found(routing, message)
       routing.halt 404, { message: }.to_json
     end
-    
+
     def log_and_handle_error(routing, json, err)
       if err.is_a?(Sequel::MassAssignmentRestriction)
         Api.logger.warn "Mass Assignment: #{json.keys}"
@@ -359,7 +360,7 @@ module Cryal
         routing.halt 500, { message: 'Internal Server Error' }.to_json
       end
     end
-  end #end class
+  end
 
   def log_and_handle_error(routing, json, err)
     if err.is_a?(Sequel::MassAssignmentRestriction)
@@ -374,4 +375,4 @@ module Cryal
   def not_found(routing, message)
     routing.halt 404, { message: }.to_json
   end
-end # end module
+end

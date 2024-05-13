@@ -23,14 +23,14 @@ module Cryal
 
       # Connect and make the database accessible to other classes
       db_url = ENV.delete('DATABASE_URL')
-      DB = Sequel.connect("#{db_url}?encoding=utf8")
+      DB = Sequel.connect("#{db_url}?encoding=utf8") # rubocop:disable Lint/ConstantDefinitionInBlock
       def self.DB = DB # rubocop:disable Naming/MethodName
 
       configure :development, :production do
         plugin :common_logger, $stdout
       end
 
-      LOGGER = Logger.new($stderr)
+      LOGGER = Logger.new($stderr) # rubocop:disable Lint/ConstantDefinitionInBlock
       def self.logger = LOGGER
 
       # Retrieve and Delete secret DB Key

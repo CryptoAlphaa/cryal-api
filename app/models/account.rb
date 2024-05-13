@@ -39,11 +39,11 @@ module Cryal
     def to_json(options = {})
       JSON(
         {
-        account_id:,
-        username:,
-        created_at:,
-        updated_at:
-      },
+          account_id:,
+          username:,
+          created_at:,
+          updated_at:
+        },
         options
       )
     end

@@ -18,16 +18,16 @@ module Cryal
     def to_json(options = {}) # rubocop:disable Metrics/MethodLength
       JSON(
         {
-        waypoint_id:,
-        plan_id:,
-        waypoint_lat: latitude,
-        waypoint_long: longitude,
-        waypoint_address:,
-        waypoint_name:,
-        waypoint_number:,
-        created_at:,
-        updated_at:
-      }, 
+          waypoint_id:,
+          plan_id:,
+          waypoint_lat: latitude,
+          waypoint_long: longitude,
+          waypoint_address:,
+          waypoint_name:,
+          waypoint_number:,
+          created_at:,
+          updated_at:
+        },
         options
       )
     end
