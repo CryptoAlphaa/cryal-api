@@ -12,8 +12,16 @@ module Cryal
     plugin :halt
     plugin :json
 
+    def secure_request?(routing)
+      routing.scheme.casecmp(Api.config.SECURE_SCHEME).zero?
+    end
+
+
     route do |routing| # rubocop:disable Metrics/BlockLength
       response['Content-Type'] = 'application/json'
+
+      secure_request?(routing) ||
+      not_found(routing, 'TLS/SSL Required', err = 403)
 
       routing.root do
         response.status = 200
