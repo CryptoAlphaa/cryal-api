@@ -53,7 +53,8 @@ def create_user_rooms # rubocop:disable Metrics/MethodLength
     user_room_info = USER_ROOM_INFO[index % 4] || { active: true }
     user_room_packet = {
       'active' => user_room_info['active'],
-      'room_id' => room_ids[index % 4]
+      'room_id' => room_ids[index % 4],
+      'authority' => user_room_info['authority']
     }
     account.add_user_room(user_room_packet)
   end
