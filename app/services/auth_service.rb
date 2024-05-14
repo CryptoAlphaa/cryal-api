@@ -16,7 +16,7 @@ module Cryal
       extend KeyStretch
       check = Base64.strict_encode64(password_hash(salt, json['password']))
       not_found(routing, @err_message, 403) unless check == checksum
-      { message: "Welcome back to NaviTogether, #{username}!", data: user.to_json }
+      { message: "Welcome back to NaviTogether, #{json['username']}!", data: user.to_json }
     end
   end
 end
