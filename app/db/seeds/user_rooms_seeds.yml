@@ -1,8 +1,8 @@
 - active: true
-  authority: 'Admin'
+  authority: 'admin'
 - active: true
-  authority: 'Member'
+  authority: 'member'
 - active: true
-  authority: 'Admin'
+  authority: 'admin'
 - active: true
-  authority: 'Member'
+  authority: 'member'

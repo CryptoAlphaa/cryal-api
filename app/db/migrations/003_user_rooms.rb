@@ -9,7 +9,9 @@ Sequel.migration do
       foreign_key :account_id, :accounts, null: false, on_delete: :cascade
       foreign_key :room_id, :rooms, on_delete: :cascade
       Boolean :active
-      String :authority
+      String :authority, default: 'member'
+
+      unique [:account_id, :room_id]
     end
   end
 end

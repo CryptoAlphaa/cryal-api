@@ -21,11 +21,13 @@ describe 'Security Test UserRoom Model' do # rubocop:disable Metrics/BlockLength
   end
 
   describe 'SECURITY: Mass Assignment' do
-    it 'should not allow post to change id' do
+    it 'should not allow adding malicious package' do
       data = populate
       account_id = data[0][:account_id]
-      data[1][:room_name]
-      post_item = { malicious_data: 100, active: true }
+      room = Cryal::Room.where(room_name: 'Meeting Room 1').first
+      obtained_id = room.room_id
+      obtained_pass =DATA[:rooms][0]['room_password']
+      post_item = { room_id: obtained_id, room_password: obtained_pass, malicious_data: 100, active: true }
       post "/api/v1/accounts/#{account_id}/joinroom", post_item.to_json
       _(last_response.status).must_equal 400
       _(last_response.body['data']).must_be_nil
