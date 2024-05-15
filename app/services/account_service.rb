@@ -66,6 +66,7 @@ module Cryal
         def self.verify_room(room_id, room_password)
           room = Cryal::Room.first(room_id:)
           return false if room.nil?
+
           jsonify = JSON.parse(room.room_password_hash)
           salt = Base64.strict_decode64(jsonify['salt'])
           checksum = jsonify['hash']
@@ -77,15 +78,16 @@ module Cryal
         def self.call(routing, room_json, account_id)
           user = Cryal::Account.first(account_id:)
           not_found(routing, 'User not found', 404) if user.nil?
-          prepared_package = room_json #create_package(room_json)
+          prepared_package = room_json # create_package(room_json)
           # set_allowed_columns :active, :room_id, :account_id, :authority
-          not_found(routing, 'Room not found or password is wrong', 404) unless verify_room(prepared_package['room_id'], prepared_package['room_password'])
+          not_found(routing, 'Room not found or password is wrong', 404) unless verify_room(
+            prepared_package['room_id'], prepared_package['room_password']
+          )
           prepared_package.delete('room_password')
           user.add_user_room(prepared_package)
         end
 
-
-        # def self.call(routing, json) # rubocop:disable Metrics/AbcSize
+        # def self.call(routing, json)
         #   user = Cryal::Account.first(username: json['username']) # user existed
         #   # raise error if user not found
         #   not_found(routing, @err_message, 403) if user.nil?
@@ -98,7 +100,6 @@ module Cryal
         #   not_found(routing, @err_message, 403) unless check == checksum
         #   { message: "Welcome back to NaviTogether, #{json['username']}!", data: user.to_json }
         # end
-
       end
     end
 

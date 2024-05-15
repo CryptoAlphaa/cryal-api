@@ -11,7 +11,7 @@ Sequel.migration do
       Boolean :active
       String :authority, default: 'member'
 
-      unique [:account_id, :room_id]
+      unique %i[account_id room_id]
     end
   end
 end
