@@ -35,7 +35,8 @@ describe 'Test UserRoom Model' do # rubocop:disable Metrics/BlockLength
       third_user = Cryal::Account.create(DATA[:accounts][2])
       room_data = Cryal::Room.where(room_name: 'Meeting Room 1').first
       account_id = third_user[:account_id]
-      prepare_to_join_room = { room_id: room_data[:room_id], active: true }
+      password = DATA[:rooms][0]['room_password']
+      prepare_to_join_room = { room_id: room_data[:room_id], active: true, room_password: password }
       post "api/v1/accounts/#{account_id}/joinroom", prepare_to_join_room.to_json
       _(last_response.status).must_equal 201
       user_room = JSON.parse(last_response.body)

@@ -24,7 +24,7 @@ module Cryal
     end
 
     def password?(try_password)
-      password = Cryal::Password.from_digest(password_digest)
+      password = Cryal::Password.from_digest(password_hash)
       password.correct?(try_password)
     end
 
@@ -41,6 +41,7 @@ module Cryal
         {
           account_id:,
           username:,
+          email: SecureDB.decrypt(email_secure),
           created_at:,
           updated_at:
         },
