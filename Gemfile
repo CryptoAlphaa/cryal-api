@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+ruby File.read('.ruby-version').strip
 
 # Web API
 gem 'json'
@@ -20,16 +21,20 @@ gem 'rack-test'
 gem 'pry'
 gem 'rerun'
 
+# Configuration
+gem 'figaro'
+gem 'pkg-config'
+gem 'rake'
+
 # Quality
 gem 'rubocop'
 
 # Database
-gem 'sequel', '~>5.34'
-
-gem 'figaro'
-gem 'hirb'
-gem 'pkg-config'
-gem 'rake'
+gem 'hirb', '~>0.7'
+gem 'sequel', '~>5.67'
+group :production do
+  gem 'pg'
+end
 
 group :development, :test do
   gem 'sequel-seed'
