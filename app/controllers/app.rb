@@ -211,11 +211,12 @@ module Cryal
       end
     end
 
-    def not_found(routing, message)
-      routing.halt 404, { message: }.to_json
-    end
+#=======================================================================================================
+# FUNCTIONS TO HANDLE ERROR
+# DO NOT DELETE
+#=======================================================================================================
 
-    def log_and_handle_error(routing, json, err)
+  def log_and_handle_error(routing, json, err)
       if err.is_a?(Sequel::MassAssignmentRestriction)
         Api.logger.warn "Mass Assignment: #{json.keys}"
         routing.halt 400, { message: 'Mass Assignment Error' }.to_json
@@ -223,16 +224,6 @@ module Cryal
         Api.logger.error "Error: #{err.message}"
         routing.halt 500, { message: 'Internal Server Error' }.to_json
       end
-    end
-  end
-
-  def log_and_handle_error(routing, json, err)
-    if err.is_a?(Sequel::MassAssignmentRestriction)
-      Api.logger.warn "Mass Assignment: #{json.keys}"
-      routing.halt 400, { message: 'Mass Assignment Error' }.to_json
-    else
-      Api.logger.error "Error: #{err.message}"
-      routing.halt 500, { message: 'Internal Server Error' }.to_json
     end
   end
 
