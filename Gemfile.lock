@@ -23,6 +23,7 @@ GEM
     parser (3.3.1.0)
       ast (~> 2.4.1)
       racc
+    pg (1.5.6)
     pkg-config (1.5.6)
     pry (0.14.2)
       coderay (~> 1.1)
@@ -80,10 +81,11 @@ PLATFORMS
 DEPENDENCIES
   base64
   figaro
-  hirb
+  hirb (~> 0.7)
   json
   minitest
   minitest-rg
+  pg
   pkg-config
   pry
   puma (~> 6.1)
@@ -93,7 +95,7 @@ DEPENDENCIES
   rerun
   roda (~> 3.1)
   rubocop
-  sequel (~> 5.34)
+  sequel (~> 5.67)
   sequel-seed
   sqlite3
 
