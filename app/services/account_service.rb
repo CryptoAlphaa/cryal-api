@@ -30,7 +30,7 @@ module Cryal
       class FetchAll
         extend Cryal
         def self.call(routing, account_id)
-          output = { data: Cryal::User_Room.where(account_id:) }
+          output = Cryal::User_Room.where(account_id:)
           not_found(routing, 'DB Error') if output.nil?
           output
         end

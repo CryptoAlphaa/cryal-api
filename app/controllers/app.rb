@@ -78,7 +78,7 @@ module Cryal
                 output = Cryal::AccountService::Room::FetchAll.call(routing, account_id)
                 not_found(routing, 'DB Error') if output.nil?
                 response.status = 200
-                output.to_json
+                { message: 'Success', data: output }.to_json
                 # user_fetch_rooms(routing, account_id)
               end
             end
