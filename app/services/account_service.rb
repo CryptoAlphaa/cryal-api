@@ -27,10 +27,10 @@ module Cryal
 
     module Room
       # Fetch all rooms where the user is.
-      class FetchOne
+      class FetchAll
         extend Cryal
         def self.call(routing, account_id)
-          output = { data: Cryal::Account.first(account_id:).rooms }
+          output = { data: Cryal::User_Room.where(account_id:) }
           not_found(routing, 'DB Error') if output.nil?
           output
         end

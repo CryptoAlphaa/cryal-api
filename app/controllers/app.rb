@@ -75,7 +75,7 @@ module Cryal
             # GET /api/v1/accounts/[account_id]/rooms DONEE
             routing.on 'rooms' do
               routing.get do
-                output = Cryal::AccountService::Room::FetchOne.call(routing, account_id)
+                output = Cryal::AccountService::Room::FetchAll.call(routing, account_id)
                 not_found(routing, 'DB Error') if output.nil?
                 response.status = 200
                 output.to_json
