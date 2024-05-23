@@ -31,7 +31,9 @@ module Cryal
         extend Cryal
         def self.call(routing, account_id)
           output = Cryal::User_Room.where(account_id:)
-          not_found(routing, 'DB Error') if output.nil?
+          output = output.all
+          puts output
+          not_found(routing, 'DB Error') if output.nil? # ga jalan
           output
         end
       end
