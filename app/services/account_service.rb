@@ -9,6 +9,7 @@ module Cryal
         extend Cryal
         def self.call(routing, account_id)
           user = Cryal::Account.first(account_id:)
+          p "User: #{user}"
           not_found(routing, 'User not found') if user.nil?
           user.locations
         end
