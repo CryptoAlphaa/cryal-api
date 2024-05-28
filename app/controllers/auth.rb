@@ -9,11 +9,15 @@ module Cryal
         include Cryal
         route('auth') do |routing|
             # POST /api/v1/auth/register
-            routing.on 'register' do
+            routing.is 'register' do
                 routing.post do
-                    json = JSON.parse(routing.body.read)
-                    register = Cryal::Register.call(routing, json)
-                    response.status = 201
+                    puts "masuk"
+                    json = JSON.parse(routing.body.read, symbolize_names: true)
+                    puts json
+                    register = VerifyRegistration.new(json).call
+                    puts "email sent"
+                    # register = Cryal::Register.call(routing, json)
+                    response.status = 202
                     register.to_json
                 end
             end
