@@ -18,7 +18,7 @@ end
 
 desc 'Test API functionality specs only'
 Rake::TestTask.new(:function) do |t|
-  t.pattern = 'spec/integration/locations_spec.rb'
+  t.pattern = 'spec/integration/*.rb'
   t.warning = false
 end
 

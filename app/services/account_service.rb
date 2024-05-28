@@ -9,7 +9,6 @@ module Cryal
         extend Cryal
         def self.call(routing, account_id)
           user = Cryal::Account.first(account_id:)
-          p "User: #{user}"
           not_found(routing, 'User not found') if user.nil?
           user.locations
         end
@@ -33,7 +32,6 @@ module Cryal
         def self.call(routing, account_id)
           output = Cryal::User_Room.where(account_id:)
           output = output.all
-          puts output
           not_found(routing, 'DB Error') if output.nil? # ga jalan
           output
         end
@@ -154,6 +152,10 @@ module Cryal
           not_found(routing, 'User not found') if user.nil?
           plan = Cryal::Plan.first(plan_id:)
           not_found(routing, 'Plan not found') if plan.nil?
+          room = Cryal::Room.first(room_id: plan.room_id)
+          not_found(routing, 'Room not found') if room.nil?
+          user_room = Cryal::User_Room.first(account_id: user.account_id, room_id: room.room_id, active: true)
+          not_found(routing, 'User not in the room') if user_room.nil?
           last_waypoint_number = Cryal::Waypoint.where(plan_id: plan.plan_id).max(:waypoint_number) || 0
           new_waypoint_number = last_waypoint_number + 1
           # delete waypoint number field if it exists
@@ -163,8 +165,8 @@ module Cryal
         end
       end
 
-      # Fetch waypoints
-      class FetchOne
+      # Fetch all waypoints
+      class FetchAll
         extend Cryal
         def self.call(routing, account_id, plan_id)
           user = Cryal::Account.first(account_id:)
@@ -172,6 +174,21 @@ module Cryal
           plan = Cryal::Plan.first(plan_id:)
           not_found(routing, 'Plan not found') if plan.nil?
           plan.waypoints
+        end
+      end
+
+      # Fetch one waypoint
+      class FetchOne
+        extend Cryal
+        def self.call(routing, account_id, plan_id)
+          user = Cryal::Account.first(account_id:)
+          not_found(routing, 'User not found') if user.nil?
+          plan = Cryal::Plan.first(plan_id:)
+          not_found(routing, 'Plan not found') if plan.nil?
+          waypoint_number = routing.params['waypoint_number']
+          waypoint = Cryal::Waypoint.first(plan_id: plan.plan_id, waypoint_number: waypoint_number)
+          not_found(routing, 'Waypoint not found') if waypoint.nil?
+          waypoint
         end
       end
     end

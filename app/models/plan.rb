@@ -10,6 +10,7 @@ module Cryal
     one_to_many :waypoints, class: 'Cryal::Waypoint', on_delete: :cascade
 
     plugin :uuid, field: :plan_id
+    # plugin :uuid, field: :room_id
     plugin :timestamps, update_on_create: true
 
     # mass assignment prevention
@@ -29,6 +30,7 @@ module Cryal
       JSON(
         {
           plan_id:,
+          room_id:,
           plan_name:,
           plan_description: plan_description_secure,
           created_at:,

@@ -59,7 +59,7 @@
 
 require_relative '../spec_helper'
 
-describe 'Test Project Handling' do
+describe 'Test Locations Handling' do
   include Rack::Test::Methods
 
   before do

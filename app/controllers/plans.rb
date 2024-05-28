@@ -59,8 +59,9 @@ module Cryal
                 # POST /api/v1/plans/create_plan
                 routing.on 'create_plan' do
                     routing.post do
+                        account = Account.first(username: @auth_account['username'])
                         json = JSON.parse(routing.body.read)
-                        output = Cryal::AccountService::Plans::Create.call(routing, json, account_id)
+                        output = Cryal::AccountService::Plans::Create.call(routing, json, account.account_id)
                         response.status = 201
                         { message: 'Plan saved', data: output }.to_json
                     rescue StandardError => e
@@ -71,7 +72,8 @@ module Cryal
                 # GET /api/v1/plans/fetch
                 routing.on 'fetch' do
                     routing.get do
-                        output = Cryal::AccountService::Plans::FetchOne.call(routing, account_id)
+                        account = Account.first(username: @auth_account['username'])
+                        output = Cryal::AccountService::Plans::FetchOne.call(routing, account.account_id)
                         response.status = 200
                         output.to_json
                     end
@@ -79,19 +81,24 @@ module Cryal
 
                 routing.on String do |plan_id|
                     routing.on 'waypoints' do
+                        account = Account.first(username: @auth_account['username'])
                         # POST /api/v1/plans/[plan_id]/waypoints
                         routing.post do
                             json = JSON.parse(routing.body.read)
-                            output = Cryal::AccountService::Waypoint::Create.call(routing, json, account_id, plan_id)
+                            output = Cryal::AccountService::Waypoint::Create.call(routing, json, account.account_id, plan_id)
                             response.status = 201
                             { message: 'Waypoint saved', data: output }.to_json
                         rescue StandardError => e
                             log_and_handle_error(routing, json, e)
                         end
 
-                        # GET /api/v1/plans/[plan_id]/waypoints
+                        # GET /api/v1/plans/[plan_id]/waypoints?waypoint_number=1
                         routing.get do
-                            output = Cryal::AccountService::Waypoint::FetchOne.call(routing, account_id, plan_id)
+                            if routing.params['waypoint_number']
+                                output = Cryal::AccountService::Waypoint::FetchOne.call(routing, account.account_id, plan_id)
+                            else
+                                output = Cryal::AccountService::Waypoint::FetchAll.call(routing, account.account_id, plan_id)
+                            end
                             response.status = 200
                             output.to_json
                         end
