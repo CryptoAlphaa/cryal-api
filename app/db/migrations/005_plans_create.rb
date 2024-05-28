@@ -6,7 +6,7 @@ Sequel.migration do
   change do
     create_table(:plans) do
       uuid :plan_id, primary_key: true
-      foreign_key :room_id, table: :rooms, null: false, type: :uuid, on_delete: :cascade
+      foreign_key :room_id, table: :rooms, type: :uuid, on_delete: :cascade
 
       String :plan_name, null: false
       String :plan_description_secure # encrypted plan description
