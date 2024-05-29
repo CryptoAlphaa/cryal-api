@@ -4,7 +4,7 @@ require 'roda'
 require 'figaro'
 require 'logger'
 require 'sequel'
-require './app/lib/secure_db'
+require_app('lib')
 
 module Cryal
   # Configuration for the API
@@ -35,6 +35,7 @@ module Cryal
 
       # Retrieve and Delete secret DB Key
       SecureDB.setup(ENV.delete('DB_KEY'))
+      AuthToken.setup(ENV.fetch('MSG_KEY')) # Load crypto key
 
       configure :development, :test do
         require 'pry'

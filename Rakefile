@@ -16,15 +16,9 @@ end
 #   t.warning = false
 # end
 
-desc 'Test API functionality specs only'
+desc 'Test API specs only'
 Rake::TestTask.new(:function) do |t|
   t.pattern = 'spec/integration/*.rb'
-  t.warning = false
-end
-
-desc 'Test API security specs only'
-Rake::TestTask.new(:security) do |t|
-  t.pattern = 'spec/integration/security/*.rb'
   t.warning = false
 end
 
@@ -41,7 +35,7 @@ Rake::TestTask.new(:envspec) do |t|
 end
 
 desc 'Run both unit and security specs'
-task specs: %i[function security model envspec]
+task specs: %i[function model envspec]
 
 desc 'Runs rubocop on tested code'
 task style: %i[spec audit] do

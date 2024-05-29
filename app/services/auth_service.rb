@@ -6,17 +6,29 @@ module Cryal
     @err_message = 'User or Password not found'
     extend Cryal
     def self.call(routing, json) # rubocop:disable Metrics/AbcSize
-      user = Cryal::Account.first(username: json['username']) # user existed
+      account = Cryal::Account.first(username: json['username']) # user existed
       # raise error if user not found
-      not_found(routing, @err_message, 403) if user.nil?
+      not_found(routing, @err_message, 403) if account.nil?
       # password
-      jsonify = JSON.parse(user.password_hash)
+      jsonify = JSON.parse(account.password_hash)
       salt = Base64.strict_decode64(jsonify['salt'])
       checksum = jsonify['hash']
       extend KeyStretch
       check = Base64.strict_encode64(password_hash(salt, json['password']))
       not_found(routing, @err_message, 403) unless check == checksum
-      { message: "Welcome back to NaviTogether, #{json['username']}!", data: user.to_json }
+      account_and_token(account)
+      # { message: "Welcome back to NaviTogether, #{json['username']}!", data: user.to_json }
     end
+
+    def self.account_and_token(account)
+      {
+        type: 'authenticated_account',
+        attributes: {
+          account:,
+          auth_token: AuthToken.create(account)
+        }
+      }
+    end
+
   end
 end
