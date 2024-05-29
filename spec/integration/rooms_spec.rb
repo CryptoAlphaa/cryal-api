@@ -5,57 +5,6 @@
 
 require_relative '../spec_helper'
 
-# describe 'Test Room Model' do # rubocop:disable Metrics/BlockLength
-#   before do
-#     clear_db
-#     load_seed
-#     first_account = Cryal::Account.create(DATA[:accounts][0])
-    
-#     first_account.add_room(DATA[:rooms][0]) # create first room
-#     second_account = Cryal::Account.create(DATA[:accounts][1])
-#     second_room = second_account.add_room(DATA[:rooms][1]) # create second room
-    
-#     @account_data = DATA[:accounts][0]
-#     @req_header
-#   end
-
-#   describe 'HAPPY: Test GET' do
-#     it 'should get rooms for authorized user' do
-
-#       credentials = { username: @account_data['username'], password: @account_data['password'] }
-#       post 'api/v1/auth/authentication', credentials.to_json, @req_header
-#       # get data from the response
-#       auth = JSON.parse(last_response.body)['attributes']['auth_token']
-#       header 'AUTHORIZATION', "Bearer #{auth}"
-#       get 'api/v1/rooms'
-#       _(last_response.status).must_equal 200
-#       rooms = JSON.parse(last_response.body)
-#       _(rooms.length).must_equal 1
-#     end
-#   end
-
-#   # describe 'HAPPY: Test POST' do
-#   #   it 'should create a new room by a user' do
-#   #     # use the second seed to create a new room
-#   #     # but first we need to insert the user and target
-#   #     new_user = Cryal::Account.create(DATA[:accounts][1])
-#   #     account_id = new_user[:account_id]
-#   #     post "api/v1/accounts/#{account_id}/createroom", DATA[:rooms][1].to_json
-#   #     _(last_response.status).must_equal 201
-#   #     room = JSON.parse(last_response.body)
-#   #     _(room['data']).wont_be_nil
-#   #   end
-#   # end
-
-#   # describe 'SAD: Test POST' do
-#   #   it 'should return 404 if user does not exist' do
-#   #     post 'api/v1/accounts/2/createroom', {}.to_json
-#   #     _(last_response.status).must_equal 404
-#   #   end
-#   # end
-# end
-
-
 describe 'Test Room Handling' do
   include Rack::Test::Methods
 
@@ -142,7 +91,7 @@ describe 'Test Room Handling' do
       _(created['room_name']).must_equal @room_data['room_name']
     end
 
-    it 'SECURITY: should not create project with mass assignment' do
+    it 'SECURITY: should not create rooms with mass assignment' do
       bad_data = @room_data.clone
       bad_data['created_at'] = '1900-01-01'
 

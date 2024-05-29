@@ -8,6 +8,7 @@ Sequel.seed(:development) do
     create_user_rooms
     create_plans
     create_waypoints
+    puts "Database seeded!"
   end
 end
 

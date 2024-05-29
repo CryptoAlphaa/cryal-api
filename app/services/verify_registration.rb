@@ -12,7 +12,6 @@ module Cryal
     class EmailProviderError < StandardError; end
 
     def initialize(registration)
-      puts registration
       @registration = registration
     end
 
@@ -22,7 +21,6 @@ module Cryal
 
     def call
       raise(InvalidRegistration, 'Username exists') unless username_available?
-
       send_email_verification
     end
 
@@ -32,7 +30,9 @@ module Cryal
 
     def html_email
       <<~END_EMAIL
-        <H1>Cryal App Registration Received</H1>
+        <H1>Welcome to NaviTogether by Cryal</H1>
+        <p>A Web App that helps manage locations and path during your travels
+        with friends and family<p>
         <p>Please <a href=\"#{@registration[:verification_url]}\">click here</a>
         to validate your email.
         You will be asked to set a password to activate your account.</p>
@@ -56,7 +56,6 @@ module Cryal
     def send_email_verification
       res = HTTP.auth("Bearer #{mail_api_key}")
                 .post(mail_url, json: mail_json)
-      puts res.body
       raise EmailProviderError if res.status >= 300
     rescue EmailProviderError
       raise EmailProviderError

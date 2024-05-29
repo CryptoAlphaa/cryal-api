@@ -11,11 +11,8 @@ module Cryal
             # POST /api/v1/auth/register
             routing.is 'register' do
                 routing.post do
-                    puts "masuk"
                     json = JSON.parse(routing.body.read, symbolize_names: true)
-                    puts json
                     register = VerifyRegistration.new(json).call
-                    puts "email sent"
                     # register = Cryal::Register.call(routing, json)
                     response.status = 202
                     register.to_json

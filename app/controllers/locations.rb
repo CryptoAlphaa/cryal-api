@@ -20,10 +20,8 @@ module Cryal
 
                 # POST /api/v1/locations
                 routing.post do
-                    p "Auth Account: #{@auth_account}"
                     account = Account.first(username: @auth_account['username'])
                     json = JSON.parse(routing.body.read)
-                    p "JSON: #{json}"
                     output = Cryal::AccountService::Location::Create.call(routing, json, account.account_id)
                     response.status = 201
                     { message: 'Location saved', data: output }.to_json

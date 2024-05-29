@@ -3,75 +3,6 @@
 
 require_relative '../spec_helper'
 
-# describe 'Test Waypoints Model' do # rubocop:disable Metrics/BlockLength
-#   before do
-#     clear_db
-#     load_seed
-#   end
-
-#   describe 'HAPPY: Test GET' do
-#     it 'should get all waypoints for a plan' do
-#       user, plan = populate
-#       # make one waypoint
-#       plan.add_waypoint(DATA[:waypoints][0])
-#       account_id = user[:account_id]
-#       get "api/v1/accounts/#{account_id}/plans/#{plan[:plan_id]}/waypoints"
-#       _(last_response.status).must_equal 200
-#       waypoints = JSON.parse(last_response.body)
-#       _(waypoints.length).must_equal 1
-#     end
-#   end
-
-#   describe 'SAD: Test GET' do
-#     it 'should return 404 if plan not found' do
-#       user, = populate
-#       account_id = user[:account_id]
-#       get "api/v1/accounts/#{account_id}/plans/100/waypoints"
-#       _(last_response.status).must_equal 404
-#     end
-
-#     it 'should return 404 if user not found' do
-#       get 'api/v1/accounts/100/plans/100/waypoints'
-#       _(last_response.status).must_equal 404
-#     end
-#   end
-
-#   describe 'HAPPY: Test POST' do
-#     it 'should create a new waypoint for a plan' do
-#       user, plan = populate
-#       account_id = user[:account_id]
-#       plan_id = plan[:plan_id]
-#       post "api/v1/accounts/#{account_id}/plans/#{plan_id}/waypoints", DATA[:waypoints][1].to_json
-#       _(last_response.status).must_equal 201
-#       waypoint = JSON.parse(last_response.body)['data']
-#       _(waypoint['waypoint_id']).wont_be_nil
-#     end
-#   end
-
-#   describe 'SAD: Test POST' do
-#     it 'should return 404 if plan is not found' do
-#       user, = populate
-#       account_id = user[:account_id]
-#       post "api/v1/accounts/#{account_id}/plans/100/waypoints", DATA[:waypoints][1].to_json
-#       _(last_response.status).must_equal 404
-#     end
-
-#     it 'should return 404 if user is not found' do
-#       post 'api/v1/accounts/100/plans/100/waypoints', DATA[:waypoints][1].to_json
-#       _(last_response.status).must_equal 404
-#     end
-#   end
-# end
-
-# def populate
-#   first_user = Cryal::Account.create(DATA[:accounts][0])
-#   second_user = Cryal::Account.create(DATA[:accounts][1])
-#   room = first_user.add_room(DATA[:rooms][0])
-#   room_data = Cryal::Room.where(room_name: 'Meeting Room 1').first
-#   second_user.add_user_room({ room_id: room_data[:room_id], active: true })
-#   plan = room.add_plan(DATA[:plans][0])
-#   [second_user, plan]
-# end
 
 describe 'Test Plan Handling' do
   include Rack::Test::Methods
@@ -193,7 +124,7 @@ describe 'Test Plan Handling' do
       _(created['waypoint_name']).must_equal @waypoint_data['waypoint_name']
     end
 
-    it 'SAD: should not create plans in unauthorized room' do
+    it 'SAD: should not create waypoints in unauthorized room' do
       credentials = { username: @account_data['username'], password: @account_data['password'] }
       post 'api/v1/auth/authentication', credentials.to_json, @req_header
       # get data from the response
@@ -206,22 +137,20 @@ describe 'Test Plan Handling' do
       _(last_response.status).must_equal 404
     end
 
-    # it 'SECURITY: should not create project with mass assignment' do
-    # credentials = { username: @account_data['username'], password: @account_data['password'] }
-    #   post 'api/v1/auth/authentication', credentials.to_json, @req_header
-    #   # get data from the response
-    #   auth = JSON.parse(last_response.body)['attributes']['auth_token']
-    #   headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
-    #   package = @plans_data.clone
-    #   package['room_name'] = @room1.room_name
-    #   package['created_at'] = '1900-01-01'
-    #   body = package.to_json
+    it 'SECURITY: should not create waypoints with mass assignment' do
+    credentials = { username: @account_data['username'], password: @account_data['password'] }
+      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      # get data from the response
+      auth = JSON.parse(last_response.body)['attributes']['auth_token']
+      headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
+      package = @waypoint_data.clone
+      package['created_at'] = '1900-01-01'
+      body = package.to_json
 
-    #   post 'api/v1/plans/create_plan', body, headers
+      post "api/v1/plans/#{@plan1.plan_id}/waypoints", body, headers
 
-    #   _(last_response.status).must_equal 400
-    #   # _(last_response.headers['Location']).must_be_nil
-    # end
+      _(last_response.status).must_equal 400
+    end
   end
 end
 end

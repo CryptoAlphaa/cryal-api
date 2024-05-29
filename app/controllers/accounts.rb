@@ -3,14 +3,6 @@
 require 'roda'
 require_relative './app'
 
-            #   # GET /api/v1/accounts/[account_id] DONE
-            #   routing.get do
-            #     output = Cryal::AccountService::Account::FetchOne.call(routing, account_id)
-            #     response.status = 200
-            #     output.to_json
-            #   end
-            # end
-
 module Cryal
     # Web controller for Credence API
     class Api < Roda
@@ -20,7 +12,6 @@ module Cryal
             routing.on String do |account_id|
                 # GET /api/v1/accounts/account_id
                 routing.get do
-                    p routing
                     output = Cryal::AccountService::Account::FetchOne.call(routing, account_id)
                     response.status = 200
                     output.to_json
