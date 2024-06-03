@@ -12,7 +12,9 @@ module Cryal
             routing.on String do |account_id|
                 # GET /api/v1/accounts/account_id
                 routing.get do
-                    output = Cryal::AccountService::Account::FetchOne.call(routing, account_id)
+                    # puts Cryal::GetAccountQuery.call(requestor_id: "907e5590-b6cb-43c9-a9ab-18cb2ef06e9a", account_id: "907e5590-b6cb-43c9-a9ab-18cb2ef06e9a")
+                    # output = Cryal::AccountService::Account::FetchOne.call(routing, account_id)
+                    output = Cryal::GetAccountQuery.call(requestor_id: @auth_account, account_id: account_id)
                     response.status = 200
                     output.to_json
                 end
