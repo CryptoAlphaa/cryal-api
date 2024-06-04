@@ -1,46 +1,26 @@
 module Cryal
   # Policy to determine if an account can view a particular project
-  class ProjectPolicy
-    def initialize(account, project)
+  class RoomPolicy
+    def initialize(account, user_room)
       @account = account
-      @project = project
+      @user_room = user_room
     end
 
     def can_view?
-      account_is_owner? || account_is_collaborator?
+      is_admin?
     end
 
     # duplication is ok!
     def can_edit?
-      account_is_owner? || account_is_collaborator?
+      is_admin?
     end
 
     def can_delete?
-      account_is_owner?
+      is_admin?
     end
 
     def can_leave?
       account_is_collaborator?
-    end
-
-    def can_add_documents?
-      account_is_owner? || account_is_collaborator?
-    end
-
-    def can_remove_documents?
-      account_is_owner? || account_is_collaborator?
-    end
-
-    def can_add_collaborators?
-      account_is_owner?
-    end
-
-    def can_remove_collaborators?
-      account_is_owner?
-    end
-
-    def can_collaborate?
-      not (account_is_owner? or account_is_collaborator?)
     end
 
     def summary
@@ -49,22 +29,20 @@ module Cryal
         can_edit: can_edit?,
         can_delete: can_delete?,
         can_leave: can_leave?,
-        can_add_documents: can_add_documents?,
-        can_delete_documents: can_remove_documents?,
-        can_add_collaborators: can_add_collaborators?,
-        can_remove_collaborators: can_remove_collaborators?,
-        can_collaborate: can_collaborate?
+        is_member: is_member?,
+        is_admin: is_admin?
       }
     end
 
     private
 
-    def account_is_owner?
-      @project.owner == @account
+    def is_member?
+      @user_room["active"] == true
     end
 
-    def account_is_collaborator?
-      @project.collaborators.include?(@account)
+    def is_admin?
+      @user_room["authority"] == 'admin'
     end
+
   end
 end

@@ -23,13 +23,18 @@ class AuthToken
   # Extract information from a token
   def initialize(token)
     @token = token
+    # puts "token", @token
     contents = AuthToken.detokenize(@token)
     @expiration = contents['exp']
+    # puts "expiration", @expiration
     @payload = contents['payload']
+    # puts "payload", @payload
   end
 
   # Check if token is expired
   def expired?
+    puts "now", Time.now
+    puts "expired", Time.at(@expiration)
     Time.now > Time.at(@expiration)
   rescue StandardError
     raise InvalidTokenError
@@ -40,6 +45,8 @@ class AuthToken
 
   # Extract data from token
   def payload
+    # puts "expired" if expired?
+    # puts "notr expired" unless expired?
     expired? ? raise(ExpiredTokenError) : @payload
   end
 

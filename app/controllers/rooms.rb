@@ -19,7 +19,7 @@ module Cryal
                 { message: 'Success', data: output }.to_json
             end
 
-        # POST /api/v1/rooms/createroom
+            # POST /api/v1/rooms/createroom
             routing.on 'createroom' do
                 routing.post do
                     account = Account.first(username: @auth_account['username'])
@@ -42,6 +42,19 @@ module Cryal
                     { message: 'Room Join Successfully', data: output }.to_json
                 rescue StandardError => e
                     log_and_handle_error(routing, json, e)
+                end
+            end
+
+            # GET /api/v1/rooms/[roomid]
+            routing.on String do |roomid|
+                routing.get do
+                    account = Account.first(username: @auth_account['username'])
+                    puts account
+                    json = JSON.parse(routing.body.read)
+                    puts json
+                    output = Cryal::AccountService::Room::FetchOne.call(routing, room_id, account)
+
+                    output
                 end
             end
         end
