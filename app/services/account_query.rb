@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Cryal
   class GetAccountQuery
     class ForbiddenError < StandardError

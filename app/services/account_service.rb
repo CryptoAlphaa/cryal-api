@@ -6,21 +6,25 @@ module Cryal
     module Location
       # Fetch all locations belonging to a user
       class FetchAll
-        extend Cryal
-        def self.call(routing, account_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          user.locations
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed access this accounts location'
+          end
+        end
+
+        def self.call(requestor:)
+            locations = requestor.locations
+            policy = LocationPolicy.new(requestor, locations)
+            policy.can_view? ? locations : raise(ForbiddenError)
         end
       end
 
       # Create location
       class Create
         extend Cryal
-        def self.call(routing, json, account_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          user.add_location(json)
+        def self.call(routing, json, account)
+          not_found(routing, 'User not found') if account.nil?
+          account.add_location(json)
         end
       end
     end
@@ -28,12 +32,38 @@ module Cryal
     module Room
       # Fetch all rooms where the user is.
       class FetchAll
-        extend Cryal
-        def self.call(routing, account_id)
-          output = Cryal::User_Room.where(account_id:)
-          output = output.all
-          not_found(routing, 'DB Error') if output.nil? # ga jalan
-          output
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed access all of the room'
+          end
+        end
+
+        def self.call(requestor:)
+          all_user_rooms = requestor.user_rooms
+          all_rooms = all_user_rooms.map(&:room)
+          policy = RoomPolicy.new(requestor, all_user_rooms)
+          policy.can_view? ? all_rooms : raise(ForbiddenError)
+        end
+      end
+      
+      class FetchOne
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed access this room!'
+          end
+        end
+
+        class NotFoundError < StandardError
+          def message
+            'Room is not found!'
+          end
+        end
+
+        def self.call(requestor_id, room_id)
+          room = Cryal::Room.first(room_id:)
+          return raise(NotFoundError) if room.nil?
+          policy = RoomPolicy.new(requestor_id, room_id)
+          policy.can_view? ? room : raise(ForbiddenError)
         end
       end
 
@@ -51,96 +81,95 @@ module Cryal
       class Join
         extend Cryal
 
-        # def self.create_package(room_json)
-        #   room_id = room_json['room_id']
-        #   room_password = room_json['room_password']
-        #   authority = room_json['authority']
-        #   package = {
-        #     'room_id' => room_id,
-        #     'room_password' => room_password,
-        #     'active' => true
-        #   }
-        #   package['authority'] = authority if authority
-        #   package
-        # end
-
-        def self.verify_room(room_id, room_password)
-          room = Cryal::Room.first(room_id:)
-          return false if room.nil?
-
-          jsonify = JSON.parse(room.room_password_hash)
-          salt = Base64.strict_decode64(jsonify['salt'])
-          checksum = jsonify['hash']
-          extend KeyStretch
-          check = Base64.strict_encode64(password_hash(salt, room_password))
-          check == checksum
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to join this room!'
+          end
         end
 
-        def self.call(routing, room_json, account_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found', 404) if user.nil?
-          prepared_package = room_json # create_package(room_json)
-          # set_allowed_columns :active, :room_id, :account_id, :authority
-          not_found(routing, 'Room not found or password is wrong', 404) unless verify_room(
-            prepared_package['room_id'], prepared_package['room_password']
-          )
-          prepared_package.delete('room_password')
-          user.add_user_room(prepared_package)
+        def self.call(requestor:, join_request:)
+          prepared_package = join_request
+          policy = RoomPolicy.new(requestor, join_request)
+          
+          if policy.can_join?(join_request)
+            prepared_package.delete('room_password')
+            created_room = requestor.add_user_room(prepared_package)  
+          else
+            raise(ForbiddenError)
+          end
+            created_room
         end
-
-        # def self.call(routing, json)
-        #   user = Cryal::Account.first(username: json['username']) # user existed
-        #   # raise error if user not found
-        #   not_found(routing, @err_message, 403) if user.nil?
-        #   # password
-        #   jsonify = JSON.parse(user.password_hash)
-        #   salt = Base64.strict_decode64(jsonify['salt'])
-        #   checksum = jsonify['hash']
-        #   extend KeyStretch
-        #   check = Base64.strict_encode64(password_hash(salt, json['password']))
-        #   not_found(routing, @err_message, 403) unless check == checksum
-        #   { message: "Welcome back to NaviTogether, #{json['username']}!", data: user.to_json }
-        # end
       end
     end
 
     module Plans
       # Fetch plans
-      class FetchOne
+      class Fetch
         extend Cryal
-        def self.call(routing, account_id) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          search = routing.params['room_name']
-          room = Cryal::Room.first(room_name: search)
-          not_found(routing, 'Room not found') if room.nil?
-          user_room = Cryal::User_Room.first(account_id: user.account_id, room_id: room.room_id)
-          not_found(routing, 'User not in the room') if user_room.nil?
-          all_plans = room.plans
-          # Extract only the plan_name and plan_description
-          output = []
-          all_plans.each do |plan|
-            output.push(plan.to_json)
+
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed access this room!'
           end
-          all_plans
+        end
+
+        class PlansNotFoundError < StandardError
+          def message
+            'Plans not found!'
+          end
+        end
+
+        def self.call(requestor, room_id, plan_name=nil)
+          user_room = Cryal::User_Room.first(account_id: requestor.account_id, room_id: room_id, active: true)
+          return raise(ForbiddenError) if user_room.nil?
+          policy = RoomPolicy.new(requestor, user_room)
+          raise ForbiddenError unless policy.can_view?
+          if plan_name.nil?
+            return raise(PlansNotFoundError) if user_room.room.plans.nil?
+            return user_room.room.plans
+          else
+            found = Cryal::Plan.first(room_id: room_id, plan_name: plan_name)
+            found.nil? ? raise(PlansNotFoundError) : found
+          end
         end
       end
 
       # Create plans
       class Create
         extend Cryal
-        def self.call(routing, plan, account_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          room = Cryal::Room.first(room_name: plan['room_name'])
-          not_found(routing, 'Room not found') if room.nil?
-          user_room = Cryal::User_Room.first(account_id: user.account_id, room_id: room.room_id)
-          not_found(routing, 'User not in the room') if user_room.nil?
-          plan.delete('room_name')
-          room.add_plan(plan)
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to create a plan in this room'
+          end
+        end
+
+        class NotFoundError < StandardError
+          def message
+            'Room is not found'
+          end
+        end
+        
+        def self.call(requestor, room_id, plan_request)
+          room = Cryal::Room.first(room_id: room_id)
+          return raise(NotFoundError) if room.nil?
+          user_room = Cryal::User_Room.first(account_id: requestor.account_id, room_id: room.room_id)
+          return raise(ForbiddenError) if user_room.nil?
+          policy = RoomPolicy.new(requestor, user_room)
+          raise ForbiddenError unless policy.can_create_plan?
+          room.add_plan(plan_request)
         end
       end
     end
+
+
+          # not_found(routing, 'User not found') if user.nil?
+          # room = Cryal::Room.first(room_name: plan['room_name'])
+          # not_found(routing, 'Room not found') if room.nil?
+          # user_room = Cryal::User_Room.first(account_id: user.account_id, room_id: room.room_id)
+          # not_found(routing, 'User not in the room') if user_room.nil?
+          # plan.delete('room_name')
+          # room.add_plan(plan)
+          # end
 
     # Waypoint service
     module Waypoint
@@ -196,13 +225,24 @@ module Cryal
     # User service
     module Account
       # Create a new user
-      class FetchOne
+      class FetchAccount
         extend Cryal
-        def self.call(routing, account_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          user
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed access this account'
+          end
         end
+
+        def self.call(requestor_id, account_id)
+          account = Cryal::Account.first(account_id:)
+          policy = AccountPolicy.new(requestor_id, account)
+          policy.can_view? ? account: raise(ForbiddenError)
+        end
+        # def self.call(routing, account_id)
+        #   user = Cryal::Account.first(account_id:)
+        #   not_found(routing, 'User not found') if user.nil?
+        #   user
+        # end
       end
     end
   end

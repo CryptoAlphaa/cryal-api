@@ -17,7 +17,12 @@ describe 'Test Account Handling' do
       account_data = DATA[:accounts][1]
       account = Cryal::Account.create(account_data)
 
-      get "/api/v1/accounts/#{account.account_id}"
+      credentials = { username: account_data['username'], password: account_data['password'] }
+      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      # get data from the response
+      auth = JSON.parse(last_response.body)['attributes']['auth_token']
+      header 'AUTHORIZATION', "Bearer #{auth}"
+      get "/api/v1/accounts?account_id=#{account.account_id}"
       _(last_response.status).must_equal 200
 
       attributes = JSON.parse(last_response.body)

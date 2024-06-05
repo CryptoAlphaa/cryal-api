@@ -23,6 +23,7 @@ module Cryal
 
       # Connect and make the database accessible to other classes
       db_url = ENV.delete('DATABASE_URL')
+      puts "DB URL: #{db_url}"
       DB = Sequel.connect("#{db_url}?encoding=utf8") # rubocop:disable Lint/ConstantDefinitionInBlock
       def self.DB = DB # rubocop:disable Naming/MethodName
 
