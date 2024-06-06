@@ -172,16 +172,6 @@ module Cryal
       end
     end
 
-
-          # not_found(routing, 'User not found') if user.nil?
-          # room = Cryal::Room.first(room_name: plan['room_name'])
-          # not_found(routing, 'Room not found') if room.nil?
-          # user_room = Cryal::User_Room.first(account_id: user.account_id, room_id: room.room_id)
-          # not_found(routing, 'User not in the room') if user_room.nil?
-          # plan.delete('room_name')
-          # room.add_plan(plan)
-          # end
-
     # Waypoint service
     module Waypoint
       # Create waypoints
@@ -210,22 +200,6 @@ module Cryal
           waypoint_request[:waypoint_number] = last_waypoint_number + 1
           plan.add_waypoint(waypoint_request)
         end
-        # def self.call(routing, json, account_id, plan_id)
-        #   user = Cryal::Account.first(account_id:)
-        #   not_found(routing, 'User not found') if user.nil?
-        #   plan = Cryal::Plan.first(plan_id:)
-        #   not_found(routing, 'Plan not found') if plan.nil?
-        #   room = Cryal::Room.first(room_id: plan.room_id)
-        #   not_found(routing, 'Room not found') if room.nil?
-        #   user_room = Cryal::User_Room.first(account_id: user.account_id, room_id: room.room_id, active: true)
-        #   not_found(routing, 'User not in the room') if user_room.nil?
-        #   last_waypoint_number = Cryal::Waypoint.where(plan_id: plan.plan_id).max(:waypoint_number) || 0
-        #   new_waypoint_number = last_waypoint_number + 1
-        #   # delete waypoint number field if it exists
-        #   json.delete('waypoint_number')
-        #   json[:waypoint_number] = new_waypoint_number
-        #   plan.add_waypoint(json)
-        # end
       end
 
       # Fetch all waypoints
@@ -257,13 +231,6 @@ module Cryal
             found.nil? ? raise(NotFoundError) : found
           end
         end
-        # def self.call(routing, account_id, plan_id)
-        #   user = Cryal::Account.first(account_id:)
-        #   not_found(routing, 'User not found') if user.nil?
-        #   plan = Cryal::Plan.first(plan_id:)
-        #   not_found(routing, 'Plan not found') if plan.nil?
-        #   plan.waypoints
-        # end
       end
     end
 
@@ -283,11 +250,6 @@ module Cryal
           policy = AccountPolicy.new(requestor_id, account)
           policy.can_view? ? account: raise(ForbiddenError)
         end
-        # def self.call(routing, account_id)
-        #   user = Cryal::Account.first(account_id:)
-        #   not_found(routing, 'User not found') if user.nil?
-        #   user
-        # end
       end
     end
   end
