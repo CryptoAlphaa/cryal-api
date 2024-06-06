@@ -86,7 +86,6 @@ describe 'Test Room Handling' do
       body = @room_data.to_json
 
       post 'api/v1/rooms/createroom', body, headers
-      p "last_response: #{last_response.body}"
       _(last_response.status).must_equal 201
       # _(last_response.headers['Location'].size).must_be :>, 0
 

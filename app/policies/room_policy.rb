@@ -43,6 +43,18 @@ module Cryal
       is_member?
     end
 
+    def can_create_waypoint?
+      is_member?
+    end
+
+    def can_edit_waypoint?
+      is_member?
+    end
+
+    def can_view_waypoint?
+      is_member?
+    end
+
     def can_join?(join_request)
       verify_request(join_request)
     end
@@ -79,7 +91,7 @@ module Cryal
       @user_room["authority"] == 'admin'
     end
 
-    def self.verify_request(join_request)
+    def verify_request(join_request)
       room = Cryal::Room.first(room_id: join_request['room_id'])
       return false if room.nil?
       jsonify = JSON.parse(room.room_password_hash)

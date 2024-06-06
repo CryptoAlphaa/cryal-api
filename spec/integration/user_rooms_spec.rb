@@ -110,7 +110,7 @@ describe 'Test UserRoom Handling' do
       body = { room_id: @generated_room.room_id, room_password: "bad_password", authority: "member" }.to_json
 
       post 'api/v1/rooms/joinroom', body, headers
-      _(last_response.status).must_equal 404
+      _(last_response.status).must_equal 403
     end
 
     it 'SECURITY: should not create user rooms with mass assignment' do

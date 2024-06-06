@@ -62,7 +62,7 @@ module Cryal
         def self.call(requestor_id, room_id)
           room = Cryal::Room.first(room_id:)
           return raise(NotFoundError) if room.nil?
-          policy = RoomPolicy.new(requestor_id, room_id)
+          policy = RoomPolicy.new(requestor_id, room.user_rooms)
           policy.can_view? ? room : raise(ForbiddenError)
         end
       end
@@ -70,11 +70,17 @@ module Cryal
       # Create room
       class Create
         extend Cryal
-        def self.call(routing, json, account_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          user.add_room(json)
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to create a room!'
+          end
         end
+
+        def self.call(requestor, room_request)
+          room = requestor.add_room(room_request)
+          room
+        end
+
       end
 
       # Join room
@@ -87,10 +93,15 @@ module Cryal
           end
         end
 
-        def self.call(requestor:, join_request:)
+        class NotFoundError < StandardError
+          def message
+            'Room is not found!'
+          end
+        end
+
+        def self.call(requestor, join_request)
           prepared_package = join_request
           policy = RoomPolicy.new(requestor, join_request)
-          
           if policy.can_join?(join_request)
             prepared_package.delete('room_password')
             created_room = requestor.add_user_room(prepared_package)  
@@ -176,49 +187,83 @@ module Cryal
       # Create waypoints
       class Create
         extend Cryal
-        def self.call(routing, json, account_id, plan_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          plan = Cryal::Plan.first(plan_id:)
-          not_found(routing, 'Plan not found') if plan.nil?
-          room = Cryal::Room.first(room_id: plan.room_id)
-          not_found(routing, 'Room not found') if room.nil?
-          user_room = Cryal::User_Room.first(account_id: user.account_id, room_id: room.room_id, active: true)
-          not_found(routing, 'User not in the room') if user_room.nil?
-          last_waypoint_number = Cryal::Waypoint.where(plan_id: plan.plan_id).max(:waypoint_number) || 0
-          new_waypoint_number = last_waypoint_number + 1
-          # delete waypoint number field if it exists
-          json.delete('waypoint_number')
-          json[:waypoint_number] = new_waypoint_number
-          plan.add_waypoint(json)
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to create a waypoint in this plan!'
+          end
         end
+
+        class NotFoundError < StandardError
+          def message
+            'Plan is not found!'
+          end
+        end
+
+        def self.call(requestor, room_id, plan_id, waypoint_request)
+          plan = Cryal::Plan.first(plan_id: plan_id)
+          return raise(NotFoundError) if plan.nil?
+          user_room = Cryal::User_Room.first(account_id: requestor.account_id, room_id: room_id)
+          return raise(ForbiddenError) if user_room.nil?
+          policy = RoomPolicy.new(requestor, user_room)
+          raise ForbiddenError unless policy.can_create_waypoint?
+          last_waypoint_number = Cryal::Waypoint.where(plan_id: plan.plan_id).max(:waypoint_number) || 0
+          waypoint_request[:waypoint_number] = last_waypoint_number + 1
+          plan.add_waypoint(waypoint_request)
+        end
+        # def self.call(routing, json, account_id, plan_id)
+        #   user = Cryal::Account.first(account_id:)
+        #   not_found(routing, 'User not found') if user.nil?
+        #   plan = Cryal::Plan.first(plan_id:)
+        #   not_found(routing, 'Plan not found') if plan.nil?
+        #   room = Cryal::Room.first(room_id: plan.room_id)
+        #   not_found(routing, 'Room not found') if room.nil?
+        #   user_room = Cryal::User_Room.first(account_id: user.account_id, room_id: room.room_id, active: true)
+        #   not_found(routing, 'User not in the room') if user_room.nil?
+        #   last_waypoint_number = Cryal::Waypoint.where(plan_id: plan.plan_id).max(:waypoint_number) || 0
+        #   new_waypoint_number = last_waypoint_number + 1
+        #   # delete waypoint number field if it exists
+        #   json.delete('waypoint_number')
+        #   json[:waypoint_number] = new_waypoint_number
+        #   plan.add_waypoint(json)
+        # end
       end
 
       # Fetch all waypoints
-      class FetchAll
+      class Fetch
         extend Cryal
-        def self.call(routing, account_id, plan_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          plan = Cryal::Plan.first(plan_id:)
-          not_found(routing, 'Plan not found') if plan.nil?
-          plan.waypoints
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to create a waypoint in this plan!'
+          end
         end
-      end
 
-      # Fetch one waypoint
-      class FetchOne
-        extend Cryal
-        def self.call(routing, account_id, plan_id)
-          user = Cryal::Account.first(account_id:)
-          not_found(routing, 'User not found') if user.nil?
-          plan = Cryal::Plan.first(plan_id:)
-          not_found(routing, 'Plan not found') if plan.nil?
-          waypoint_number = routing.params['waypoint_number']
-          waypoint = Cryal::Waypoint.first(plan_id: plan.plan_id, waypoint_number: waypoint_number)
-          not_found(routing, 'Waypoint not found') if waypoint.nil?
-          waypoint
+        class NotFoundError < StandardError
+          def message
+            'Plan is not found!'
+          end
         end
+
+        def self.call(requestor, room_id, plan_id, waypoint_number=nil)
+          plan = Cryal::Plan.first(plan_id: plan_id)
+          return raise(NotFoundError) if plan.nil?
+          user_room = Cryal::User_Room.first(account_id: requestor.account_id, room_id: room_id)
+          return raise(ForbiddenError) if user_room.nil?
+          policy = RoomPolicy.new(requestor, user_room)
+          raise ForbiddenError unless  policy.can_view_waypoint?
+          if waypoint_number.nil?
+            return plan.waypoints
+          else
+            found = Cryal::Waypoint.first(plan_id: plan_id, waypoint_number: waypoint_number)
+            found.nil? ? raise(NotFoundError) : found
+          end
+        end
+        # def self.call(routing, account_id, plan_id)
+        #   user = Cryal::Account.first(account_id:)
+        #   not_found(routing, 'User not found') if user.nil?
+        #   plan = Cryal::Plan.first(plan_id:)
+        #   not_found(routing, 'Plan not found') if plan.nil?
+        #   plan.waypoints
+        # end
       end
     end
 
