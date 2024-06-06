@@ -40,7 +40,7 @@ module Cryal
         {
           room_id:,
           room_name:,
-          room_description: room_description_secure,
+          room_description:,
           created_at:,
           updated_at:
         },

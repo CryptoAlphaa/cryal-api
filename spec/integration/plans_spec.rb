@@ -29,7 +29,7 @@ describe 'Test Plan Handling' do
 
       end
 
-      it 'HAPPY: should get list of all plans in a certain room' do
+      it 'HAPPY: should get list all plans and single plan in a certain room' do
         # Cryal::Authenticate.call(routing, json)
         credentials = { username: @account_data['username'], password: @account_data['password'] }
         post 'api/v1/auth/authentication', credentials.to_json, @req_header
@@ -37,30 +37,38 @@ describe 'Test Plan Handling' do
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
 
-        get "api/v1/plans/fetch?room_name=#{@room1.room_name}"
+        get "api/v1/rooms/#{@room1.room_id}/plans"
+        _(last_response.status).must_equal 200
+        result = JSON.parse(last_response.body)['data']
+        _(result.length).must_equal 2
+
+        # this is for single plans
+        # get_string = "api/v1/rooms/#{@room1.room_id}/plans?plan_name=#{DATA[:plans][0]['plan_name']}"
+        get "api/v1/rooms/#{@room1.room_id}/plans?plan_name=#{DATA[:plans][0]['plan_name']}"
         _(last_response.status).must_equal 200
         result = JSON.parse(last_response.body)
         _(result.length).must_equal 2
 
-        get "api/v1/plans/fetch?room_name=#{@room2.room_name}"
+        get "api/v1/rooms/#{@room2.room_id}/plans"
         _(last_response.status).must_equal 200
         result = JSON.parse(last_response.body)
-        _(result.length).must_equal 1
+        _(result.length).must_equal 2
+        
       end
 
-      it 'SAD: should not get plans for wrong room name' do
+      it 'SAD: should not get plans for wrong room id' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
         post 'api/v1/auth/authentication', credentials.to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
-        get 'api/v1/plans/fetch?room_name=LetsGuessThisRoomName'
-        _(last_response.status).must_equal 404
+        get "api/v1/rooms/12345/plans"
+        _(last_response.status).must_equal 403
       end
 
       it 'BAD: should not process for unauthorized account' do
         header 'AUTHORIZATION', 'Bearer bad_token'
-        get 'api/v1/plans/fetch?room_name=Meeting Room 1'
+        get "api/v1/rooms/#{@room2.room_id}/plans?plan_name=SummerEscape"
         _(last_response.status).must_equal 403
 
         result = JSON.parse(last_response.body)
@@ -73,7 +81,8 @@ describe 'Test Plan Handling' do
       # get data from the response
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       header 'AUTHORIZATION', "Bearer #{auth}"
-      get 'api/v1/plans/fetch?room_name=Meeting Room 1\' OR \'1\' = \'1'
+      get "api/v1/rooms/#{@room1.room_id}/plans?plan_name=1 OR 1 = 1;"
+      # p "Last response body sql inject: #{last_response.body}"
       # deliberately not reporting error -- don't give attacker information
       _(last_response.status).must_equal 404
       _(last_response.body['data']).must_be_nil
@@ -105,11 +114,9 @@ describe 'Test Plan Handling' do
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
       package = @plans_data.clone
-      package['room_name'] = @room1.room_name
       body = package.to_json
 
-      post 'api/v1/plans/create_plan', body, headers
-      # p "last_response.body: #{last_response.body}"
+      post "api/v1/rooms/#{@room1.room_id}/plans", body, headers
       _(last_response.status).must_equal 201
      
       # _(last_response.headers['Location'].size).must_be :>, 0
@@ -128,11 +135,10 @@ describe 'Test Plan Handling' do
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
       package = @plans_data.clone
-      package['room_name'] = @room2.room_name
       body = package.to_json
 
-      post 'api/v1/plans/create_plan', body, headers
-      _(last_response.status).must_equal 404
+      post "api/v1/rooms/#{@room2.room_id}/plans", body, headers
+      _(last_response.status).must_equal 403
     end
 
     it 'SECURITY: should not create plans with mass assignment' do
@@ -146,7 +152,7 @@ describe 'Test Plan Handling' do
       package['created_at'] = '1900-01-01'
       body = package.to_json
 
-      post 'api/v1/plans/create_plan', body, headers
+      post "api/v1/rooms/#{@room1.room_id}/plans", body, headers
 
       _(last_response.status).must_equal 400
       # _(last_response.headers['Location']).must_be_nil

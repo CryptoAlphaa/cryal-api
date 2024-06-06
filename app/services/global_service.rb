@@ -34,7 +34,7 @@ module Cryal
       # Fetch a specific room
       class FetchOne
         extend Cryal
-        def self.call(routing, room_id)
+        def self.call(routing, room_id, account)
           output = Cryal::Room.first(room_id:)
           not_found(routing, 'Room not found') if output.nil?
           output

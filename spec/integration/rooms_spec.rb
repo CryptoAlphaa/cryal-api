@@ -54,7 +54,12 @@ describe 'Test Room Handling' do
       end
 
     it 'SECURITY: should prevent basic SQL injection targeting IDs' do
-      get 'api/v1/rooms/2%20or%20id%3E0'
+      credentials = { username: @account_data['username'], password: @account_data['password'] }
+      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      # get data from the response
+      auth = JSON.parse(last_response.body)['attributes']['auth_token']
+      header 'AUTHORIZATION', "Bearer #{auth}"
+      get 'api/v1/rooms?room_id=1%3BDELETE+FROM+rooms'
       # deliberately not reporting error -- don't give attacker information
       _(last_response.status).must_equal 404
       _(last_response.body['data']).must_be_nil
@@ -105,7 +110,7 @@ describe 'Test Room Handling' do
       post 'api/v1/rooms/createroom', body, headers
 
       _(last_response.status).must_equal 400
-      # _(last_response.headers['Location']).must_be_nil
+      _(last_response.headers['Location']).must_be_nil
     end
   end
 end

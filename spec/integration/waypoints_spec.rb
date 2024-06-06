@@ -40,15 +40,20 @@ describe 'Test Plan Handling' do
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
 
-        get "api/v1/plans/#{@r1_plan1.plan_id}/waypoints"
+        get "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints"
         _(last_response.status).must_equal 200
         result = JSON.parse(last_response.body)
         _(result.length).must_equal 2
 
-        get "api/v1/plans/#{@r2_plan1.plan_id}/waypoints"
+        get "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints?waypoint_number=1"
         _(last_response.status).must_equal 200
         result = JSON.parse(last_response.body)
-        _(result.length).must_equal 1
+        _(result.length).must_equal 2
+
+        get "api/v1/rooms/#{@room2.room_id}/plans/#{@r2_plan1.plan_id}/waypoints"
+        _(last_response.status).must_equal 200
+        result = JSON.parse(last_response.body)
+        _(result['data'].length).must_equal 1
       end
 
       it 'SAD: should not get waypoints for wrong plan' do
@@ -57,13 +62,14 @@ describe 'Test Plan Handling' do
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
-        get "api/v1/plans/1212313/waypoints"
+
+        get "api/v1/rooms/#{@room1.room_id}/plans/12312312314/waypoints"
         _(last_response.status).must_equal 404
       end
 
       it 'BAD: should not process for unauthorized account' do
         header 'AUTHORIZATION', 'Bearer bad_token'
-        get "api/v1/plans/#{@r2_plan1.plan_id}/waypoints"
+        get "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints"
         _(last_response.status).must_equal 403
 
         result = JSON.parse(last_response.body)
@@ -76,7 +82,7 @@ describe 'Test Plan Handling' do
       # get data from the response
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       header 'AUTHORIZATION', "Bearer #{auth}"
-      get "api/v1/plans/#{@r1_plan1.plan_id}/waypoint?waypoint_number=1\' OR \'1\' = \'1"
+      get "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints?waypoint_number=1\' OR \'1\' = \'1"
       # deliberately not reporting error -- don't give attacker information
       _(last_response.status).must_equal 404
       _(last_response.body['data']).must_be_nil
@@ -111,7 +117,8 @@ describe 'Test Plan Handling' do
       package = @waypoint_data.clone
       body = package.to_json
 
-      post "api/v1/plans/#{@plan1.plan_id}/waypoints", body, headers
+      post "api/v1/rooms/#{@room1.room_id}/plans/#{@plan1.plan_id}/waypoints", body, headers
+      # post "api/v1/plans/#{@plan1.plan_id}/waypoints", body, headers
       # p "last_response.body: #{last_response.body}"
       _(last_response.status).must_equal 201
      
@@ -133,8 +140,8 @@ describe 'Test Plan Handling' do
       package = @plans_data.clone
       body = package.to_json
 
-      post "api/v1/plans/#{@plan2.plan_id}/waypoints", body, headers
-      _(last_response.status).must_equal 404
+      post "api/v1/rooms/#{@room2.room_id}/plans/#{@plan2.plan_id}/waypoints", body, headers
+      _(last_response.status).must_equal 403
     end
 
     it 'SECURITY: should not create waypoints with mass assignment' do
@@ -147,7 +154,7 @@ describe 'Test Plan Handling' do
       package['created_at'] = '1900-01-01'
       body = package.to_json
 
-      post "api/v1/plans/#{@plan1.plan_id}/waypoints", body, headers
+      post "api/v1/rooms/#{@room1.room_id}/plans/#{@plan1.plan_id}/waypoints", body, headers
 
       _(last_response.status).must_equal 400
     end

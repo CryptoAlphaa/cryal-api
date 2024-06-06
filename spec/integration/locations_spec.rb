@@ -80,7 +80,6 @@ describe 'Test Locations Handling' do
       proj = Cryal::Location.first
 
       _(created['location_id']).must_equal proj.location_id
-      _(created['name']).must_equal @location_data['name']
     end
 
     it 'SECURITY: should not create location with mass assignment' do

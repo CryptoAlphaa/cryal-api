@@ -24,6 +24,8 @@ module Cryal
                 routing.post do
                     json = JSON.parse(routing.body.read)
                     authenticate = Cryal::Authenticate.call(routing, json)
+                    # @auth_account = JSON.parse(authenticate[:attributes].to_json)["account"]
+                    # puts auth_account
                     response.status = 200
                     authenticate.to_json
                 end
