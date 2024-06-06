@@ -33,9 +33,10 @@ gem 'rubocop'
 # Database
 gem 'hirb', '~>0.7'
 gem 'sequel', '~>5.67'
-# group :production do
-#   gem 'pg'
-# end
+
+group :production do
+  gem 'pg'
+end
 
 group :development, :test do
   gem 'sequel-seed'
