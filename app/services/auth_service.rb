@@ -5,7 +5,7 @@ module Cryal
   module Authenticate
     @err_message = 'User or Password not found'
     extend Cryal
-    def self.call(routing, json) # rubocop:disable Metrics/AbcSize
+    def self.call(routing, json)
       account = Cryal::Account.first(username: json['username']) # user existed
       # raise error if user not found
       not_found(routing, @err_message, 403) if account.nil?
@@ -28,6 +28,5 @@ module Cryal
         }
       }
     end
-
   end
 end

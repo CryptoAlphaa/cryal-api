@@ -4,10 +4,10 @@ source 'https://rubygems.org'
 ruby File.read('.ruby-version').strip
 
 # Web API
+gem 'http'
 gem 'json'
 gem 'puma', '~>6.1'
 gem 'roda', '~>3.1'
-gem 'http'
 
 # Security
 gem 'base64'

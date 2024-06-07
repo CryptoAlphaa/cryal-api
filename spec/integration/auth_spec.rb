@@ -2,7 +2,7 @@
 
 require_relative '../spec_helper'
 
-describe 'Test Authentication Routes' do
+describe 'Test Authentication Routes' do # rubocop:disable Metrics/BlockLength
   include Rack::Test::Methods
 
   before do
@@ -22,7 +22,7 @@ describe 'Test Authentication Routes' do
                       password: @account_data['password'] }
       post 'api/v1/auth/authentication', credentials.to_json, @req_header
       auth_account = JSON.parse(last_response.body)
-      
+
       account = auth_account['attributes']['account']
       _(last_response.status).must_equal 200
       _(account['username']).must_equal(@account_data['username'])

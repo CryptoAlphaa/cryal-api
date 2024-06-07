@@ -7,19 +7,19 @@ class SecureDB
   extend Securable
   class NoDbKeyError < StandardError; end
 
-    # Encrypt or else return nil if data is nil
-    def self.encrypt(plaintext)
-      return nil unless plaintext
+  # Encrypt or else return nil if data is nil
+  def self.encrypt(plaintext)
+    return nil unless plaintext
 
-      ciphertext = base_encrypt(plaintext)
-      Base64.strict_encode64(ciphertext)
-    end
-
-    # Decrypt or else return nil if database value is nil already
-    def self.decrypt(ciphertext64)
-      return nil unless ciphertext64
-
-      ciphertext = Base64.strict_decode64(ciphertext64)
-      base_decrypt(ciphertext)
-    end
+    ciphertext = base_encrypt(plaintext)
+    Base64.strict_encode64(ciphertext)
   end
+
+  # Decrypt or else return nil if database value is nil already
+  def self.decrypt(ciphertext64)
+    return nil unless ciphertext64
+
+    ciphertext = Base64.strict_decode64(ciphertext64)
+    base_decrypt(ciphertext)
+  end
+end

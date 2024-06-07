@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Policy to determine if account can view a project
 class AccountPolicy
   def initialize(requestor_id, account_id)

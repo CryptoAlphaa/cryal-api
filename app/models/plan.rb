@@ -26,7 +26,7 @@ module Cryal
       self.plan_description_secure = SecureDB.encrypt(plaintext)
     end
 
-    def to_json(options = {})
+    def to_json(options = {}) # rubocop:disable Metrics/MethodLength
       JSON(
         {
           plan_id:,

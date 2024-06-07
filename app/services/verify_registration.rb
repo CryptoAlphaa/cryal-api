@@ -21,6 +21,7 @@ module Cryal
 
     def call
       raise(InvalidRegistration, 'Username exists') unless username_available?
+
       send_email_verification
     end
 
