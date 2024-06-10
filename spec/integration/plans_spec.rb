@@ -17,10 +17,20 @@ describe 'Test Plan Handling' do
       before do
         @account_data = DATA[:accounts][0]
         account = Cryal::Account.create(@account_data)
+        account.add_location(DATA[:locations][0])
+        account.add_location(DATA[:locations][1])
+
         @room1 = account.add_room(DATA[:rooms][0])
         account.add_user_room(room_id: @room1.room_id, active: true)
         r1_plan1 = @room1.add_plan(DATA[:plans][0])
         r1_plan2 = @room1.add_plan(DATA[:plans][1])
+
+        second_account = Cryal::Account.create(DATA[:accounts][1])
+        second_account.add_location(DATA[:locations][2])
+        second_account.add_user_room(room_id: @room1.room_id, active: true)
+
+        r1_plan1.add_waypoint(DATA[:waypoints][0])
+        r1_plan1.add_waypoint(DATA[:waypoints][1])
 
         
         @room2 = account.add_room(DATA[:rooms][1])
@@ -38,15 +48,19 @@ describe 'Test Plan Handling' do
         header 'AUTHORIZATION', "Bearer #{auth}"
 
         get "api/v1/rooms/#{@room1.room_id}/plans"
+        # p "Last response body: #{last_response.body}"
         _(last_response.status).must_equal 200
         result = JSON.parse(last_response.body)['data']
+        # p "Data when you get all plans: #{result}"
         _(result.length).must_equal 2
 
         # this is for single plans
         # get_string = "api/v1/rooms/#{@room1.room_id}/plans?plan_name=#{DATA[:plans][0]['plan_name']}"
         get "api/v1/rooms/#{@room1.room_id}/plans?plan_name=#{DATA[:plans][0]['plan_name']}"
+        # p "Last response body: #{last_response.body}"
         _(last_response.status).must_equal 200
         result = JSON.parse(last_response.body)
+        # p "Data when you get single plan: #{result}"
         _(result.length).must_equal 2
 
         get "api/v1/rooms/#{@room2.room_id}/plans"

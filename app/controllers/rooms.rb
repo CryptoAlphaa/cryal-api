@@ -23,7 +23,7 @@ module Cryal
                             user = user_room.account
                             { user_id: user.account_id, username: user.username }
                         end
-                        packet = { rooms: rooms, accounts: accounts}
+                        packet = { rooms: rooms, accounts: accounts, plans: rooms.plans}
                     end
                     response.status = 200
                     { message: 'Success', data: packet }.to_json
@@ -72,6 +72,7 @@ module Cryal
                         # GET /api/v1/rooms/room_id/plans?plan_name="some_plan_name"
                         routing.get do
                             plan_name = routing.params['plan_name']
+                            puts "Plan name in backend: #{plan_name}"
                             plans = Cryal::AccountService::Plans::Fetch.call(@auth_account, room_id, plan_name)
                             response.status = 200
                             { message: 'Success', data: plans }.to_json

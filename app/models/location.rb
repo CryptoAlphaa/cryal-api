@@ -18,8 +18,8 @@ module Cryal
         {
           location_id:,
           account_id:,
-          latitude: cur_lat_secure,
-          longitude: cur_long_secure,
+          latitude:,
+          longitude:,
           cur_address:,
           cur_name:,
           created_at:

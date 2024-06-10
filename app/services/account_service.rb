@@ -136,11 +136,21 @@ module Cryal
           policy = RoomPolicy.new(requestor, user_room)
           raise ForbiddenError unless policy.can_view?
           if plan_name.nil?
-            return raise(PlansNotFoundError) if user_room.room.plans.nil?
-            return user_room.room.plans
+            return raise(PlansNotFoundError) if user_room.room.plans.nil? # if looking for a specific plan and it's not found
+            return user_room.room.plans # if looking for all plans
           else
-            found = Cryal::Plan.first(room_id: room_id, plan_name: plan_name)
-            found.nil? ? raise(PlansNotFoundError) : found
+            found = Cryal::Plan.first(room_id: room_id, plan_name: plan_name) # if looking for a specific plan
+            raise PlansNotFoundError if found.nil?
+            # when we find the plan, we must get all users latest location, and the plan's waypoints
+            data = { plan: found, waypoints: found.waypoints }
+            location_data = []
+            all_users = Cryal::User_Room.where(room_id: room_id, active: true)
+            all_users.each do |acc|
+              location = acc.account.locations.last
+              location_data << { username: acc.account.username, location: location }
+            end
+            data[:user_locations] = location_data
+            data
           end
         end
       end

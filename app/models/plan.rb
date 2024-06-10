@@ -32,7 +32,7 @@ module Cryal
           plan_id:,
           room_id:,
           plan_name:,
-          plan_description: plan_description_secure,
+          plan_description:,
           created_at:,
           updated_at:
         },
