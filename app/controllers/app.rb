@@ -5,11 +5,10 @@ require 'roda'
 require 'json'
 require_relative './helpers'
 
-
 # Cryal Module
 module Cryal
   # Class for designing the API
-  class Api < Roda # rubocop:disable Metrics/ClassLength
+  class Api < Roda
     plugin :environments
     plugin :halt
     plugin :json
@@ -19,7 +18,7 @@ module Cryal
     include SecureRequestHelpers
     include Cryal
 
-    route do |routing| # rubocop:disable Metrics/BlockLength
+    route do |routing|
       response['Content-Type'] = 'application/json'
 
       secure_request?(routing) ||
@@ -45,22 +44,21 @@ module Cryal
   end
 
   #=======================================================================================================
-# FUNCTIONS TO HANDLE ERROR
-# DO NOT DELETE
-#=======================================================================================================
+  # FUNCTIONS TO HANDLE ERROR
+  # DO NOT DELETE
+  #=======================================================================================================
 
-def log_and_handle_error(routing, json, err)
-  if err.is_a?(Sequel::MassAssignmentRestriction)
+  def log_and_handle_error(routing, json, err)
+    if err.is_a?(Sequel::MassAssignmentRestriction)
       Api.logger.warn "Mass Assignment: #{json.keys}"
       routing.halt 400, { message: 'Mass Assignment Error' }.to_json
-  else
+    else
       Api.logger.error "Error: #{err.message}"
       routing.halt 500, { message: 'Internal Server Error' }.to_json
+    end
   end
-end
 
-def not_found(routing, message, err = 404)
-  routing.halt err, { message: }.to_json
-end
-
+  def not_found(routing, message, err = 404)
+    routing.halt err, { message: }.to_json
+  end
 end

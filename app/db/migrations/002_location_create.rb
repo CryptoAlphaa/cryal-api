@@ -20,6 +20,5 @@ Sequel.migration do
     #     add_foreign_key :account_id, :accounts, type: :uuid, key: :account_id
     #   end
     # end
-
   end
 end

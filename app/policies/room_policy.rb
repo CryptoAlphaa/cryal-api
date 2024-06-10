@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Cryal
   # Policy to determine if an account can view a particular project
   class RoomPolicy
@@ -7,59 +9,59 @@ module Cryal
     end
 
     def can_view?
-      is_member?
+      member?
     end
 
     # duplication is ok!
     def can_edit_room_info?
-      is_admin?
+      admin?
     end
 
     def can_delete_room?
-      is_admin?
+      admin?
     end
 
     def can_remove_member?
-      is_admin?
+      admin?
     end
 
     def can_leave?
-      is_member?
+      member?
     end
 
     def can_edit_authority?
-      is_admin?
+      admin?
     end
 
     def can_create_plan?
-      is_member?
+      member?
     end
 
     def can_edit_plan?
-      is_member?
+      member?
     end
 
     def can_delete_plan?
-      is_member?
+      member?
     end
 
     def can_create_waypoint?
-      is_member?
+      member?
     end
 
     def can_edit_waypoint?
-      is_member?
+      member?
     end
 
     def can_view_waypoint?
-      is_member?
+      member?
     end
 
     def can_join?(join_request)
       verify_request(join_request)
     end
-    
-    def summary
+
+    def summary # rubocop:disable Metrics/MethodLength
       {
         can_view: can_view?,
         can_edit_room_info: can_edit?,
@@ -70,30 +72,32 @@ module Cryal
         can_create_plan: can_create_plan?,
         can_edit_plan: can_edit_plan?,
         can_delete_plan: can_delete_plan?,
-        is_member: is_member?,
-        is_admin: is_admin?
+        member: member?,
+        admin: admin?
       }
     end
 
     private
 
-    def is_member?
+    def member?
       # p "Authorized account: #{@account}"
       # p "user_room: #{@user_room}"
       # p "account from user_room: #{@user_room.account}"
-      return @user_room.account = @account if @user_room.class == Cryal::User_Room
+      return @user_room.account = @account if @user_room.instance_of?(Cryal::User_Room)
+
       @user_room.select do |exist|
         exist.active == true
       end
     end
 
-    def is_admin?
-      @user_room["authority"] == 'admin'
+    def admin?
+      @user_room['authority'] == 'admin'
     end
 
     def verify_request(join_request)
       room = Cryal::Room.first(room_id: join_request['room_id'])
       return false if room.nil?
+
       jsonify = JSON.parse(room.room_password_hash)
       salt = Base64.strict_decode64(jsonify['salt'])
       checksum = jsonify['hash']

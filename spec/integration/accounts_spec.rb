@@ -3,7 +3,7 @@
 
 require_relative '../spec_helper'
 
-describe 'Test Account Handling' do
+describe 'Test Account Handling' do # rubocop:disable Metrics/BlockLength
   include Rack::Test::Methods
 
   before do
@@ -26,7 +26,7 @@ describe 'Test Account Handling' do
       _(last_response.status).must_equal 200
 
       attributes = JSON.parse(last_response.body)
-      
+
       _(attributes['username']).must_equal account.username
       _(attributes['salt']).must_be_nil
       _(attributes['password']).must_be_nil
