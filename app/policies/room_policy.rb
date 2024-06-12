@@ -3,62 +3,62 @@
 module Cryal
   # Policy to determine if an account can view a particular project
   class RoomPolicy
-    def initialize(account, user_room)
+    def initialize(account, user_room, auth_scope = nil)
       @account = account
       @user_room = user_room
+      @auth_scope = auth_scope
     end
 
     def can_view?
-      member?
+      member? && can_read?
     end
 
-    # duplication is ok!
     def can_edit_room_info?
-      admin?
+      admin? && can_write?
     end
 
     def can_delete_room?
-      admin?
+      admin? && can_write?
     end
 
     def can_remove_member?
-      admin?
+      admin? && can_write?
     end
 
     def can_leave?
-      member?
+      member? && can_write?
     end
 
     def can_edit_authority?
-      admin?
+      admin? && can_write?
     end
 
     def can_create_plan?
-      member?
+      member? && can_write?
     end
 
     def can_edit_plan?
-      member?
+      member? && can_write?
     end
 
     def can_delete_plan?
-      member?
+      member? && can_write?
     end
 
     def can_create_waypoint?
-      member?
+      member? && can_write?
     end
 
     def can_edit_waypoint?
-      member?
+      member? && can_write?
     end
 
     def can_view_waypoint?
-      member?
+      member? && can_read?
     end
 
     def can_join?(join_request)
-      verify_request(join_request)
+      verify_request(join_request) && can_write?
     end
 
     def summary # rubocop:disable Metrics/MethodLength
@@ -78,6 +78,14 @@ module Cryal
     end
 
     private
+
+    def can_read?
+      @auth_scope ? @auth_scope.can_read?('rooms') : false
+    end
+    
+    def can_write?
+      @auth_scope ? @auth_scope.can_write?('rooms') : false
+    end
 
     def member?
       # p "Authorized account: #{@account}"

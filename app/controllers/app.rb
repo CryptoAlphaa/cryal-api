@@ -18,6 +18,8 @@ module Cryal
     include SecureRequestHelpers
     include Cryal
 
+    UNAUTH_MSG = { message: 'Unauthorized Request' }.to_json
+
     route do |routing|
       response['Content-Type'] = 'application/json'
 
@@ -25,7 +27,10 @@ module Cryal
         not_found(routing, 'TLS/SSL Required', 403)
 
       begin
-        @auth_account = authenticated_account(routing.headers)
+        @auth = authorization(routing.headers)
+        @auth_account = @auth[:account] if @auth
+        
+        # @auth_account = authenticated_account(routing.headers)
       rescue AuthToken::InvalidTokenError
         routing.halt 403, { message: 'Invalid auth token' }.to_json
       end

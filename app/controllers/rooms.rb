@@ -8,22 +8,16 @@ module Cryal
     class Api < Roda
         include Cryal
         route('rooms') do |routing|
+            routing.halt(403, UNAUTH_MSG) unless @auth_account
             # make three routing, get all rooms associated, create room, join room
             # GET /api/v1/rooms?room_id=1
             routing.is do
                 routing.get do
                     room_id = routing.params['room_id']
                     if room_id.nil?
-                        rooms = Cryal::AccountService::Room::FetchAll.call(requestor: @auth_account)
-                        packet = rooms
+                        packet = Cryal::AccountService::Room::FetchAll.call(requestor: @auth_account)
                     else
-                        rooms = Cryal::AccountService::Room::FetchOne.call(@auth_account, room_id)
-                        # get all users in the room
-                        accounts = rooms.user_rooms.map do |user_room|
-                            user = user_room.account
-                            { user_id: user.account_id, username: user.username }
-                        end
-                        packet = { rooms: rooms, accounts: accounts, plans: rooms.plans}
+                        packet = Cryal::AccountService::Room::FetchOne.call(@auth, room_id)
                     end
                     response.status = 200
                     { message: 'Success', data: packet }.to_json
@@ -39,7 +33,7 @@ module Cryal
             routing.on 'createroom' do
                 routing.post do
                     room_data = JSON.parse(routing.body.read)
-                    output = Cryal::AccountService::Room::Create.call(@auth_account, room_data)
+                    output = Cryal::AccountService::Room::Create.call(@auth, room_data)
                     response.status = 201
                     { message: 'Room created', data: output }.to_json
                 rescue Cryal::AccountService::Room::Create::ForbiddenError => e
@@ -53,7 +47,7 @@ module Cryal
             routing.on 'joinroom' do
                 routing.post do
                     join_request = JSON.parse(routing.body.read)
-                    output = Cryal::AccountService::Room::Join.call(@auth_account, join_request)
+                    output = Cryal::AccountService::Room::Join.call(@auth, join_request)
                     response.status = 201
                     { message: 'Room Join Successfully', data: output }.to_json
                 rescue Cryal::AccountService::Room::Join::ForbiddenError => e
@@ -72,8 +66,8 @@ module Cryal
                         # GET /api/v1/rooms/room_id/plans?plan_name="some_plan_name"
                         routing.get do
                             plan_name = routing.params['plan_name']
-                            puts "Plan name in backend: #{plan_name}"
-                            plans = Cryal::AccountService::Plans::Fetch.call(@auth_account, room_id, plan_name)
+                            # puts "Plan name in backend: #{plan_name}"
+                            plans = Cryal::AccountService::Plans::Fetch.call(@auth, room_id, plan_name)
                             response.status = 200
                             { message: 'Success', data: plans }.to_json
                             rescue Cryal::AccountService::Plans::Fetch::ForbiddenError => e
@@ -88,7 +82,7 @@ module Cryal
                         # POST /api/v1/rooms/room_id/plans
                         routing.post do
                             new_plan = JSON.parse(routing.body.read)
-                            output = Cryal::AccountService::Plans::Create.call(@auth_account, room_id, new_plan)
+                            output = Cryal::AccountService::Plans::Create.call(@auth, room_id, new_plan)
                             response.status = 201
                             { message: 'Plan saved', data: output }.to_json
                             rescue Cryal::AccountService::Plans::Create::ForbiddenError => e
@@ -106,7 +100,7 @@ module Cryal
                                 # POST /api/v1/rooms/room_id/plans/plan_id/waypoints
                                 routing.post do
                                     new_waypoint = JSON.parse(routing.body.read)
-                                    output = Cryal::AccountService::Waypoint::Create.call(@auth_account, room_id, plan_id, new_waypoint)
+                                    output = Cryal::AccountService::Waypoint::Create.call(@auth, room_id, plan_id, new_waypoint)
                                     response.status = 201
                                     { message: 'Waypoint saved', data: output }.to_json
                                     rescue Cryal::AccountService::Waypoint::Create::ForbiddenError => e
@@ -120,7 +114,7 @@ module Cryal
                                 # GET /api/v1/rooms/room_id/plans/plan_id/waypoints?waypoint_number=1
                                 routing.get do
                                     waypoint_number = routing.params['waypoint_number']
-                                    waypoints = Cryal::AccountService::Waypoint::Fetch.call(@auth_account, room_id, plan_id, waypoint_number)
+                                    waypoints = Cryal::AccountService::Waypoint::Fetch.call(@auth, room_id, plan_id, waypoint_number)
                                     response.status = 200
                                     { message: 'Success', data: waypoints }.to_json
                                     rescue Cryal::AccountService::Waypoint::Fetch::ForbiddenError => e

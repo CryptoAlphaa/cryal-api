@@ -55,6 +55,11 @@ describe 'Test UserRoom Handling' do # rubocop:disable Metrics/BlockLength
       end
 
       it 'SECURITY: should prevent basic SQL injection targeting IDs' do
+        credentials = { username: @account_data['username'], password: @account_data['password'] }
+        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        # get data from the response
+        auth = JSON.parse(last_response.body)['attributes']['auth_token']
+        header 'AUTHORIZATION', "Bearer #{auth}"
         get 'api/v1/rooms/2%20or%20id%3E0'
         # deliberately not reporting error -- don't give attacker information
         _(last_response.status).must_equal 404

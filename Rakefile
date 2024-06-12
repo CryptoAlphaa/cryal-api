@@ -18,7 +18,7 @@ end
 
 desc 'Test Integration with the API'
 Rake::TestTask.new(:function) do |t|
-  t.pattern = 'spec/integration/plans_spec.rb'
+  t.pattern = 'spec/integration/*.rb'
   t.warning = false
 end
 

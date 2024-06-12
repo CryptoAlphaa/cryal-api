@@ -14,10 +14,10 @@ module Cryal
 
       def viewable
         if @current_account == @target_account
-          @full_scope
+          @full_scope.map(&:room)
         else
-          @full_scope.select do |room|
-            inside_the_room?(room, @current_account)
+          @full_scope.select do |user_room|
+            inside_the_room?(user_room, @current_account)
           end
         end
       end
@@ -28,8 +28,8 @@ module Cryal
         account.user_rooms
       end
 
-      def inside_the_room?(room, account)
-        room.account_id == account.account_id
+      def inside_the_room?(user_room, account)
+        return user_room.room if user_room.account_id == account.account_id
       end
     end
   end
