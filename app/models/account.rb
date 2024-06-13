@@ -17,8 +17,14 @@ module Cryal
 
     # mass assignment prevention
     plugin :whitelist_security
-    set_allowed_columns :username, :email, :password
+    set_allowed_columns :username, :email, :password_hash, :email_secure, :password
 
+    def self.create_github_account(github_account)
+      create(username: github_account[:username], email_secure: SecureDB.encrypt(github_account[:email]),
+            password_hash: "test"
+      )
+    end
+    
     def password=(new_password)
       self.password_hash = Cryal::Password.digest(new_password)
     end
@@ -26,6 +32,12 @@ module Cryal
     def password?(try_password)
       password = Cryal::Password.from_digest(password_hash)
       password.correct?(try_password)
+    end
+
+    def self.username_exist?(username)
+      # encrypted_email = SecureDB.encrypt(email)
+      account = Account.first(username: username)
+      account
     end
 
     def email
@@ -39,7 +51,6 @@ module Cryal
     def to_json(options = {})
       JSON(
         {
-          account_id:,
           username:,
           email: SecureDB.decrypt(email_secure),
           created_at:,
