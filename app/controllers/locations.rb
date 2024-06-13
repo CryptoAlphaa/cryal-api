@@ -13,7 +13,7 @@ module Cryal
       routing.is do
         routing.get do
           # Read account_id from query string
-          output = Cryal::AccountService::Location::FetchAll.call(@auth)
+          output = AccountService::Location::FetchAll.call(@auth)
           response.status = 200
           output.to_json
         end
@@ -21,7 +21,7 @@ module Cryal
         # POST /api/v1/locations
         routing.post do
           json = JSON.parse(routing.body.read)
-          output = Cryal::AccountService::Location::Create.call(routing, json, @auth_account)
+          output = AccountService::Location::Create.call(routing, json, @auth_account)
           response.status = 201
           { message: 'Location saved', data: output }.to_json
         rescue StandardError => e

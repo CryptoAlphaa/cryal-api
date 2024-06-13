@@ -23,14 +23,21 @@ module Cryal
       routing.is 'authentication' do
         routing.post do
           json = JSON.parse(routing.body.read)
-          puts "before authenticate"
-          authenticate = Cryal::Authenticate.call(routing, json)
-          puts "after authenticate"
-          puts "authenticate: #{authenticate}"
-          # @auth_account = JSON.parse(authenticate[:attributes].to_json)["account"]
-          # puts auth_account
+          authenticate = Authenticate.call(routing, json)
           response.status = 200
           authenticate.to_json
+        end
+      end
+
+      routing.is 'sso' do
+        routing.post do
+          auth_request = JSON.parse(request.body.read, symbolize_names: true)
+          auth_account = AuthViaSSO::AuthorizeSso.new.call(auth_request[:access_token])
+          { data: auth_account }.to_json
+        rescue StandardError => error
+          puts "FAILED to validate Github account: #{error.inspect}"
+          puts error.backtrace
+          routing.halt 400          
         end
       end
     end

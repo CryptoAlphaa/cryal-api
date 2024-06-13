@@ -25,8 +25,7 @@ describe 'Test Account Handling' do # rubocop:disable Metrics/BlockLength
       get "/api/v1/accounts?username=#{account.username}"
       _(last_response.status).must_equal 200
 
-      attributes = JSON.parse(last_response.body)['attributes']['account']
-
+      attributes = JSON.parse(last_response.body)['data']['attributes']['account']
       _(attributes['username']).must_equal account.username
       _(attributes['salt']).must_be_nil
       _(attributes['password']).must_be_nil

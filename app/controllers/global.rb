@@ -11,7 +11,7 @@ module Cryal
       # GET /api/v1/global/rooms
       routing.on 'rooms' do
         routing.get do
-          output = Cryal::GlobalActions::Room::FetchAll.call(routing)
+          output = GlobalActions::Room::FetchAll.call(routing)
           response.status = 200
           output.to_json
         end
@@ -20,7 +20,7 @@ module Cryal
       # GET /api/v1/global/rooms/[room_id]
       routing.on 'rooms', String do |room_id|
         routing.get do
-          output = Cryal::GlobalActions::Room::FetchOne.call(routing, room_id)
+          output = GlobalActions::Room::FetchOne.call(routing, room_id)
           response.status = 200
           output.to_json
         end
@@ -29,7 +29,7 @@ module Cryal
       # GET /api/v1/global/userrooms
       routing.on 'userrooms' do
         routing.get do
-          output = Cryal::GlobalActions::UserRooms::FetchAll.call(routing)
+          output = GlobalActions::UserRooms::FetchAll.call(routing)
           response.status = 200
           output.to_json
         end

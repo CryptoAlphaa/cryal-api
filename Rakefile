@@ -10,12 +10,6 @@ task :api_spec do
   sh 'ruby spec/integration/api_spec.rb'
 end
 
-# desc 'Test all the specs'
-# Rake::TestTask.new(:spec) do |t|
-#   t.pattern = 'spec/unit/users_spec.rb'
-#   t.warning = false
-# end
-
 desc 'Test Integration with the API'
 Rake::TestTask.new(:function) do |t|
   t.pattern = 'spec/integration/*.rb'

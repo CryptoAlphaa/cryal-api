@@ -15,16 +15,16 @@ module Cryal
                 routing.get do
                     room_id = routing.params['room_id']
                     if room_id.nil?
-                        packet = Cryal::AccountService::Room::FetchAll.call(requestor: @auth_account)
+                        packet = AccountService::Room::FetchAll.call(requestor: @auth_account)
                     else
-                        packet = Cryal::AccountService::Room::FetchOne.call(@auth, room_id)
+                        packet = AccountService::Room::FetchOne.call(@auth, room_id)
                     end
                     response.status = 200
                     { message: 'Success', data: packet }.to_json
                     # { message: 'Success', data: {rooms => rooms, accounts => accounts} }.to_json
-                rescue Cryal::AccountService::Room::FetchAll::ForbiddenError => e
+                rescue AccountService::Room::FetchAll::ForbiddenError => e
                     routing.halt 403, { message: 'Forbidden' }.to_json
-                rescue Cryal::AccountService::Room::FetchOne::NotFoundError => e
+                rescue AccountService::Room::FetchOne::NotFoundError => e
                     routing.halt 404, { message: 'Not Found'}.to_json
                 end
             end
@@ -33,10 +33,10 @@ module Cryal
             routing.on 'createroom' do
                 routing.post do
                     room_data = JSON.parse(routing.body.read)
-                    output = Cryal::AccountService::Room::Create.call(@auth, room_data)
+                    output = AccountService::Room::Create.call(@auth, room_data)
                     response.status = 201
                     { message: 'Room created', data: output }.to_json
-                rescue Cryal::AccountService::Room::Create::ForbiddenError => e
+                rescue AccountService::Room::Create::ForbiddenError => e
                     routing.halt 403, { message: e.message }.to_json
                 rescue StandardError => e
                     log_and_handle_error(routing, room_data, e)
@@ -47,12 +47,12 @@ module Cryal
             routing.on 'joinroom' do
                 routing.post do
                     join_request = JSON.parse(routing.body.read)
-                    output = Cryal::AccountService::Room::Join.call(@auth, join_request)
+                    output = AccountService::Room::Join.call(@auth, join_request)
                     response.status = 201
                     { message: 'Room Join Successfully', data: output }.to_json
-                rescue Cryal::AccountService::Room::Join::ForbiddenError => e
+                rescue AccountService::Room::Join::ForbiddenError => e
                     routing.halt 403, { message: e.message }.to_json
-                rescue Cryal::AccountService::Room::Join::NotFoundError => e
+                rescue AccountService::Room::Join::NotFoundError => e
                     routing.halt 404, { message: e.message }.to_json
                 rescue StandardError => e
                     log_and_handle_error(routing, join_request, e)
@@ -67,12 +67,12 @@ module Cryal
                         routing.get do
                             plan_name = routing.params['plan_name']
                             # puts "Plan name in backend: #{plan_name}"
-                            plans = Cryal::AccountService::Plans::Fetch.call(@auth, room_id, plan_name)
+                            plans = AccountService::Plans::Fetch.call(@auth, room_id, plan_name)
                             response.status = 200
                             { message: 'Success', data: plans }.to_json
-                            rescue Cryal::AccountService::Plans::Fetch::ForbiddenError => e
+                            rescue AccountService::Plans::Fetch::ForbiddenError => e
                                 routing.halt 403, { message: e.message }.to_json
-                            rescue Cryal::AccountService::Plans::Fetch::PlansNotFoundError => e
+                            rescue AccountService::Plans::Fetch::PlansNotFoundError => e
                                 routing.halt 404, { message: e.message }.to_json
                             rescue StandardError => e
                                 routing.halt 500, { message: 'API Server Error' }.to_json
@@ -82,12 +82,12 @@ module Cryal
                         # POST /api/v1/rooms/room_id/plans
                         routing.post do
                             new_plan = JSON.parse(routing.body.read)
-                            output = Cryal::AccountService::Plans::Create.call(@auth, room_id, new_plan)
+                            output = AccountService::Plans::Create.call(@auth, room_id, new_plan)
                             response.status = 201
                             { message: 'Plan saved', data: output }.to_json
-                            rescue Cryal::AccountService::Plans::Create::ForbiddenError => e
+                            rescue AccountService::Plans::Create::ForbiddenError => e
                                 routing.halt 403, { message: e.message }.to_json
-                            rescue Cryal::AccountService::Plans::Create::NotFoundError => e
+                            rescue AccountService::Plans::Create::NotFoundError => e
                                 routing.halt 404, { message: e.message }.to_json
                             rescue StandardError => e
                                 log_and_handle_error(routing, new_plan, e)
@@ -100,12 +100,12 @@ module Cryal
                                 # POST /api/v1/rooms/room_id/plans/plan_id/waypoints
                                 routing.post do
                                     new_waypoint = JSON.parse(routing.body.read)
-                                    output = Cryal::AccountService::Waypoint::Create.call(@auth, room_id, plan_id, new_waypoint)
+                                    output = AccountService::Waypoint::Create.call(@auth, room_id, plan_id, new_waypoint)
                                     response.status = 201
                                     { message: 'Waypoint saved', data: output }.to_json
-                                    rescue Cryal::AccountService::Waypoint::Create::ForbiddenError => e
+                                    rescue AccountService::Waypoint::Create::ForbiddenError => e
                                         routing.halt 403, { message: e.message }.to_json
-                                    rescue Cryal::AccountService::Waypoint::Create::NotFoundError => e
+                                    rescue AccountService::Waypoint::Create::NotFoundError => e
                                         routing.halt 404, { message: e.message }.to_json
                                     rescue StandardError => e
                                         log_and_handle_error(routing, new_waypoint, e)
@@ -114,12 +114,12 @@ module Cryal
                                 # GET /api/v1/rooms/room_id/plans/plan_id/waypoints?waypoint_number=1
                                 routing.get do
                                     waypoint_number = routing.params['waypoint_number']
-                                    waypoints = Cryal::AccountService::Waypoint::Fetch.call(@auth, room_id, plan_id, waypoint_number)
+                                    waypoints = AccountService::Waypoint::Fetch.call(@auth, room_id, plan_id, waypoint_number)
                                     response.status = 200
                                     { message: 'Success', data: waypoints }.to_json
-                                    rescue Cryal::AccountService::Waypoint::Fetch::ForbiddenError => e
+                                    rescue AccountService::Waypoint::Fetch::ForbiddenError => e
                                         routing.halt 403, { message: e.message }.to_json
-                                    rescue Cryal::AccountService::Waypoint::Fetch::NotFoundError => e
+                                    rescue AccountService::Waypoint::Fetch::NotFoundError => e
                                         routing.halt 404, { message: e.message }.to_json
                                     rescue StandardError => e
                                         routing.halt 500, { message: 'API Server Error' }.to_json

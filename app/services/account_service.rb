@@ -70,7 +70,7 @@ module Cryal
             user = user_room.account
             { user_id: user.account_id, username: user.username }
           end
-          { rooms: rooms, accounts: accounts, plans: rooms.plans}
+          { rooms: room, accounts: accounts, plans: room.plans}
         end
       end
 
