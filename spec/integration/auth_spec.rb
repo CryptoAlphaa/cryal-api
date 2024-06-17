@@ -21,7 +21,8 @@ describe 'Test Authentication Routes' do # rubocop:disable Metrics/BlockLength
     it 'HAPPY: should authenticate valid credentials' do
       credentials = { username: @account_data['username'],
                       password: @account_data['password'] }
-      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      body = SignedRequest.new(app.config).sign(credentials).to_json
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
       auth_account = JSON.parse(last_response.body)
 
       account = auth_account['attributes']['account']
@@ -31,10 +32,10 @@ describe 'Test Authentication Routes' do # rubocop:disable Metrics/BlockLength
     end
 
     it 'BAD: should not authenticate invalid password' do
-      credentials = { username: @account_data['username'],
+      bad_credentials = { username: @account_data['username'],
                       password: 'fakepassword123' }
 
-      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(bad_credentials).to_json, @req_header
       result = JSON.parse(last_response.body)
 
       _(last_response.status).must_equal 403
@@ -59,7 +60,7 @@ describe 'Test Authentication Routes' do # rubocop:disable Metrics/BlockLength
     it 'HAPPY AUTH SSO: should authenticate+authorize new valid SSO account' do
       gh_access_token = { access_token: GOOD_GH_ACCESS_TOKEN }
 
-      post 'api/v1/auth/sso', gh_access_token.to_json, @req_header
+      post 'api/v1/auth/sso', SignedRequest.new(app.config).sign(gh_access_token).to_json, @req_header
 
       auth_account = JSON.parse(last_response.body)['data']
       account = auth_account['attributes']['account']
@@ -78,7 +79,7 @@ describe 'Test Authentication Routes' do # rubocop:disable Metrics/BlockLength
       )
 
       gh_access_token = { access_token: GOOD_GH_ACCESS_TOKEN }
-      post 'api/v1/auth/sso', gh_access_token.to_json, @req_header
+      post 'api/v1/auth/sso', SignedRequest.new(app.config).sign(gh_access_token).to_json, @req_header
 
       auth_account = JSON.parse(last_response.body)['data']
       account = auth_account['attributes']['account']

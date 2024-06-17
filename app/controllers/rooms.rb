@@ -29,6 +29,34 @@ module Cryal
                 end
             end
 
+            routing.on 'delete' do
+                routing.delete do
+                    room_id = routing.params['room_id']
+                    output = AccountService::Room::Delete.call(@auth, room_id)
+                    response.status = 200
+                    { message: 'Room deleted', data: output }.to_json
+                rescue AccountService::Room::Delete::ForbiddenError => e
+                    routing.halt 403, { message: e.message }.to_json
+                rescue AccountService::Room::Delete::NotFoundError => e
+                    routing.halt 404, { message: e.message }.to_json
+                rescue StandardError => e
+                    log_and_handle_error(routing, room_id, e)
+                end
+            end
+
+            routing.on 'exit' do
+                routing.delete do
+                    room_id = routing.params['room_id']
+                    output = AccountService::Room::Exit.call(@auth, room_id)
+                    response.status = 200
+                    { message: 'Room exited' }.to_json
+                rescue AccountService::Room::Exit::ForbiddenError => e
+                    routing.halt 403, { message: e.message }.to_json
+                rescue AccountService::Room::Exit::NotFoundError => e
+                    routing.halt 404, { message: e.message }.to_json
+                end
+            end
+
             # POST /api/v1/rooms/createroom
             routing.on 'createroom' do
                 routing.post do
@@ -77,8 +105,19 @@ module Cryal
                             rescue StandardError => e
                                 routing.halt 500, { message: 'API Server Error' }.to_json
                         end
-
-
+                        # delete /api/v1/rooms/room_id/plans?plan_name="some_plan_name"
+                        routing.delete do
+                            plan_name = routing.params['plan_name']
+                            output = AccountService::Plans::Delete.call(@auth, room_id, plan_name)
+                            response.status = 200
+                            { message: 'Plan deleted', data: output }.to_json
+                            rescue AccountService::Plans::Delete::ForbiddenError => e
+                                routing.halt 403, { message: e.message }.to_json
+                            rescue AccountService::Plans::Delete::NotFoundError => e
+                                routing.halt 404, { message: e.message }.to_json
+                            rescue StandardError => e
+                                routing.halt 500, { message: 'API Server Error' }.to_json
+                        end
                         # POST /api/v1/rooms/room_id/plans
                         routing.post do
                             new_plan = JSON.parse(routing.body.read)
@@ -120,6 +159,20 @@ module Cryal
                                     rescue AccountService::Waypoint::Fetch::ForbiddenError => e
                                         routing.halt 403, { message: e.message }.to_json
                                     rescue AccountService::Waypoint::Fetch::NotFoundError => e
+                                        routing.halt 404, { message: e.message }.to_json
+                                    rescue StandardError => e
+                                        routing.halt 500, { message: 'API Server Error' }.to_json
+                                end
+
+                                # DELETE /api/v1/rooms/room_id/plans/plan_id/waypoints?waypoint_number=1
+                                routing.delete do
+                                    waypoint_number = routing.params['waypoint_number']
+                                    output = AccountService::Waypoint::Delete.call(@auth, room_id, plan_id, waypoint_number)
+                                    response.status = 200
+                                    { message: 'Waypoint deleted'}.to_json
+                                    rescue AccountService::Waypoint::Delete::ForbiddenError => e
+                                        routing.halt 403, { message: e.message }.to_json
+                                    rescue AccountService::Waypoint::Delete::NotFoundError => e
                                         routing.halt 404, { message: e.message }.to_json
                                     rescue StandardError => e
                                         routing.halt 500, { message: 'API Server Error' }.to_json

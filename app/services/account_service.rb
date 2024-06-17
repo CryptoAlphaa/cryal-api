@@ -111,8 +111,56 @@ module Cryal
           join_request.delete('room_password')
           requestor[:account].add_user_room(join_request)
         end
-
       end
+
+      class Delete
+        extend Cryal
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to delete this room!'
+          end
+        end
+
+        class NotFoundError < StandardError
+          def message
+            'Room is not found!'
+          end
+        end
+
+        def self.call(requestor, room_id)
+          room = Cryal::Room.first(room_id: room_id)
+          return raise(NotFoundError) if room.nil?
+          # get this user specific user_room
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+          policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
+          raise ForbiddenError unless policy.can_delete_room?
+          room.destroy
+        end
+      end
+
+      class Exit
+        extend Cryal
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to exit this room!'
+          end
+        end
+
+        class NotFoundError < StandardError
+          def message
+            'Room is not found!'
+          end
+        end
+
+        def self.call(requestor, room_id)
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+          raise NotFoundError if user_room.nil?
+          policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
+          raise ForbiddenError unless policy.can_leave?
+          user_room.destroy
+        end
+      end
+
     end
 
     module Plans
@@ -182,6 +230,32 @@ module Cryal
           room.add_plan(plan_request)
         end
       end
+
+      # Delete plan
+      class Delete
+        extend Cryal
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to delete this plan'
+          end
+        end
+
+        class NotFoundError < StandardError
+          def message
+            'Plan is not found'
+          end
+        end
+
+        def self.call(requestor, room_id, plan_name)
+          plan = Cryal::Plan.first(plan_name: plan_name)
+          return raise(NotFoundError) if plan.nil?
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+          return raise(ForbiddenError) if user_room.nil?
+          policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
+          raise ForbiddenError unless policy.can_delete_plan?
+          plan.destroy
+        end
+      end
     end
 
     # Waypoint service
@@ -241,6 +315,41 @@ module Cryal
           else
             found = Cryal::Waypoint.first(plan_id: plan_id, waypoint_number: waypoint_number)
             found.nil? ? raise(NotFoundError) : found
+          end
+        end
+      end
+
+      # Delete waypoint
+      class Delete
+        extend Cryal
+        class ForbiddenError < StandardError
+          def message
+            'You are not allowed to delete this waypoint'
+          end
+        end
+
+        class NotFoundError < StandardError
+          def message
+            'Waypoint is not found'
+          end
+        end
+
+        def self.call(requestor, room_id, plan_id, waypoint_number)
+          plan = Cryal::Plan.first(plan_id: plan_id)
+          return raise(NotFoundError) if plan.nil?
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+          return raise(ForbiddenError) if user_room.nil?
+          policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
+          raise ForbiddenError unless policy.can_delete_waypoint?
+          waypoint = Cryal::Waypoint.first(plan_id: plan_id, waypoint_number: waypoint_number)
+          raise NotFoundError if waypoint.nil?
+          waypoint.destroy
+
+          # Renumber remaining waypoints
+          remaining_waypoints = Cryal::Waypoint.where(plan_id: plan_id).order(:waypoint_number)
+          remaining_waypoints.each_with_index do |wp, index|
+            new_number = index + 1
+            wp.update(waypoint_number: new_number) unless wp.waypoint_number == new_number
           end
         end
       end

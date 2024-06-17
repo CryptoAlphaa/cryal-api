@@ -23,7 +23,7 @@ describe 'Test Locations Handling' do # rubocop:disable Metrics/BlockLength
       it 'HAPPY: should get list for authorized account' do
         # Cryal::Authenticate.call(routing, json)
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -46,7 +46,7 @@ describe 'Test Locations Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'SECURITY: should prevent basic SQL injection targeting IDs' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -69,7 +69,7 @@ describe 'Test Locations Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'HAPPY: should be able to create new locations' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
@@ -90,7 +90,7 @@ describe 'Test Locations Handling' do # rubocop:disable Metrics/BlockLength
         bad_data['created_at'] = '1900-01-01'
 
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }

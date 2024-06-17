@@ -18,7 +18,7 @@ describe 'Test Account Handling' do # rubocop:disable Metrics/BlockLength
       account = Cryal::Account.create(account_data)
 
       credentials = { username: account_data['username'], password: account_data['password'] }
-      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
       # get data from the response
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       header 'AUTHORIZATION', "Bearer #{auth}"
@@ -39,7 +39,7 @@ describe 'Test Account Handling' do # rubocop:disable Metrics/BlockLength
     end
 
     it 'HAPPY: should be able to create new accounts' do
-      post 'api/v1/accounts', @account_data.to_json, @req_header
+      post 'api/v1/accounts', SignedRequest.new(app.config).sign(@account_data).to_json
       _(last_response.status).must_equal 201
       _(last_response.headers['Location'].size).must_be :>, 0
 
@@ -54,7 +54,7 @@ describe 'Test Account Handling' do # rubocop:disable Metrics/BlockLength
     it 'BAD: should not create account with illegal attributes' do
       bad_data = @account_data.clone
       bad_data['created_at'] = '1900-01-01'
-      post 'api/v1/accounts', bad_data.to_json, @req_header
+      post 'api/v1/accounts', SignedRequest.new(app.config).sign(bad_data).to_json
 
       _(last_response.status).must_equal 400
       _(last_response.headers['Location']).must_be_nil

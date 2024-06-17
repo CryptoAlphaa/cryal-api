@@ -14,6 +14,7 @@ module Cryal
     plugin :json
     plugin :multi_route
     plugin :request_headers
+    plugin :all_verbs
 
     include SecureRequestHelpers
     include Cryal
