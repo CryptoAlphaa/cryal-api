@@ -21,16 +21,19 @@ describe 'Test Plan Handling' do
         account.add_location(DATA[:locations][1])
 
         @room1 = account.add_room(DATA[:rooms][0])
-        account.add_user_room(room_id: @room1.room_id, active: true)
-        r1_plan1 = @room1.add_plan(DATA[:plans][0])
+        account.add_user_room(room_id: @room1.room_id, active: true, authority: 'admin')
+        @r1_plan1 = @room1.add_plan(DATA[:plans][0])
         r1_plan2 = @room1.add_plan(DATA[:plans][1])
 
+        # second account
+        @third_account_data = DATA[:accounts][2]
         second_account = Cryal::Account.create(DATA[:accounts][1])
         second_account.add_location(DATA[:locations][2])
         second_account.add_user_room(room_id: @room1.room_id, active: true)
+        third_account = Cryal::Account.create(@third_account_data)
 
-        r1_plan1.add_waypoint(DATA[:waypoints][0])
-        r1_plan1.add_waypoint(DATA[:waypoints][1])
+        @r1_plan1.add_waypoint(DATA[:waypoints][0])
+        @r1_plan1.add_waypoint(DATA[:waypoints][1])
 
         
         @room2 = account.add_room(DATA[:rooms][1])
@@ -42,7 +45,7 @@ describe 'Test Plan Handling' do
       it 'HAPPY: should get list all plans and single plan in a certain room' do
         # Cryal::Authenticate.call(routing, json)
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -72,7 +75,7 @@ describe 'Test Plan Handling' do
 
       it 'SAD: should not get plans for wrong room id' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -91,7 +94,7 @@ describe 'Test Plan Handling' do
 
     it 'SECURITY: should prevent basic SQL injection targeting IDs' do
       credentials = { username: @account_data['username'], password: @account_data['password'] }
-      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
       # get data from the response
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       header 'AUTHORIZATION', "Bearer #{auth}"
@@ -100,6 +103,29 @@ describe 'Test Plan Handling' do
       # deliberately not reporting error -- don't give attacker information
       _(last_response.status).must_equal 404
       _(last_response.body['data']).must_be_nil
+    end
+
+    it 'HAPPY: should be able to delete plans' do
+      credentials = { username: @account_data['username'], password: @account_data['password'] }
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
+      # get data from the response
+      auth = JSON.parse(last_response.body)['attributes']['auth_token']
+      headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
+      body = {}.to_json
+      delete "api/v1/rooms/#{@room1.room_id}/plans?plan_name=#{@r1_plan1.plan_name}", body, headers
+      _(last_response.status).must_equal 200
+      _(last_response.body).must_include 'Plan deleted'
+    end
+
+    it 'SAD: should not be able to delete plans if they are not authorized' do
+      credentials = { username: @third_account_data['username'], password: @third_account_data['password'] }
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
+      # get data from the response
+      auth = JSON.parse(last_response.body)['attributes']['auth_token']
+      headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
+      body = {}.to_json
+      delete "api/v1/rooms/#{@room1.room_id}/plans?plan_name=#{@r1_plan1.plan_name}", body, headers
+      _(last_response.status).must_equal 403
     end
   end
 
@@ -123,7 +149,7 @@ describe 'Test Plan Handling' do
     it 'HAPPY: should be able to create plans in their authorized room' do
 
       credentials = { username: @account_data['username'], password: @account_data['password'] }
-      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
       # get data from the response
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
@@ -144,7 +170,7 @@ describe 'Test Plan Handling' do
 
     it 'SAD: should not create plans in unauthorized room' do
       credentials = { username: @account_data['username'], password: @account_data['password'] }
-      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
       # get data from the response
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
@@ -156,8 +182,8 @@ describe 'Test Plan Handling' do
     end
 
     it 'SECURITY: should not create plans with mass assignment' do
-    credentials = { username: @account_data['username'], password: @account_data['password'] }
-      post 'api/v1/auth/authentication', credentials.to_json, @req_header
+      credentials = { username: @account_data['username'], password: @account_data['password'] }
+      post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
       # get data from the response
       auth = JSON.parse(last_response.body)['attributes']['auth_token']
       headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }

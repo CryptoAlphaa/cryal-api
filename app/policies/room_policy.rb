@@ -53,6 +53,10 @@ module Cryal
       member? && can_write?
     end
 
+    def can_delete_waypoint?
+      member? && can_write?
+    end
+
     def can_view_waypoint?
       member? && can_read?
     end
@@ -88,6 +92,7 @@ module Cryal
     end
 
     def member?
+      return true if admin?
       # p "Authorized account: #{@account}"
       # p "user_room: #{@user_room}"
       # p "account from user_room: #{@user_room.account}"
@@ -99,7 +104,7 @@ module Cryal
     end
 
     def admin?
-      @user_room['authority'] == 'admin'
+      @user_room.authority == 'admin'
     end
 
     def verify_request(join_request)

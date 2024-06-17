@@ -16,7 +16,9 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
     describe 'Getting list of Waypoints' do # rubocop:disable Metrics/BlockLength
       before do
         @account_data = DATA[:accounts][0]
+        @second_account_data = DATA[:accounts][1]
         account = Cryal::Account.create(@account_data)
+        second_account = Cryal::Account.create(@second_account_data)
         @room1 = account.add_room(DATA[:rooms][0])
         account.add_user_room(room_id: @room1.room_id, active: true)
         @r1_plan1 = @room1.add_plan(DATA[:plans][0])
@@ -32,7 +34,7 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
       it 'HAPPY: should get list of all waypoints in a specific plan' do
         # Cryal::Authenticate.call(routing, json)
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -55,7 +57,7 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'SAD: should not get waypoints for wrong plan' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -75,7 +77,7 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'SECURITY: should prevent basic SQL injection targeting IDs' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -83,6 +85,30 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
         # deliberately not reporting error -- don't give attacker information
         _(last_response.status).must_equal 404
         _(last_response.body['data']).must_be_nil
+      end
+
+      it 'HAPPY: should delete a single waypoint' do
+        credentials = { username: @account_data['username'], password: @account_data['password'] }
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
+        # get data from the response
+        auth = JSON.parse(last_response.body)['attributes']['auth_token']
+        headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
+
+        delete "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints?waypoint_number=#{@waypoint1.waypoint_number}", {}, headers
+        _(last_response.status).must_equal 200
+        result = JSON.parse(last_response.body)
+        _(result['data']).must_be_nil
+      end
+
+      it 'BAD: should not delete a single waypoint for unauthorized user' do
+        credentials = { username: @second_account_data['username'], password: @second_account_data['password'] }
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
+        # get data from the response
+        auth = JSON.parse(last_response.body)['attributes']['auth_token']
+        headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
+
+        delete "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints?waypoint_number=#{@waypoint1.waypoint_number}", {}, headers
+        _(last_response.status).must_equal 403
       end
     end
 
@@ -106,7 +132,7 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'HAPPY: should be able to add waypoint in their authorized plan' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
@@ -129,7 +155,7 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'SAD: should not create waypoints in unauthorized room' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
@@ -142,7 +168,7 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'SECURITY: should not create waypoints with mass assignment' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }

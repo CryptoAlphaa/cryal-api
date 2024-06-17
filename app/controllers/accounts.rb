@@ -24,13 +24,13 @@ module Cryal
 
       # POST /api/v1/accounts
       routing.post do
-        json = JSON.parse(routing.body.read)
-        output = GlobalActions::Account::Create.call(json)
+        account_data = SignedRequest.new(Api.config).parse(request.body.read)
+        output = GlobalActions::Account::Create.call(account_data)
         response.status = 201
         response['Location'] = "#{@account_route}/#{output.username}"
         { message: 'Account created', data: output }.to_json
       rescue StandardError => e
-        log_and_handle_error(routing, json, e)
+        log_and_handle_error(routing, account_data, e)
       end
     end
   end

@@ -35,7 +35,7 @@ describe 'Test UserRoom Handling' do # rubocop:disable Metrics/BlockLength
       it 'HAPPY: should get list of joined rooms for authorized account' do
         # Cryal::Authenticate.call(routing, json)
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -56,7 +56,7 @@ describe 'Test UserRoom Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'SECURITY: should prevent basic SQL injection targeting IDs' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
@@ -82,7 +82,7 @@ describe 'Test UserRoom Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'HAPPY: should be able to join existing rooms' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
@@ -105,7 +105,7 @@ describe 'Test UserRoom Handling' do # rubocop:disable Metrics/BlockLength
 
       it 'SAD: should not join room with wrong password' do
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
@@ -121,7 +121,7 @@ describe 'Test UserRoom Handling' do # rubocop:disable Metrics/BlockLength
                  authority: 'member' }.to_json
 
         credentials = { username: @account_data['username'], password: @account_data['password'] }
-        post 'api/v1/auth/authentication', credentials.to_json, @req_header
+        post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(credentials).to_json, @req_header
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }

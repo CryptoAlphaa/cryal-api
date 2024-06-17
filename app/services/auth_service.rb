@@ -6,7 +6,7 @@ module Cryal
     @err_message = 'User or Password not found!'
     extend Cryal
     def self.call(routing, json)
-      account = Cryal::Account.first(username: json['username']) # user existed
+      account = Cryal::Account.first(username: json[:username]) # user existed
       # raise error if user not found
       not_found(routing, @err_message, 403) if account.nil?
       # password
@@ -18,7 +18,7 @@ module Cryal
       salt = Base64.strict_decode64(jsonify['salt'])
       checksum = jsonify['hash']
       extend KeyStretch
-      check = Base64.strict_encode64(password_hash(salt, json['password']))
+      check = Base64.strict_encode64(password_hash(salt, json[:password]))
       not_found(routing, @err_message, 403) unless check == checksum
       account_and_token(account)
     end
