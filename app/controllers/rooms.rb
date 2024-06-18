@@ -164,10 +164,10 @@ module Cryal
                                         routing.halt 500, { message: 'API Server Error' }.to_json
                                 end
 
-                                # DELETE /api/v1/rooms/room_id/plans/plan_id/waypoints?waypoint_number=1
+                                # DELETE /api/v1/rooms/room_id/plans/plan_id/waypoints?waypoint_id=...
                                 routing.delete do
-                                    waypoint_number = routing.params['waypoint_number']
-                                    output = AccountService::Waypoint::Delete.call(@auth, room_id, plan_id, waypoint_number)
+                                    waypoint_id = routing.params['waypoint_id']
+                                    output = AccountService::Waypoint::Delete.call(@auth, room_id, plan_id, waypoint_id)
                                     response.status = 200
                                     { message: 'Waypoint deleted'}.to_json
                                     rescue AccountService::Waypoint::Delete::ForbiddenError => e
