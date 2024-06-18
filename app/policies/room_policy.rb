@@ -92,7 +92,7 @@ module Cryal
     end
 
     def member?
-      return true if admin?
+      # return true if admin?
       # p "Authorized account: #{@account}"
       # p "user_room: #{@user_room}"
       # p "account from user_room: #{@user_room.account}"

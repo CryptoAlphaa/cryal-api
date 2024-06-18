@@ -283,7 +283,9 @@ module Cryal
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_create_waypoint?
           last_waypoint_number = Cryal::Waypoint.where(plan_id: plan.plan_id).max(:waypoint_number) || 0
-          waypoint_request[:waypoint_number] = last_waypoint_number + 1
+          waypoint_request["waypoint_number"] = last_waypoint_number + 1
+          waypoint_request["latitude"] = waypoint_request["latitude"].to_s
+          waypoint_request["longitude"] = waypoint_request["longitude"].to_s
           plan.add_waypoint(waypoint_request)
         end
       end
@@ -334,14 +336,14 @@ module Cryal
           end
         end
 
-        def self.call(requestor, room_id, plan_id, waypoint_number)
+        def self.call(requestor, room_id, plan_id, waypoint_id)
           plan = Cryal::Plan.first(plan_id: plan_id)
           return raise(NotFoundError) if plan.nil?
           user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
           return raise(ForbiddenError) if user_room.nil?
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_delete_waypoint?
-          waypoint = Cryal::Waypoint.first(plan_id: plan_id, waypoint_number: waypoint_number)
+          waypoint = Cryal::Waypoint.first(plan_id: plan_id, waypoint_id: waypoint_id)
           raise NotFoundError if waypoint.nil?
           waypoint.destroy
 
