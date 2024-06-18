@@ -43,8 +43,9 @@ module Cryal
           # all_rooms = all_user_rooms.map(&:room)
           # policy = RoomPolicy.new(requestor, all_user_rooms)
           # policy.can_view? ? all_rooms : raise(ForbiddenError)
-          rooms = RoomPolicy::AccountScope.new(requestor).viewable
-          rooms
+          all_rooms = RoomPolicy::AccountScope.new(requestor).viewable
+          user_rooms = requestor.user_rooms
+          { all_rooms: all_rooms, user_rooms: user_rooms }
         end
       end
       
@@ -152,9 +153,16 @@ module Cryal
           end
         end
 
+        class YouAreAdminError < StandardError
+          def message
+            'You are the admin of this room, you cannot exit!'
+          end
+        end
+
         def self.call(requestor, room_id)
           user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
           raise NotFoundError if user_room.nil?
+          raise YouAreAdminError if user_room.authority == 'admin'
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_leave?
           user_room.destroy
