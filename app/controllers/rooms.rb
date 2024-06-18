@@ -29,6 +29,7 @@ module Cryal
                 end
             end
 
+            # DELETE /api/v1/rooms/delete?room_id=1
             routing.on 'delete' do
                 routing.delete do
                     room_id = routing.params['room_id']
@@ -44,6 +45,7 @@ module Cryal
                 end
             end
 
+            # DELETE /api/v1/rooms/exit?room_id=1
             routing.on 'exit' do
                 routing.delete do
                     room_id = routing.params['room_id']
@@ -54,6 +56,8 @@ module Cryal
                     routing.halt 403, { message: e.message }.to_json
                 rescue AccountService::Room::Exit::NotFoundError => e
                     routing.halt 404, { message: e.message }.to_json
+                rescue AccountService::Room::Exit::YouAreAdminError => e
+                    routing.halt 403, { message: e.message }.to_json
                 end
             end
 
