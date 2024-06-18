@@ -43,8 +43,11 @@ module Cryal
           # all_rooms = all_user_rooms.map(&:room)
           # policy = RoomPolicy.new(requestor, all_user_rooms)
           # policy.can_view? ? all_rooms : raise(ForbiddenError)
-          rooms = RoomPolicy::AccountScope.new(requestor).viewable
-          rooms
+          all_rooms = RoomPolicy::AccountScope.new(requestor).viewable
+          user_rooms = requestor.user_rooms
+          puts "all_rooms: #{all_rooms}"
+          puts "user_rooms: #{user_rooms}"
+          { all_rooms: all_rooms, user_rooms: user_rooms }
         end
       end
       
