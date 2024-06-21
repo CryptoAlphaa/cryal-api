@@ -86,7 +86,7 @@ module Cryal
     def can_read?
       @auth_scope ? @auth_scope.can_read?('rooms') : false
     end
-    
+
     def can_write?
       @auth_scope ? @auth_scope.can_write?('rooms') : false
     end

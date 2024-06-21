@@ -30,7 +30,7 @@ module Cryal
       begin
         @auth = authorization(routing.headers)
         @auth_account = @auth[:account] if @auth
-        
+
         # @auth_account = authenticated_account(routing.headers)
       rescue AuthToken::InvalidTokenError
         routing.halt 403, { message: 'Invalid auth token' }.to_json

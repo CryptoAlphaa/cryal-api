@@ -29,7 +29,7 @@ Rake::TestTask.new(:envspec) do |t|
 end
 
 desc 'Run both unit and security specs'
-task specs: %i[function model envspec]
+task spec: %i[function model envspec]
 
 desc 'Runs rubocop on tested code'
 task style: %i[spec audit] do
@@ -115,22 +115,21 @@ namespace :newkey do
   task(:load_libs) { require_app('lib', config: false) }
 
   desc 'Create sample cryptographic key for database'
-  task :db => :load_libs do
+  task db: :load_libs do
     puts "DB_KEY: #{SecureDB.generate_key}"
   end
 
   desc 'Create sample cryptographic key for tokens and messaging'
-  task :msg => :load_libs do
+  task msg: :load_libs do
     require_app('lib', config: false)
     puts "MSG_KEY: #{AuthToken.generate_key}"
   end
 
   desc 'Create sample sign/verify keypair for signed communication'
-  task :signing => :load_libs do
+  task signing: :load_libs do
     keypair = SignedRequest.generate_keypair
 
     puts "SIGNING_KEY: #{keypair[:signing_key]}"
     puts " VERIFY_KEY: #{keypair[:verify_key]}"
   end
 end
-

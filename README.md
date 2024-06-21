@@ -60,5 +60,5 @@ RACK_ENV=test rake db:migrate
 Run the test specification script in `Rakefile`:
 
 ```shell
-rake specs
+rake spec
 ```

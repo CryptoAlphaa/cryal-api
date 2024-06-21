@@ -33,7 +33,7 @@ describe 'Test Authentication Routes' do # rubocop:disable Metrics/BlockLength
 
     it 'BAD: should not authenticate invalid password' do
       bad_credentials = { username: @account_data['username'],
-                      password: 'fakepassword123' }
+                          password: 'fakepassword123' }
 
       post 'api/v1/auth/authentication', SignedRequest.new(app.config).sign(bad_credentials).to_json, @req_header
       result = JSON.parse(last_response.body)

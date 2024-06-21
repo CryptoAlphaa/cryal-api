@@ -30,6 +30,8 @@ gem 'rake'
 # Quality
 gem 'rubocop'
 
+gem 'simplecov'
+
 # Database
 gem 'hirb', '~>0.7'
 gem 'sequel', '~>5.67'

@@ -17,7 +17,7 @@ class SignedRequest
     verify_key = signing_key.verify_key
 
     { signing_key: Base64.strict_encode64(signing_key),
-      verify_key:  Base64.strict_encode64(verify_key) }
+      verify_key: Base64.strict_encode64(verify_key) }
   end
 
   def parse(signed_json)
@@ -29,10 +29,10 @@ class SignedRequest
   def sign(message)
     signing_key = Base64.strict_decode64(@config.SIGNING_KEY)
     signature = RbNaCl::SigningKey.new(signing_key)
-      .sign(message.to_json)
-      .then { |sig| Base64.strict_encode64(sig) }
+                                  .sign(message.to_json)
+                                  .then { |sig| Base64.strict_encode64(sig) }
 
-    { data: message, signature: signature }
+    { data: message, signature: }
   end
 
   private
