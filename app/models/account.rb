@@ -21,10 +21,9 @@ module Cryal
 
     def self.create_github_account(github_account)
       create(username: github_account[:username], email_secure: SecureDB.encrypt(github_account[:email]),
-            password_hash: "test"
-      )
+             password_hash: 'test')
     end
-    
+
     def password=(new_password)
       self.password_hash = Cryal::Password.digest(new_password)
     end
@@ -36,8 +35,7 @@ module Cryal
 
     def self.username_exist?(username)
       # encrypted_email = SecureDB.encrypt(email)
-      account = Account.first(username: username)
-      account
+      Account.first(username:)
     end
 
     def email

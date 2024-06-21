@@ -29,7 +29,7 @@ module Cryal
       end
 
       def inside_the_room?(user_room, account)
-        return user_room.room if user_room.account_id == account.account_id
+        user_room.room if user_room.account_id == account.account_id
       end
     end
   end

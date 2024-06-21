@@ -13,7 +13,7 @@ module Cryal
       begin
         jsonify = JSON.parse(account.password_hash)
       rescue JSON::ParserError
-        raise @err_message 
+        raise @err_message
       end
       salt = Base64.strict_decode64(jsonify['salt'])
       checksum = jsonify['hash']
@@ -39,21 +39,23 @@ module Cryal
       def call(access_token)
         github_account = get_github_account(access_token)
         sso_account = find_or_create_sso_account(github_account)
-  
+
         account_and_token(sso_account)
       end
-      
+
       def get_github_account(access_token)
         github_response = HTTP.headers(
           user_agent: 'Cryal', authorization: "token #{access_token}",
-          accept: 'application/json').get(ENV['GITHUB_ACCOUNT_URL'])
-  
+          accept: 'application/json'
+        ).get(ENV['GITHUB_ACCOUNT_URL'])
+
         raise unless github_response.status == 200
+
         # puts "gh response: #{github_response.inspect}"
         account = GithubAccount.new(JSON.parse(github_response))
         { username: account.username, email: account.email }
       end
-  
+
       def find_or_create_sso_account(account_data)
         Account.username_exist?(account_data[:username]) ||
           # Cryal::Account.new(account_data)
@@ -64,7 +66,7 @@ module Cryal
         {
           type: 'sso_account',
           attributes: {
-            account: account,
+            account:,
             auth_token: AuthToken.create(account)
           }
         }

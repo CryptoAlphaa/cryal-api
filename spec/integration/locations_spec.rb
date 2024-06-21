@@ -50,7 +50,7 @@ describe 'Test Locations Handling' do # rubocop:disable Metrics/BlockLength
         # get data from the response
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         header 'AUTHORIZATION', "Bearer #{auth}"
-        
+
         get 'api/v1/locations/2%20or%20id%3E0'
         # deliberately not reporting error -- don't give attacker information
         _(last_response.status).must_equal 404

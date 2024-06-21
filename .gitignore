@@ -2,3 +2,5 @@ app/db/store/*
 config/secrets.yml
 _*
 .bundle
+coverage/*
+!coverage/.resultset.json

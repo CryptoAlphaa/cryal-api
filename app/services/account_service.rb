@@ -13,9 +13,9 @@ module Cryal
         end
 
         def self.call(auth_info)
-            locations = auth_info[:account].locations
-            policy = LocationPolicy.new(auth_info[:account], locations, auth_info[:scope])
-            policy.can_view? ? locations : raise(ForbiddenError)
+          locations = auth_info[:account].locations
+          policy = LocationPolicy.new(auth_info[:account], locations, auth_info[:scope])
+          policy.can_view? ? locations : raise(ForbiddenError)
         end
       end
 
@@ -45,10 +45,10 @@ module Cryal
           # policy.can_view? ? all_rooms : raise(ForbiddenError)
           all_rooms = RoomPolicy::AccountScope.new(requestor).viewable
           user_rooms = requestor.user_rooms
-          { all_rooms: all_rooms, user_rooms: user_rooms }
+          { all_rooms:, user_rooms: }
         end
       end
-      
+
       class FetchOne
         class ForbiddenError < StandardError
           def message
@@ -65,13 +65,14 @@ module Cryal
         def self.call(requestor, room_id)
           room = Cryal::Room.first(room_id:)
           return raise(NotFoundError) if room.nil?
+
           policy = RoomPolicy.new(requestor[:account], room.user_rooms, requestor[:scope])
           policy.can_view? ? room : raise(ForbiddenError)
           accounts = room.user_rooms.map do |user_room|
             user = user_room.account
             { user_id: user.account_id, username: user.username }
           end
-          { rooms: room, accounts: accounts, plans: room.plans}
+          { rooms: room, accounts:, plans: room.plans }
         end
       end
 
@@ -86,6 +87,7 @@ module Cryal
 
         def self.call(requestor, room_request)
           raise ForbiddenError unless requestor[:scope].can_write?('rooms')
+
           requestor[:account].add_room(room_request)
         end
       end
@@ -109,6 +111,7 @@ module Cryal
         def self.call(requestor, join_request)
           policy = RoomPolicy.new(requestor[:account], join_request, requestor[:scope])
           raise ForbiddenError unless policy.can_join?(join_request)
+
           join_request.delete('room_password')
           requestor[:account].add_user_room(join_request)
         end
@@ -129,12 +132,14 @@ module Cryal
         end
 
         def self.call(requestor, room_id)
-          room = Cryal::Room.first(room_id: room_id)
+          room = Cryal::Room.first(room_id:)
           return raise(NotFoundError) if room.nil?
+
           # get this user specific user_room
-          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id:)
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_delete_room?
+
           room.destroy
         end
       end
@@ -160,15 +165,16 @@ module Cryal
         end
 
         def self.call(requestor, room_id)
-          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id:)
           raise NotFoundError if user_room.nil?
           raise YouAreAdminError if user_room.authority == 'admin'
+
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_leave?
+
           user_room.destroy
         end
       end
-
     end
 
     module Plans
@@ -188,24 +194,29 @@ module Cryal
           end
         end
 
-        def self.call(requestor, room_id, plan_name=nil)
-          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id, active: true)
+        def self.call(requestor, room_id, plan_name = nil)
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id:, active: true)
           return raise(ForbiddenError) if user_room.nil?
+
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_view?
+
           if plan_name.nil?
-            return raise(PlansNotFoundError) if user_room.room.plans.nil? # if looking for a specific plan and it's not found
-            return user_room.room.plans # if looking for all plans
+            # if looking for a specific plan and it's not found
+            return raise(PlansNotFoundError) if user_room.room.plans.nil?
+
+            user_room.room.plans # if looking for all plans
           else
-            found = Cryal::Plan.first(room_id: room_id, plan_name: plan_name) # if looking for a specific plan
+            found = Cryal::Plan.first(room_id:, plan_name:) # if looking for a specific plan
             raise PlansNotFoundError if found.nil?
+
             # when we find the plan, we must get all users latest location, and the plan's waypoints
             data = { plan: found, waypoints: found.waypoints }
             location_data = []
-            all_users = Cryal::User_Room.where(room_id: room_id, active: true)
+            all_users = Cryal::User_Room.where(room_id:, active: true)
             all_users.each do |acc|
               location = acc.account.locations.last
-              location_data << { username: acc.account.username, location: location }
+              location_data << { username: acc.account.username, location: }
             end
             data[:user_locations] = location_data
             data
@@ -227,14 +238,17 @@ module Cryal
             'Room is not found'
           end
         end
-        
+
         def self.call(requestor, room_id, plan_request)
-          room = Cryal::Room.first(room_id: room_id)
+          room = Cryal::Room.first(room_id:)
           return raise(NotFoundError) if room.nil?
+
           user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room.room_id)
           return raise(ForbiddenError) if user_room.nil?
+
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_create_plan?
+
           room.add_plan(plan_request)
         end
       end
@@ -255,12 +269,15 @@ module Cryal
         end
 
         def self.call(requestor, room_id, plan_name)
-          plan = Cryal::Plan.first(plan_name: plan_name)
+          plan = Cryal::Plan.first(plan_name:)
           return raise(NotFoundError) if plan.nil?
-          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id:)
           return raise(ForbiddenError) if user_room.nil?
+
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_delete_plan?
+
           plan.destroy
         end
       end
@@ -284,16 +301,19 @@ module Cryal
         end
 
         def self.call(requestor, room_id, plan_id, waypoint_request)
-          plan = Cryal::Plan.first(plan_id: plan_id)
+          plan = Cryal::Plan.first(plan_id:)
           return raise(NotFoundError) if plan.nil?
-          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id:)
           return raise(ForbiddenError) if user_room.nil?
+
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_create_waypoint?
+
           last_waypoint_number = Cryal::Waypoint.where(plan_id: plan.plan_id).max(:waypoint_number) || 0
-          waypoint_request["waypoint_number"] = last_waypoint_number + 1
-          waypoint_request["latitude"] = waypoint_request["latitude"].to_s
-          waypoint_request["longitude"] = waypoint_request["longitude"].to_s
+          waypoint_request['waypoint_number'] = last_waypoint_number + 1
+          waypoint_request['latitude'] = waypoint_request['latitude'].to_s
+          waypoint_request['longitude'] = waypoint_request['longitude'].to_s
           plan.add_waypoint(waypoint_request)
         end
       end
@@ -313,19 +333,19 @@ module Cryal
           end
         end
 
-        def self.call(requestor, room_id, plan_id, waypoint_number=nil)
-          plan = Cryal::Plan.first(plan_id: plan_id)
+        def self.call(requestor, room_id, plan_id, waypoint_number = nil)
+          plan = Cryal::Plan.first(plan_id:)
           return raise(NotFoundError) if plan.nil?
-          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id:)
           return raise(ForbiddenError) if user_room.nil?
+
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
-          raise ForbiddenError unless  policy.can_view_waypoint?
-          if waypoint_number.nil?
-            return plan.waypoints
-          else
-            found = Cryal::Waypoint.first(plan_id: plan_id, waypoint_number: waypoint_number)
-            found.nil? ? raise(NotFoundError) : found
-          end
+          raise ForbiddenError unless policy.can_view_waypoint?
+          return plan.waypoints if waypoint_number.nil?
+
+          found = Cryal::Waypoint.first(plan_id:, waypoint_number:)
+          found.nil? ? raise(NotFoundError) : found
         end
       end
 
@@ -345,18 +365,22 @@ module Cryal
         end
 
         def self.call(requestor, room_id, plan_id, waypoint_id)
-          plan = Cryal::Plan.first(plan_id: plan_id)
+          plan = Cryal::Plan.first(plan_id:)
           return raise(NotFoundError) if plan.nil?
-          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id: room_id)
+
+          user_room = Cryal::User_Room.first(account_id: requestor[:account].account_id, room_id:)
           return raise(ForbiddenError) if user_room.nil?
+
           policy = RoomPolicy.new(requestor[:account], user_room, requestor[:scope])
           raise ForbiddenError unless policy.can_delete_waypoint?
-          waypoint = Cryal::Waypoint.first(plan_id: plan_id, waypoint_id: waypoint_id)
+
+          waypoint = Cryal::Waypoint.first(plan_id:, waypoint_id:)
           raise NotFoundError if waypoint.nil?
+
           waypoint.destroy
 
           # Renumber remaining waypoints
-          remaining_waypoints = Cryal::Waypoint.where(plan_id: plan_id).order(:waypoint_number)
+          remaining_waypoints = Cryal::Waypoint.where(plan_id:).order(:waypoint_number)
           remaining_waypoints.each_with_index do |wp, index|
             new_number = index + 1
             wp.update(waypoint_number: new_number) unless wp.waypoint_number == new_number
@@ -379,7 +403,7 @@ module Cryal
         def self.call(requestor_id, account_username)
           account = Cryal::Account.first(username: account_username)
           policy = AccountPolicy.new(requestor_id, account)
-          policy.can_view? ? account: raise(ForbiddenError)
+          policy.can_view? ? account : raise(ForbiddenError)
           account_and_token(account, AuthScope.new(AuthScope::READ_ONLY))
         end
 
@@ -387,7 +411,7 @@ module Cryal
           {
             type: 'authorized_account',
             attributes: {
-              account: account,
+              account:,
               auth_token: AuthToken.create(account, auth_scope)
             }
           }

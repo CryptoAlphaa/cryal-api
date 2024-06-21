@@ -94,7 +94,8 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
 
-        delete "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints?waypoint_id=#{@waypoint1.waypoint_id}", {}, headers
+        delete "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints?waypoint_id=#{@waypoint1.waypoint_id}",
+               {}, headers
         _(last_response.status).must_equal 200
         result = JSON.parse(last_response.body)
         _(result['data']).must_be_nil
@@ -107,7 +108,8 @@ describe 'Test Plan Handling' do # rubocop:disable Metrics/BlockLength
         auth = JSON.parse(last_response.body)['attributes']['auth_token']
         headers = { 'CONTENT_TYPE' => 'application/json', 'HTTP_AUTHORIZATION' => "Bearer #{auth}" }
 
-        delete "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints?waypoint_number=#{@waypoint1.waypoint_number}", {}, headers
+        delete "api/v1/rooms/#{@room1.room_id}/plans/#{@r1_plan1.plan_id}/waypoints?waypoint_number=#{@waypoint1.waypoint_number}",
+               {}, headers
         _(last_response.status).must_equal 403
       end
     end

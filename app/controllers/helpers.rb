@@ -21,8 +21,8 @@ module Cryal
     def account_and_scope(auth_token)
       token = AuthToken.new(auth_token)
       account = Account.first(username: token.payload['username'])
-      
-      { account: account, scope: AuthScope.new(token.scope) }
+
+      { account:, scope: AuthScope.new(token.scope) }
     end
   end
 end
